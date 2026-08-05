@@ -66,7 +66,7 @@ test("all external tools have explicit source pins or unresolved markers", async
 });
 
 test("portable assets contain no personal path, identity, excluded feature, or embedded secret-looking value", async () => {
-  const roots = ["bin", "bootstrap", "commands", "manifest", "policies", "profiles", "skills", "templates", "tests"];
+  const roots = ["bin", "bootstrap", "commands", "manifest", "policies", "profiles", "scripts", "skills", "templates", "tests"];
   const secretValue = /(?:api[_-]?key|auth[_-]?token|secret|password)\s*[:=]\s*["'][A-Za-z0-9_\-]{12,}["']/i;
   const personalPath = ["", "Users", "ami" + "tdvl"].join("/");
   for (const root of roots) {
@@ -105,4 +105,11 @@ test("portable command and goal contracts retain their required workflow section
     const content = await readFile(join(ROOT, path), "utf8");
     for (const phrase of phrases) assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${path} missing ${phrase}`);
   }
+});
+
+test("twin inventory documents the only intentional live-tool exclusions", async () => {
+  const dispositions = await json("inventory-dispositions");
+  assert.equal(dispositions.twin.mode, "one-way-portable-contract");
+  assert.deepEqual(dispositions.twin.excludedLiveTools.map((item) => item.id).sort(), ["agent-inbox", "vox"]);
+  for (const item of dispositions.twin.excludedLiveTools) assert.ok(item.reason);
 });

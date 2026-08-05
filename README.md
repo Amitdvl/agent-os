@@ -50,3 +50,12 @@ If you prefer commands, use [the quickstart](docs/quickstart.md). The
 [fresh-Mac walkthrough](docs/fresh-mac-walkthrough.md) explains every step;
 [architecture](docs/architecture.md) and [inventory](docs/inventory.md) record
 the underlying design and audit evidence.
+
+## Maintainers: keep the twin current
+
+Agent OS is the privacy-preserving twin of its owner's reusable local workflow.
+When changing a portable local tool, slash command, policy, routing rule, or
+setup contract, mirror that behavior into this repository in the same task and
+run validation, tests, `git diff --check`, and the configured twin audit.
+Machine-only items need an explicit exclusion; credentials, sessions, archives,
+identities, and machine-specific paths must never enter this repository.

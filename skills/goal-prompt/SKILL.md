@@ -17,6 +17,15 @@ Use goal framing for multi-turn work, verification-heavy outcomes, meaningful tr
 
 Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
 
+## Mandatory character-count gate
+
+Before delivering a `/goal` prompt, programmatically count the exact text the
+user will paste, including the `/goal ` prefix, spaces, punctuation, and
+newlines. Never estimate by eye or claim it fits without that count. Do not send
+one prompt above 3,800 characters: shorten it without losing required criteria,
+or split it into ordered self-contained sessions. State the exact count after
+every delivered prompt.
+
 ```text
 Goal: [specific outcome and exit criteria].
 
