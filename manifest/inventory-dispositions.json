@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "localTools": [
+    {"id": "agent-inbox", "disposition": "external-with-portable-contract"},
+    {"id": "birdclaw", "disposition": "external-with-portable-contract"},
+    {"id": "discrawl", "disposition": "external-with-portable-contract"},
+    {"id": "instagram-cli", "disposition": "external-with-portable-contract"},
+    {"id": "notcrawl", "disposition": "external-with-portable-contract"},
+    {"id": "notion", "disposition": "external-with-portable-contract"},
+    {"id": "obsidian", "disposition": "external-with-portable-contract"},
+    {"id": "opencap", "disposition": "external-with-portable-contract"},
+    {"id": "opencli", "disposition": "external-with-portable-contract"},
+    {"id": "peekaboo", "disposition": "external-with-portable-contract"},
+    {"id": "rdt-cli", "disposition": "external-with-portable-contract"},
+    {"id": "remindctl", "disposition": "external-with-portable-contract"},
+    {"id": "spogo", "disposition": "external-with-portable-contract"},
+    {"id": "twitter-cli", "disposition": "external-with-portable-contract"},
+    {"id": "vox", "disposition": "external-with-portable-contract"},
+    {"id": "wacli", "disposition": "external-with-portable-contract"},
+    {"id": "wacrawl", "disposition": "external-with-portable-contract"},
+    {"id": "xurl", "disposition": "external-with-portable-contract"},
+    {"id": "yt-dlp", "disposition": "external-with-portable-contract"}
+  ],
+  "commands": [
+    {"id": "add", "disposition": "portable-core"},
+    {"id": "commands", "disposition": "portable-core"},
+    {"id": "trunk-finish", "disposition": "portable-core"},
+    {"id": "teach", "disposition": "portable-core-disabled-by-default"},
+    {"id": "margins", "disposition": "intentionally-excluded"},
+    {"id": "promote", "disposition": "intentionally-excluded"}
+  ],
+  "skillGroups": [
+    {
+      "id": "local-tools",
+      "disposition": "external-with-portable-contract",
+      "skills": ["agent-inbox", "birdclaw", "discrawl", "instagram-cli", "notcrawl", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "vox", "wacli", "wacrawl", "xurl", "yt-dlp"]
+    },
+    {
+      "id": "commands",
+      "disposition": "portable-core",
+      "skills": ["add", "commands", "trunk-finish"]
+    },
+    {
+      "id": "gstack",
+      "disposition": "third-party-optional",
+      "skills": ["browse", "careful", "codex", "design-consultation", "design-review", "document-release", "freeze", "gstack-upgrade", "guard", "investigate", "office-hours", "plan-ceo-review", "plan-design-review", "plan-eng-review", "qa", "qa-only", "retro", "review", "setup-browser-cookies", "ship", "unfreeze"]
+    },
+    {
+      "id": "other-symlinks",
+      "disposition": "third-party-optional",
+      "skills": ["last30days", "remotion-best-practices"]
+    },
+    {
+      "id": "real-directories",
+      "disposition": "portable-contract-or-external-by-inventory",
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cli-for-agents", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "figma", "figma-code-connect-components", "figma-create-design-system-rules", "figma-create-new-file", "figma-generate-design", "figma-generate-library", "figma-implement-design", "figma-use", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+    }
+  ],
+  "hooks": [
+    {"id": "commit-push-watcher", "disposition": "amit-strict-optional-disabled"},
+    {"id": "commit-push-hook-manager", "disposition": "amit-strict-template"},
+    {"id": "ctx7-guard", "disposition": "portable-core-optional"},
+    {"id": "no-no-verify-guard", "disposition": "portable-core-optional"},
+    {"id": "hook-runtime-state", "disposition": "private-machine-state"}
+  ],
+  "rules": [
+    {"id": "tool-allow-prefixes", "disposition": "amit-strict-generated"},
+    {"id": "development-allow-prefixes", "disposition": "host-configured"},
+    {"id": "absolute-binary-paths", "disposition": "generated-local-state"},
+    {"id": "transient-login-rules", "disposition": "private-transient-state"}
+  ],
+  "policySurfaces": [
+    {"id": "identity-tone", "disposition": "amit-strict-local-config"},
+    {"id": "thread-naming", "disposition": "portable-core"},
+    {"id": "local-automations", "disposition": "amit-strict"},
+    {"id": "memory-disabled", "disposition": "amit-strict"},
+    {"id": "focus-protection", "disposition": "amit-strict"},
+    {"id": "repo-skill-ownership", "disposition": "portable-core"},
+    {"id": "local-work-autonomy", "disposition": "amit-strict"},
+    {"id": "agent-vault", "disposition": "portable-core-contract"},
+    {"id": "accessibility-fallbacks", "disposition": "portable-core"},
+    {"id": "archive-freshness", "disposition": "portable-core"},
+    {"id": "local-cli-routing", "disposition": "portable-core"},
+    {"id": "new-tool-onboarding", "disposition": "portable-core-command"}
+  ]
+}
+

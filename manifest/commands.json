@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "commands": [
+    {
+      "id": "add",
+      "path": "commands/add/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Onboard a new external tool into Agent OS manifests and guidance without silently authenticating it."
+    },
+    {
+      "id": "commands",
+      "path": "commands/commands/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Show the current capability catalogue derived from manifests and installed state."
+    },
+    {
+      "id": "trunk-finish",
+      "path": "commands/trunk-finish/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Verify and finish trunk-based repository work using project-owned policy."
+    },
+    {
+      "id": "teach",
+      "path": "commands/teach/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": false,
+      "purpose": "Run a Socratic teaching loop over a declared topic or source."
+    },
+    {
+      "id": "margins",
+      "path": null,
+      "disposition": "intentionally-excluded",
+      "selectedByDefault": false,
+      "purpose": "Business-specific metrics require a project-owned schema."
+    },
+    {
+      "id": "promote",
+      "path": null,
+      "disposition": "intentionally-excluded",
+      "selectedByDefault": false,
+      "purpose": "Production promotion remains project-owned."
+    }
+  ]
+}
+

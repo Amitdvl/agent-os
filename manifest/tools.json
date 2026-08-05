@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "tools": [
+    {
+      "id": "agent-inbox", "binary": "agent-inbox", "purpose": "Local Agent Inbox reads and explicitly requested sends or status changes.",
+      "packs": ["local-productivity"], "source": "agent-inbox-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["local-app"],
+      "freshness": "Use bounded JSON reads and verify sends from CLI output.", "safety": "Mutate inbox state only when target and action are clear."
+    },
+    {
+      "id": "birdclaw", "binary": "birdclaw", "purpose": "X local archive analysis and guarded live sync/actions.",
+      "packs": ["research", "communication"], "source": "birdclaw-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["local-archive", "human-login"],
+      "freshness": "Refresh the relevant archive unless the user requests no refresh or asks only about setup.", "safety": "Never inspect credential files; require exact intent for remote actions and protect private DMs."
+    },
+    {
+      "id": "discrawl", "binary": "discrawl", "purpose": "Discord archive sync/search and supported explicit writes.",
+      "packs": ["communication"], "source": "discrawl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "freshness": "Run a full sync before answering from message data and again after supported writes.", "safety": "Do not expose tokens or private message content beyond the request."
+    },
+    {
+      "id": "instagram-cli", "binary": "instagram-cli", "purpose": "Instagram Direct/profile reads and explicit messaging actions.",
+      "packs": ["communication"], "source": "instagram-cli-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "freshness": "Use thread IDs from a fresh bounded inbox result.", "safety": "Never inspect sessions; no website fallback; login stays user-owned."
+    },
+    {
+      "id": "notcrawl", "binary": "notcrawl", "purpose": "Notion local archive sync, search, SQL, export, and guarded private share.",
+      "packs": ["local-productivity"], "source": "notcrawl-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["agent-vault", "human-login"],
+      "freshness": "Check archive status and explicitly select the sync source when freshness matters.", "safety": "Never expose tokens, signed URLs, cache databases, or private archive contents."
+    },
+    {
+      "id": "notion", "binary": "notion", "purpose": "Notion API reads and explicit page creation/append.",
+      "packs": ["local-productivity"], "source": "notion-manual", "disposition": "external-local", "platforms": ["darwin"], "auth": ["agent-vault"],
+      "freshness": "Run an auth status check before authenticated work.", "safety": "Never print injected environment values; writes require target and content."
+    },
+    {
+      "id": "obsidian", "binary": "obsidian", "purpose": "Obsidian vault search, links, reads, and explicit note edits.",
+      "packs": ["local-productivity"], "source": "obsidian-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "freshness": "Use the configured vault as the source of truth.", "safety": "Treat the vault read-only unless a specific edit is requested."
+    },
+    {
+      "id": "opencap", "binary": "opencap", "purpose": "Screen video recording, event logs, upload, sharing, and edits.",
+      "packs": ["creator"], "source": "opencap-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login", "macos-permission"],
+      "freshness": "Check recording status before starting a recording.", "safety": "Record only on request; sharing, deletion, trim, and rename require exact targets."
+    },
+    {
+      "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters and Browser Bridge automation.",
+      "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters.", "safety": "Never inspect cookies or session storage; browser/account writes require exact intent."
+    },
+    {
+      "id": "peekaboo", "binary": "peekaboo", "purpose": "macOS screen, app, window inspection and UI automation support.",
+      "packs": ["local-productivity", "creator"], "source": "peekaboo-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
+      "freshness": "Inspect the current visible UI state immediately before acting.", "safety": "Prefer read-only inspection; UI writes need a clear target and task authority."
+    },
+    {
+      "id": "rdt-cli", "binary": "rdt", "purpose": "Reddit browsing, search, exports, account reads, and explicit interactions.",
+      "packs": ["research", "communication"], "source": "rdt-cli-git", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "freshness": "Use bounded sequential requests and structured output.", "safety": "Never inspect browser cookies; interactions require exact target/action."
+    },
+    {
+      "id": "remindctl", "binary": "remindctl", "purpose": "Apple Reminders reads and explicit create/update/complete/delete actions.",
+      "packs": ["local-productivity"], "source": "remindctl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
+      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action."
+    },
+    {
+      "id": "spogo", "binary": "spogo", "purpose": "Spotify search, playback, queue, library, playlists, and listening data.",
+      "packs": ["creator"], "source": "spogo-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "freshness": "Check auth status before authenticated work.", "safety": "Never inspect cookies; playback and account/player changes are user-visible writes."
+    },
+    {
+      "id": "twitter-cli", "binary": "twitter", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions.",
+      "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes."
+    },
+    {
+      "id": "vox", "binary": "vox", "purpose": "Self-hosted Twilio/OpenAI Realtime phone bridge.",
+      "packs": ["communication", "creator"], "source": "vox-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["agent-vault", "telecom-consent"],
+      "freshness": "Inspect the installed interface before relying on it.", "safety": "No call without exact number, caller ID, purpose, disclosure, consent, and legal review."
+    },
+    {
+      "id": "wacli", "binary": "wacli", "purpose": "WhatsApp linked-device live reads and writes.",
+      "packs": ["communication"], "source": "wacli-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "freshness": "Use current linked-device state for live tasks.", "safety": "Sends and account/group mutations require exact target and content/action."
+    },
+    {
+      "id": "wacrawl", "binary": "wacrawl", "purpose": "Read-only WhatsApp Desktop archive sync/search.",
+      "packs": ["communication"], "source": "wacrawl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["local-archive"],
+      "freshness": "Sync before answers from archive data unless the user opts out.", "safety": "Never mutate WhatsApp or expose raw archives/private message text unnecessarily."
+    },
+    {
+      "id": "xurl", "binary": "xurl", "purpose": "Authenticated X API transport and guarded live actions.",
+      "packs": ["research", "communication"], "source": "xurl-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "freshness": "Check auth status before live API work.", "safety": "Never inspect credential storage or use verbose auth; no inline secrets."
+    },
+    {
+      "id": "yt-dlp", "binary": "yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads.",
+      "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
+    },
+    {
+      "id": "agent-reach", "binary": "agent-reach", "purpose": "Optional upstream research-channel installer, router, and doctor.",
+      "packs": ["research"], "source": "agent-reach-optional", "disposition": "third-party-optional", "platforms": ["darwin"], "auth": ["channel-specific"],
+      "freshness": "Use its doctor only after the user deliberately installs it.", "safety": "Never mandatory, never a wrapper for all tools, and never auto-connect browser sessions."
+    }
+  ]
+}
+

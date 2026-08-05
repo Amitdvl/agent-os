@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "id": "core",
+      "description": "Agent policy, portable commands, first-party skills, guard templates, status, and diagnostics.",
+      "tools": [],
+      "commands": ["add", "commands", "trunk-finish"],
+      "optionalCommands": ["teach"],
+      "skills": ["agent-os", "agent-secrets", "goal-prompt", "tool-routing"]
+    },
+    {
+      "id": "local-productivity",
+      "description": "Local apps, personal knowledge, reminders, and macOS UI inspection.",
+      "tools": ["agent-inbox", "notion", "notcrawl", "obsidian", "remindctl", "peekaboo"],
+      "commands": [],
+      "optionalCommands": [],
+      "skills": []
+    },
+    {
+      "id": "research",
+      "description": "Local archives, public web/media, and current platform research.",
+      "tools": ["birdclaw", "xurl", "twitter-cli", "rdt-cli", "opencli", "yt-dlp"],
+      "optionalTools": ["agent-reach"],
+      "commands": [],
+      "optionalCommands": [],
+      "skills": []
+    },
+    {
+      "id": "communication",
+      "description": "Guarded messaging, social account actions, and phone workflows.",
+      "tools": ["wacli", "wacrawl", "discrawl", "twitter-cli", "xurl", "instagram-cli", "vox"],
+      "commands": [],
+      "optionalCommands": [],
+      "skills": []
+    },
+    {
+      "id": "creator",
+      "description": "Recording, playback, and public-media production helpers.",
+      "tools": ["opencap", "spogo", "yt-dlp", "vox"],
+      "commands": [],
+      "optionalCommands": [],
+      "skills": []
+    }
+  ]
+}
+

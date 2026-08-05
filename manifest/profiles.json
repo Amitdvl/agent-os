@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "defaultProfile": "amit-strict",
+  "profiles": [
+    {
+      "id": "amit-strict",
+      "displayName": "Amit Strict",
+      "description": "The closest portable equivalent of Amit's current local agent workflow.",
+      "packs": ["core", "local-productivity", "research", "communication", "creator"],
+      "policies": ["core", "external-actions", "secrets", "freshness", "focus", "amit-strict"],
+      "identityMode": "local-config",
+      "memory": "disabled",
+      "externalWrites": "exact-intent",
+      "defaultHosts": ["codex", "claude-code"]
+    }
+  ]
+}
+
