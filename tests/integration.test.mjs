@@ -72,6 +72,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
   const doctor = JSON.parse(run(["doctor", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(doctor.ok, true);
   assert.match(doctor.nextActions[1], /install/);
+  const catalogue = JSON.parse(run(["status", "--home", home, "--catalog", "--json"], 0, noTools).stdout);
+  assert.equal(catalogue.workflows.length, 5);
+  assert.ok(catalogue.hostSkills.codex.includes("birdclaw"));
+  assert.deepEqual(catalogue.automations, []);
+  assert.deepEqual(catalogue.plugins, []);
 
   const beforeUpdate = await readFile(join(home, ".agent-os", "state.json"), "utf8");
   const update = JSON.parse(run(["update", "--home", home, "--safe", "--json"], 0, noTools).stdout);
