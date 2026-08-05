@@ -1,0 +1,14 @@
+.DS_Store
+.sandbox/
+.agent-os-state/
+coverage/
+node_modules/
+*.log
+*.tmp
+*.bak
+*.sops.env
+*.sops.yaml
+.env
+.env.*
+!.env.example
+
