@@ -92,3 +92,17 @@ test("documentation links resolve inside the repository", async () => {
     }
   }
 });
+
+test("portable command and goal contracts retain their required workflow sections", async () => {
+  const required = {
+    "commands/add/SKILL.md": ["## Workflow", "## Stop conditions", "## Report", "reviewed-install", "allow rule"],
+    "commands/commands/SKILL.md": ["deterministic order", "personal slash commands", "standalone skills", "credential"],
+    "commands/teach/SKILL.md": ["## Source resolution", "## Teaching loop", "exactly one targeted question", "--student"],
+    "commands/trunk-finish/SKILL.md": ["recovery-first", "sensitive surfaces", "worktrees", "## Report"],
+    "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting"],
+  };
+  for (const [path, phrases] of Object.entries(required)) {
+    const content = await readFile(join(ROOT, path), "utf8");
+    for (const phrase of phrases) assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${path} missing ${phrase}`);
+  }
+});
