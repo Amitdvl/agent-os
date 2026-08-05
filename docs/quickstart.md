@@ -1,46 +1,46 @@
 # Quickstart
 
-Agent OS is preview-first. These commands are for a future deployment; building this repository did not run them against the current Mac.
+Agent OS is preview-first. It can set up the portable core without installing software, contacting a service, logging in, granting a macOS permission, or modifying an existing unowned file.
 
-## 1. Requirements
+## Before starting
 
-- macOS
-- Git
-- Node.js 20 or newer
-- a private clone of this repository
+- macOS, Git, and Node.js 20+
+- a clone of this repository in a user-owned folder
+- Codex and/or Claude Code installed and signed in through their normal user flows
 
-From the repository:
+## The safe first run
 
 ```sh
 ./bin/agent-os validate
-./bin/setup --profile amit-strict --safe
+./bin/setup --safe
+./bin/setup --safe --apply
+./bin/status --json
+./bin/doctor --json
 ```
 
-The second command prints every planned destination and changes nothing.
+`--safe` is real: it selects only the `core` pack and refuses installation, SOPS/age execution, and vault decryption. It creates only Agent OS policy, first-party skills, and commands. The first command is always a no-write preview; `--apply` is separately required.
 
-## 2. Review
+## Add optional capabilities later
 
-Confirm:
-
-- the selected home, Codex, Claude Code, and state directories;
-- the `amit-strict` profile and selected packs;
-- any unowned-file conflicts;
-- external tools you actually want;
-- human login, encrypted-vault, browser-session, and macOS permission checkpoints.
-
-## 3. Apply later
-
-Only after reviewing the preview:
+Preview a full tool deployment (managed registry, templates, symlinks, and Codex binary allow rules):
 
 ```sh
-./bin/setup --profile amit-strict --safe --apply
-./bin/status
-./bin/doctor
+./bin/setup --packs core,local-productivity,research,communication,creator
+./bin/setup --packs core,local-productivity --apply
 ```
 
-Apply installs Agent OS-owned instruction blocks, commands, and generated skills. It does not install external CLIs, authenticate accounts, import archives, grant permissions, enable hooks, or change focus-blocking infrastructure.
+Preview installation of a pinned, supported tool source:
 
-For another user's Mac, edit the generated non-secret config in their Agent OS state directory before re-running setup. Do not copy Amit's local state.
+```sh
+./bin/agent-os install --tools yt-dlp
+```
 
-See the [fresh-Mac walkthrough](fresh-mac-walkthrough.md), [advanced guide](advanced.md), and [troubleshooting](troubleshooting.md).
+Only after independently reviewing the source, license, and command may a user invoke the separately gated mode:
 
+```sh
+./bin/agent-os install --tools yt-dlp --apply --reviewed-install
+```
+
+This never logs in, grants access, installs browser extensions, or mutates remote accounts. A `manual-unresolved` source remains a human checkpoint.
+
+See the [fresh-Mac walkthrough](fresh-mac-walkthrough.md) for the friend-friendly sequence and [troubleshooting](troubleshooting.md) for next actions.

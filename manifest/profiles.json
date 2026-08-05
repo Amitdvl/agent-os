@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "defaultProfile": "amit-strict",
+  "defaultProfile": "strict-portable",
   "profiles": [
     {
-      "id": "amit-strict",
-      "displayName": "Amit Strict",
-      "description": "The closest portable equivalent of Amit's current local agent workflow.",
+      "id": "strict-portable",
+      "displayName": "Strict Portable",
+      "description": "An opinionated portable workflow with safe defaults and no inherited private identity.",
       "packs": ["core", "local-productivity", "research", "communication", "creator"],
-      "policies": ["core", "external-actions", "secrets", "freshness", "focus", "amit-strict"],
+      "policies": ["core", "external-actions", "secrets", "freshness", "focus", "strict-portable"],
       "identityMode": "local-config",
       "memory": "disabled",
       "externalWrites": "exact-intent",
@@ -15,4 +15,3 @@
     }
   ]
 }
-
