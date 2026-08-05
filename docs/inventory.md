@@ -13,3 +13,12 @@ Every selected tool is rendered to a managed `SKILL.md` with a data-root placeho
 The local-productivity pack includes NoteBridge for local Wispr Flow and Apple Notes inspection, explicit exports, guarded Apple changes, and one-way Wispr-to-Apple mirroring.
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
+
+## Portable workflow templates
+
+Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
+audit and reusable-tooling harvest. It also carries optional portable sources for
+the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
+These are source contracts only: schedules, LaunchAgents, hook state, logs,
+session data, and project-specific configuration are never deployed or copied
+automatically.

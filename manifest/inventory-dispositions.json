@@ -31,7 +31,7 @@
     {"id": "add", "disposition": "portable-core"},
     {"id": "commands", "disposition": "portable-core"},
     {"id": "trunk-finish", "disposition": "portable-core"},
-    {"id": "teach", "disposition": "portable-core-disabled-by-default"},
+    {"id": "teach", "disposition": "portable-core"},
     {"id": "margins", "disposition": "intentionally-excluded"},
     {"id": "promote", "disposition": "intentionally-excluded"}
   ],
@@ -59,15 +59,23 @@
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cli-for-agents", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "figma", "figma-code-connect-components", "figma-create-design-system-rules", "figma-create-new-file", "figma-generate-design", "figma-generate-library", "figma-implement-design", "figma-use", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cli-for-agents", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
     }
   ],
   "hooks": [
-    {"id": "commit-push-watcher", "disposition": "strict-portable-optional-disabled"},
-    {"id": "commit-push-hook-manager", "disposition": "strict-portable-template"},
-    {"id": "ctx7-guard", "disposition": "portable-core-optional"},
-    {"id": "no-no-verify-guard", "disposition": "portable-core-optional"},
+    {"id": "commit-push-watcher", "path": "templates/hooks/commit-push-watcher/codex_commit_push_watcher.py", "disposition": "strict-portable-optional-disabled"},
+    {"id": "commit-push-hook-manager", "path": "templates/hooks/commit-push-watcher/manage_commit_push_hook.sh", "disposition": "strict-portable-template"},
+    {"id": "ctx7-guard", "path": "templates/hooks/ctx7-guard/ctx7_guard.py", "disposition": "portable-core-optional"},
+    {"id": "no-no-verify-guard", "path": "templates/hooks/block-no-verify/block_no_verify.sh", "disposition": "portable-core-optional"},
     {"id": "hook-runtime-state", "disposition": "private-machine-state"}
+  ],
+  "automationTemplates": [
+    {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
+    {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"}
+  ],
+  "referenceOnly": [
+    {"id": "config-project-record", "disposition": "project-specific-reference-only"},
+    {"id": "agent-os-migration-followup", "disposition": "one-shot-reference-only"}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},

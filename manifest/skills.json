@@ -4,6 +4,7 @@
     {"id": "agent-os", "path": "skills/agent-os/SKILL.md", "disposition": "portable-core"},
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
     {"id": "goal-prompt", "path": "skills/goal-prompt/SKILL.md", "disposition": "portable-core"},
+    {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow"},
     {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core"},
     {"id": "gstack", "path": null, "disposition": "third-party-optional"},
     {"id": "last30days", "path": null, "disposition": "third-party-optional"},
@@ -11,4 +12,3 @@
     {"id": "system-and-platform-skills", "path": null, "disposition": "host-or-third-party"}
   ]
 }
-

@@ -1,23 +1,50 @@
 ---
 name: teach
-description: Use when /teach should run a one-question Socratic loop over a topic, transcript, notes file, or prior work session.
+description: Use when the user invokes /teach to run a Socratic teaching loop over a topic, transcript, notes file, or prior work session.
 ---
 
 # Teach
 
-Use `/teach <topic-or-path> [--student <name>]` when someone wants to understand material deeply enough to explain it back. With no argument, ask which topic, session, or file to learn from.
+Use `/teach` when the user wants to understand a prior session, technical topic,
+change, transcript, or notes file deeply enough to explain it back.
 
-## Source resolution
+## Usage
 
-When the argument is a readable file, read that file directly. For a topic, search only project-declared sources and configured non-secret paths; never assume a transcript directory. Extract goals and constraints, key decisions and rejected alternatives, evidence and verification, and open risks.
+```text
+/teach <topic keywords>
+/teach <path/to/file>
+/teach <topic> --student <name>
+```
 
-## Teaching loop
+No argument: ask which session, topic, or file the user wants to learn from.
 
-1. Make a concrete concept checklist and ask for the learner's current understanding.
-2. Choose one unchecked concept.
-3. Ask exactly one targeted question.
-4. Mark it complete only when the answer explains the motivation and tradeoff.
-5. If incomplete, explain the gap briefly and ask one rephrased question.
-6. Continue until every concept is confirmed, then summarize the learner's demonstrated understanding and remaining risks.
+## Source Resolution
 
-Keep responses concise unless depth is requested. Do not edit source material unless explicitly asked.
+When the argument is a file, read it directly. When the argument is a topic,
+search only sources the current project or user config declares. Do not assume a
+fixed transcript directory.
+
+Extract:
+
+- user goals and constraints;
+- key decisions and rejected alternatives;
+- evidence that mattered;
+- verification performed;
+- open risks or follow-up work.
+
+## Teaching Loop
+
+1. Create a checklist of concrete concepts.
+2. Ask the user to explain their current understanding.
+3. Pick one unchecked concept at a time.
+4. Ask one targeted question.
+5. If the answer is correct, mark the concept complete.
+6. If the answer misses the point, explain the gap and re-ask differently.
+7. Finish only when every concept is confirmed.
+
+## Rules
+
+- One question at a time.
+- Teach motivation and tradeoffs, not just event sequence.
+- Keep responses concise unless the user asks for depth.
+- Do not edit source material unless explicitly asked.

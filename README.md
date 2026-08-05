@@ -59,3 +59,7 @@ setup contract, mirror that behavior into this repository in the same task and
 run validation, tests, `git diff --check`, and the configured twin audit.
 Machine-only items need an explicit exclusion; credentials, sessions, archives,
 identities, and machine-specific paths must never enter this repository.
+
+Portable workflow sources include the read-only Skill Cleaner contract, paused
+automation templates, and optional hook templates. They are not scheduled or
+installed automatically; each destination chooses and configures them locally.

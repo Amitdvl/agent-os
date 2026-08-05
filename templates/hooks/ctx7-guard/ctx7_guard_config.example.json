@@ -1,0 +1,56 @@
+{
+  "topicMappings": {
+    "@clerk/clerk-react": [
+      "@clerk/clerk-react",
+      "clerk-react"
+    ],
+    "@stripe/stripe-js": [
+      "@stripe/stripe-js",
+      "stripe-js"
+    ],
+    "@tanstack/react-query": [
+      "@tanstack/react-query",
+      "react-query",
+      "tanstack/query",
+      "/tanstack/query/latest"
+    ],
+    "anthropic": [
+      "anthropic"
+    ],
+    "fastapi": [
+      "fastapi"
+    ],
+    "google-genai": [
+      "google.genai",
+      "google-genai"
+    ],
+    "httpx": [
+      "httpx"
+    ],
+    "openai": [
+      "openai",
+      "/openai/openai-python"
+    ],
+    "pydantic": [
+      "pydantic",
+      "pydantic-settings"
+    ],
+    "react-hook-form": [
+      "@hookform/resolvers",
+      "react-hook-form"
+    ],
+    "react-router-dom": [
+      "react-router",
+      "react-router-dom"
+    ],
+    "sqlalchemy": [
+      "sqlalchemy"
+    ],
+    "stripe": [
+      "stripe"
+    ],
+    "zod": [
+      "zod"
+    ]
+  }
+}

@@ -26,7 +26,7 @@
       "id": "teach",
       "path": "commands/teach/SKILL.md",
       "disposition": "portable-core",
-      "selectedByDefault": false,
+      "selectedByDefault": true,
       "purpose": "Run a Socratic teaching loop over a declared topic or source."
     },
     {
@@ -45,4 +45,3 @@
     }
   ]
 }
-
