@@ -59,6 +59,14 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok((await lstat(codexLink)).isSymbolicLink());
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
+  const toolRequirements = {
+    "agent-inbox": "agent-inbox list", birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli doctor", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", vox: "vox --help", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
+  };
+  for (const [id, phrase] of Object.entries(toolRequirements)) {
+    const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
+    for (const heading of ["## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
+  }
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["birdclaw"\]/);
   assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
 
@@ -77,6 +85,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok(catalogue.hostSkills.codex.includes("birdclaw"));
   assert.deepEqual(catalogue.automations, []);
   assert.deepEqual(catalogue.plugins, []);
+  assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator"]);
 
   const beforeUpdate = await readFile(join(home, ".agent-os", "state.json"), "utf8");
   const update = JSON.parse(run(["update", "--home", home, "--safe", "--json"], 0, noTools).stdout);
