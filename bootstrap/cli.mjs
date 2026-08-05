@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { access, mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import { access, chmod, lstat, mkdir, readFile, readdir, readlink, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { homedir, platform } from "node:os";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,6 +24,31 @@ const MANIFEST_NAMES = [
 ];
 const START_PREFIX = "<!-- agent-os:start";
 const END_MARKER = "<!-- agent-os:end -->";
+
+// These are portable *templates*, not machine configuration. Every selected
+// tool receives the same complete section structure, with only safe command
+// examples and placeholders for private data roots.
+const TOOL_CONTRACTS = {
+  "agent-inbox": { root: "<Agent Inbox application data>", preflight: ["agent-inbox --help"], reads: ["agent-inbox list --json"], writes: ["agent-inbox send … (only with an exact recipient and message)"], limits: "The CLI is not a replacement for permission to send or resolve messages.", fix: "Open the local app and confirm its command-line integration is enabled." },
+  birdclaw: { root: "<user-home>/.birdclaw", preflight: ["birdclaw --help"], reads: ["birdclaw sync", "birdclaw search --json --max 20"], writes: ["Explicit tweet, reply, DM, mute, or block command only after exact user intent"], limits: "Archive freshness and available history depend on the user's own account sync.", fix: "Complete the tool's supported login locally; never inspect its cookie or database files." },
+  discrawl: { root: "<tool-owned Discord archive>", preflight: ["discrawl --help"], reads: ["discrawl sync --full", "discrawl search <query>"], writes: ["Supported discrawl send only with an exact channel and message"], limits: "A full archive sync is required before answering from Discord data.", fix: "Use the tool's documented account setup; do not expose a bot token." },
+  "instagram-cli": { root: "<user-home>/.instagram-cli", preflight: ["instagram-cli --version", "instagram-cli auth whoami"], reads: ["instagram-cli inbox --output json --limit 20"], writes: ["instagram-cli send/reply only with exact thread and content"], limits: "There is intentionally no Instagram website or browser-automation fallback.", fix: "The user must run instagram-cli auth login locally when the session is absent or expired." },
+  notcrawl: { root: "<tool-owned Notion archive>", preflight: ["notcrawl status --json"], reads: ["notcrawl sync --source desktop", "notcrawl search <query>"], writes: ["notcrawl publish --push only with an exact remote target and push intent"], limits: "Sync/export/share can change a local archive; publishing is never implicit.", fix: "Configure an independently created vault record or supported desktop/API access." },
+  notion: { root: "<no local archive; service API>", preflight: ["notion auth status"], reads: ["notion search <query>", "notion blocks children <id>"], writes: ["notion create/append only with exact page/database target and content"], limits: "The command needs an independently supplied vault environment; 404 can mean the integration was not shared.", fix: "Create the named vault requirement and share the target with the new user's integration." },
+  obsidian: { root: "<configured user-owned Obsidian vault>", preflight: ["obsidian --help"], reads: ["obsidian search <query>", "obsidian read <note>"], writes: ["Specific create/edit/append only after an explicit note target"], limits: "The vault is read-only by default and its contents are never migrated by Agent OS.", fix: "Set the non-secret vault path in Agent OS config after the user chooses one." },
+  opencap: { root: "<tool-owned OpenCap state>", preflight: ["opencap record status"], reads: ["opencap record status"], writes: ["opencap record start/stop/share/edit only for the exact requested window or display"], limits: "Screen Recording and optional account access are human checkpoints.", fix: "Grant the narrow macOS permission in System Settings and complete the supported login manually." },
+  opencli: { root: "<tool-owned browser bridge state>", preflight: ["opencli doctor", "opencli profile list"], reads: ["opencli doctor"], writes: ["Browser/UI mutation only with exact target and action"], limits: "Cookies, browser profiles, and extension permissions are never inspected or copied.", fix: "Install/enable the supported bridge and select a user-owned browser profile manually." },
+  peekaboo: { root: "<macOS accessibility and screen state>", preflight: ["peekaboo --help"], reads: ["peekaboo list windows"], writes: ["UI automation only with a clear target and task authority"], limits: "Read-only inspection is preferred; Accessibility/Screen Recording stay user-controlled.", fix: "Grant only the required macOS privacy permission in System Settings." },
+  "rdt-cli": { root: "<tool-owned browser-session state>", preflight: ["rdt --help"], reads: ["rdt search <query> --json --max 20"], writes: ["Comment, vote, save, subscribe, or account changes only with exact target/action"], limits: "Browser credentials are opaque and must never be inspected.", fix: "Connect the user's own supported browser session manually." },
+  remindctl: { root: "<Apple Reminders database>", preflight: ["remindctl --help"], reads: ["remindctl list"], writes: ["Create/update/complete/delete only with exact list, reminder, date, and action"], limits: "Results can lag native state and access requires macOS permission.", fix: "Grant Reminders access in System Settings, then verify in the native app." },
+  spogo: { root: "<tool-owned Spotify session>", preflight: ["spogo auth status"], reads: ["spogo now-playing"], writes: ["Playback, queue, device, library, playlist, and volume changes only on exact request"], limits: "Player changes are visible remote writes and browser credentials remain opaque.", fix: "Complete the supported user login or browser import locally." },
+  "twitter-cli": { root: "<tool-owned browser-session state>", preflight: ["twitter --help"], reads: ["twitter search <query> --json --max 20"], writes: ["Post/reply/quote/delete/like/follow only with exact target and content"], limits: "Use Birdclaw for historical archive work; do not print auth diagnostics.", fix: "Connect a user-owned browser session through the tool's documented flow." },
+  vox: { root: "<tool-owned local Vox configuration>", preflight: ["vox --help"], reads: ["vox --help"], writes: ["Outbound call/configuration only with exact number, caller ID, purpose, consent, and disclosure"], limits: "Calls, recordings, telecom rules, public tunnels, and provider changes remain human-reviewed.", fix: "Create the required vault records and complete provider/consent setup before any call." },
+  wacli: { root: "<tool-owned WhatsApp linked-device state>", preflight: ["wacli --help"], reads: ["wacli status"], writes: ["Send, reaction, archive, pin, group/channel, or account mutation only with exact target/action"], limits: "Linked-device sessions are user-owned and must never be read from disk.", fix: "Link the user's own device through the supported interactive flow." },
+  wacrawl: { root: "<WhatsApp Desktop local archive>", preflight: ["wacrawl sync"], reads: ["wacrawl sync", "wacrawl search <query>"], writes: ["None: this integration is archive read-only"], limits: "Sync before answering unless the user opts out or asks only about setup.", fix: "Install WhatsApp Desktop and let the user establish their own archive." },
+  xurl: { root: "<tool-owned X API configuration>", preflight: ["xurl --help"], reads: ["xurl --help"], writes: ["Any authenticated action only with exact target/content"], limits: "OAuth configuration is user-owned; never use inline credentials or verbose auth output.", fix: "Complete the supported OAuth setup locally." },
+  "yt-dlp": { root: "<user-selected download destination>", preflight: ["yt-dlp --version"], reads: ["yt-dlp --no-playlist --skip-download <single-public-url>"], writes: ["A single authorized --no-playlist download to an explicit destination"], limits: "No cookies, login, proxy, geo-bypass, background, or bulk retrieval.", fix: "Install from a reviewed source and use only public, authorized media." },
+};
 
 function hash(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -119,7 +145,10 @@ async function validateBundle(bundle) {
   for (const tool of collections.tools) {
     if (!sources.has(tool.source)) errors.push(`tool ${tool.id} references missing source ${tool.source}`);
     if (!tool.binary || !tool.purpose || !tool.safety) errors.push(`tool ${tool.id} is missing routing fields`);
+    if (!TOOL_CONTRACTS[tool.id]) errors.push(`tool ${tool.id} has no portable template`);
   }
+
+  for (const id of Object.keys(TOOL_CONTRACTS)) if (!tools.has(id)) errors.push(`portable template ${id} has no tool manifest`);
 
   for (const source of collections.sources) {
     if (!source.pin) errors.push(`source ${source.id} has no pin or explicit unresolved marker`);
@@ -138,7 +167,7 @@ async function validateBundle(bundle) {
 
 function parseArgs(argv) {
   const result = { _: [] };
-  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config"]);
+  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config", "--tools", "--vault-dir", "--age-recipient"]);
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (!value.startsWith("--")) {
@@ -183,7 +212,7 @@ async function resolveContext(bundle, options, preferState = false) {
   const profile = bundle.profiles.profiles.find((item) => item.id === profileId);
   if (!profile) throw new Error(`unknown profile: ${profileId}`);
 
-  const requestedPacks = splitList(options.packs) ?? (preferState ? previousState?.packs : null) ?? profile.packs;
+  const requestedPacks = options.safe ? ["core"] : splitList(options.packs) ?? (preferState ? previousState?.packs : null) ?? profile.packs;
   const packMap = byId(bundle.packs.packs);
   const packs = requestedPacks.map((id) => {
     const pack = packMap.get(id);
@@ -207,7 +236,9 @@ async function resolveContext(bundle, options, preferState = false) {
     throw error;
   });
 
-  return { bundle, options, userHome, stateDir, statePath, previousState, profile, packs, hosts, codexHome, claudeHome, config };
+  const localToolsRoot = join(stateDir, "local-tools");
+  const vaultDir = ensureUnder(userHome, options["vault-dir"] ?? join(stateDir, "vault"), "vault directory");
+  return { bundle, options, userHome, stateDir, statePath, previousState, profile, packs, hosts, codexHome, claudeHome, localToolsRoot, vaultDir, config };
 }
 
 function selectedTools(context) {
@@ -263,9 +294,11 @@ function removeBlock(content) {
   return [before, after].filter(Boolean).join("\n\n") + (before || after ? "\n" : "");
 }
 
-function renderToolSkill(tool) {
+function renderToolSkill(tool, source) {
+  const contract = TOOL_CONTRACTS[tool.id];
+  if (!contract) throw new Error(`missing portable tool contract for ${tool.id}`);
   const auth = tool.auth.join(", ");
-  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\n---\n\n# ${tool.id}\n\nUse the upstream \`${tool.binary}\` binary when this capability is selected and installed. Check \`command -v ${tool.binary}\` and a lightweight help/version command when exact interface support matters. Binary presence does not prove authentication.\n\n## Freshness\n\n${tool.freshness}\n\n## Safety\n\n${tool.safety}\n\nAuthentication class: ${auth}. Never inspect or expose the underlying credential, session, archive, or private application state. Agent OS does not install or authenticate this dependency automatically.\n`;
+  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\ninstall_source: ${source.kind}:${source.locator}\nsource_pin: ${source.pin}\n---\n\n# ${tool.id}\n\nThis managed template routes Agent OS to the upstream \`${tool.binary}\` binary after the user has deliberately installed it. Binary presence does not prove authentication.\n\n## Data and authentication\n\n- Data root: ${contract.root}\n- Authentication: ${auth}\n- Credential rule: Never inspect, print, copy, or migrate credentials, sessions, archives, browser state, or private app state.\n\n## Preflight\n\n${contract.preflight.map((command) => `- \`${command}\``).join("\n")}\n\n## Freshness\n\n${tool.freshness}\n\n## Safe reads\n\n${contract.reads.map((command) => `- \`${command}\``).join("\n")}\n\n## Guarded writes\n\n${contract.writes.map((command) => `- ${command}`).join("\n")}\n\n${tool.safety}\n\n## Limitations\n\n${contract.limits}\n\n## Troubleshooting\n\n${contract.fix}\n`;
 }
 
 function managedRecord(previousState, path) {
@@ -273,6 +306,21 @@ function managedRecord(previousState, path) {
 }
 
 async function classifyOperation(operation, previousState) {
+  if (operation.kind === "symlink") {
+    let currentTarget = null;
+    let currentKind = null;
+    try {
+      const info = await lstat(operation.path);
+      currentKind = info.isSymbolicLink() ? "symlink" : "other";
+      if (currentKind === "symlink") currentTarget = await readlink(operation.path);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    const previous = managedRecord(previousState, operation.path);
+    if (currentKind === "other" || (currentKind === "symlink" && !previous)) return { ...operation, status: "conflict", reason: "destination is not ledger-owned", currentTarget };
+    if (currentKind === "symlink" && previous?.linkTarget !== currentTarget) return { ...operation, status: "conflict", reason: "managed symlink drifted", currentTarget };
+    return { ...operation, status: currentTarget === operation.linkTarget ? "unchanged" : "create", currentTarget };
+  }
   const current = await readText(operation.path, null);
   const previous = managedRecord(previousState, operation.path);
   if (operation.kind === "managed-block") {
@@ -288,9 +336,21 @@ async function classifyOperation(operation, previousState) {
   return { ...operation, status: current === operation.content ? "unchanged" : current === null ? "create" : "update", current, next: operation.content };
 }
 
+function renderRegistry(tools) {
+  return `${JSON.stringify({ version: 1, architecture: "agent-os-managed-local-tools", root: "tools", tools: tools.map((tool) => ({ id: tool.id, binary: tool.binary, skill: `tools/${tool.id}/SKILL.md`, data_root: TOOL_CONTRACTS[tool.id].root, auth: tool.auth, source: tool.source, removable: false })) }, null, 2)}\n`;
+}
+
+function renderAllowRules(tools) {
+  return `${[...new Set(tools.map((tool) => tool.binary))].sort().map((binary) => `prefix_rule(pattern=["${binary}"], decision="allow")`).join("\n")}\n`;
+}
+
 async function buildPlan(context) {
   const operations = [];
   const block = await renderInstructionBlock(context);
+  const tools = selectedTools(context);
+  const sourceMap = byId(context.bundle.sources.sources);
+  operations.push({ kind: "file", path: join(context.localToolsRoot, "registry.json"), content: renderRegistry(tools), id: "local-tools:registry" });
+  for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
     operations.push({ kind: "managed-block", path: join(hostHome, host.instructionFile), block, id: `${host.id}:instructions` });
@@ -298,14 +358,16 @@ async function buildPlan(context) {
     for (const skill of selectedSkills(context)) {
       operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, "SKILL.md"), content: await readText(join(REPO_ROOT, skill.path)), id: `${host.id}:skill:${skill.id}` });
     }
-    for (const tool of selectedTools(context)) {
-      operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, tool.id, "SKILL.md"), content: renderToolSkill(tool), id: `${host.id}:tool:${tool.id}` });
+    for (const tool of tools) {
+      const path = join(hostHome, host.skillDirectory, tool.id);
+      operations.push({ kind: "symlink", path, linkTarget: relative(dirname(path), join(context.localToolsRoot, "tools", tool.id)), id: `${host.id}:tool-link:${tool.id}` });
     }
     for (const command of selectedCommands(context)) {
       const content = await readText(join(REPO_ROOT, command.path));
       const path = host.commandMode === "markdown" ? join(hostHome, host.commandDirectory, `${command.id}.md`) : join(hostHome, host.skillDirectory, command.id, "SKILL.md");
       operations.push({ kind: "file", path, content, id: `${host.id}:command:${command.id}` });
     }
+    if (host.id === "codex" && tools.length) operations.push({ kind: "file", path: join(hostHome, "rules", "agent-os.rules"), content: renderAllowRules(tools), id: "codex:allow-rules" });
   }
 
   const classified = [];
@@ -354,15 +416,22 @@ async function applyPlan(context, plan) {
       const previous = managedRecord(context.previousState, operation.path);
       if (previous) managed.push(previous);
       else if (operation.kind === "managed-block") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, blockHash: hash(operation.block) });
+      else if (operation.kind === "symlink") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, linkTarget: operation.linkTarget });
       else managed.push({ id: operation.id, kind: operation.kind, path: operation.path, hash: hash(operation.content) });
       continue;
     }
-    if (operation.current !== null) {
+    if (operation.current != null) {
       const backup = backupTarget(context.stateDir, operation.path, timestamp);
       await atomicWrite(backup, operation.current);
     }
-    await atomicWrite(operation.path, operation.next);
+    if (operation.kind === "symlink") {
+      await mkdir(dirname(operation.path), { recursive: true });
+      await symlink(operation.linkTarget, operation.path);
+    } else {
+      await atomicWrite(operation.path, operation.next);
+    }
     if (operation.kind === "managed-block") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, blockHash: hash(operation.block) });
+    else if (operation.kind === "symlink") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, linkTarget: operation.linkTarget });
     else managed.push({ id: operation.id, kind: operation.kind, path: operation.path, hash: hash(operation.content) });
   }
 
@@ -410,13 +479,23 @@ async function stateHealth(context) {
   const managed = [];
   const drift = [];
   for (const item of context.previousState.managed ?? []) {
-    const current = await readText(item.path, null);
     let status = "ok";
-    if (current === null) status = "missing";
-    else if (item.kind === "managed-block") {
+    if (item.kind === "symlink") {
+      try {
+        const info = await lstat(item.path);
+        status = !info.isSymbolicLink() ? "drift" : (await readlink(item.path)) === item.linkTarget ? "ok" : "drift";
+      } catch (error) {
+        if (error.code === "ENOENT") status = "missing";
+        else throw error;
+      }
+    } else {
+      const current = await readText(item.path, null);
+      if (current === null) status = "missing";
+      else if (item.kind === "managed-block") {
       const block = extractBlock(current);
       if (!block || hash(block.text) !== item.blockHash) status = "drift";
-    } else if (hash(current) !== item.hash) status = "drift";
+      } else if (hash(current) !== item.hash) status = "drift";
+    }
     managed.push({ path: displayPath(context, item.path), status });
     if (status !== "ok") drift.push({ path: displayPath(context, item.path), status });
   }
@@ -426,13 +505,31 @@ async function stateHealth(context) {
 async function statusReport(context, catalogue = false) {
   const health = await stateHealth(context);
   const tools = [];
-  for (const tool of selectedTools(context)) tools.push({ id: tool.id, binary: tool.binary, available: Boolean(await binaryAvailable(tool.binary)), auth: tool.auth, disposition: tool.disposition });
+  const requirements = context.bundle.secrets.requirements;
+  for (const tool of selectedTools(context)) {
+    const available = Boolean(await binaryAvailable(tool.binary));
+    const toolRequirements = requirements.filter((item) => item.tool === tool.id && item.class === "agent-vault");
+    const vaultReady = !toolRequirements.length || await exists(join(context.vaultDir, "tools", `${tool.id}.sops.yaml`));
+    const permissionNeeded = tool.auth.includes("macos-permission");
+    const authNeeded = tool.auth.some((item) => ["human-login", "browser-session", "telecom-consent"].includes(item));
+    const nextAction = !available ? `Review and preview: agent-os install --tools ${tool.id}`
+      : !vaultReady ? `Initialize/fill the vault requirement for ${tool.id}`
+      : permissionNeeded ? "Grant the required macOS permission manually, then rerun doctor"
+      : authNeeded ? "Complete the tool's supported interactive login manually"
+      : "Ready for the documented preflight";
+    tools.push({ id: tool.id, binary: tool.binary, cli: available ? "available" : "absent", vault: vaultReady ? "not-required-or-present" : "missing-requirement", auth: authNeeded ? "unauthenticated-human-checkpoint" : "not-required", permission: permissionNeeded ? "missing-macos-permission" : "not-required", disposition: tool.disposition, nextAction });
+  }
+  const registryPath = join(context.localToolsRoot, "registry.json");
+  let tmpClean = true;
+  try { tmpClean = (await readdir(join(context.vaultDir, "tmp"))).length === 0; } catch (error) { if (error.code !== "ENOENT") throw error; }
   const report = {
     installed: health.installed,
     profile: context.profile.id,
     packs: context.packs.map((item) => item.id),
     hosts: context.hosts.map((item) => item.id),
     drift: health.drift,
+    registry: { path: displayPath(context, registryPath), status: await exists(registryPath) ? "present" : "absent" },
+    vault: { path: displayPath(context, context.vaultDir), config: await exists(join(context.vaultDir, ".sops.yaml")) ? "present" : "absent", tmpClean },
     tools,
   };
   if (catalogue) {
@@ -457,14 +554,141 @@ async function doctorReport(context) {
     coreChecks,
     warnings: validation.warnings,
     optionalTools: status.tools,
-    humanCheckpoints: ["Install selected external binaries from reviewed sources.", "Configure an encrypted vault adapter for selected secret requirements.", "Complete desired account logins and macOS permissions manually."],
+    nextActions: [
+      status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup --safe to review the core-only plan.",
+      "Use agent-os install --tools <id> for a reviewed installation plan; it is preview-only unless explicitly confirmed.",
+      "Use agent-os vault init for an independent SOPS + age vault preview, then complete logins and macOS permissions manually.",
+    ],
   };
+}
+
+function requestedTools(context) {
+  const ids = splitList(context.options.tools);
+  if (!ids) return selectedTools(context);
+  const toolMap = byId(context.bundle.tools.tools);
+  return ids.map((id) => {
+    const tool = toolMap.get(id);
+    if (!tool) throw new Error(`unknown tool: ${id}`);
+    return tool;
+  });
+}
+
+function installCommand(source) {
+  if (source.pin === "manual-unresolved") return null;
+  if (source.kind === "homebrew") return { command: "brew", args: ["install", source.locator] };
+  if (source.kind === "npm") return { command: "npm", args: ["install", "--global", `${source.locator}@${source.pin}`] };
+  if (source.kind === "python-package") return { command: "uv", args: ["tool", "install", `${source.locator}==${source.pin.replace(/-audited$/, "")}`] };
+  if (source.kind === "git" && /^https:\/\//.test(source.locator)) return { command: "git", args: ["clone", "--depth", "1", source.locator, `<choose-destination-for-${source.id}>`] };
+  return null;
+}
+
+function installPlan(context) {
+  const sourceMap = byId(context.bundle.sources.sources);
+  return requestedTools(context).map((tool) => {
+    const source = sourceMap.get(tool.source);
+    const command = installCommand(source);
+    return { id: tool.id, source: source.id, pin: source.pin, status: command ? "review-required" : "manual-required", command: command ? [command.command, ...command.args].join(" ") : null, reason: command ? "Run only with --apply --reviewed-install after verifying current upstream provenance and license." : "This source is unresolved or unsupported; installation remains a human checkpoint." };
+  });
+}
+
+function runChecked(command, args, label) {
+  const result = spawnSync(command, args, { encoding: "utf8" });
+  if (result.error) throw new Error(`${label}: ${result.error.message}`);
+  if (result.status !== 0) throw new Error(`${label}: ${result.stderr?.trim() || `exit ${result.status}`}`);
+  return result.stdout;
+}
+
+function vaultTools(context) {
+  const wanted = new Set(requestedTools(context).map((tool) => tool.id));
+  return context.bundle.secrets.requirements.filter((item) => wanted.has(item.tool) && item.class === "agent-vault");
+}
+
+async function vaultPlan(context) {
+  const requirements = vaultTools(context);
+  return {
+    vault: displayPath(context, context.vaultDir),
+    apply: Boolean(context.options.apply),
+    safe: Boolean(context.options.safe),
+    requirements: requirements.map((item) => ({ tool: item.tool, names: item.names, inventory: displayPath(context, join(context.vaultDir, "tools", `${item.tool}.sops.yaml`)), env: displayPath(context, join(context.vaultDir, "tools", `${item.tool}.sops.env`)) })),
+    operations: ["Create a new independent SOPS configuration and age recipient.", "Create encrypted non-secret inventory and env placeholders.", "Keep temporary plaintext in the vault tmp directory only for the encryption process, then remove it."],
+    humanCheckpoint: "Do not enter real values until reviewing the generated encrypted records in the new user's vault.",
+  };
+}
+
+async function encryptPlaceholder(context, recipient, target, content) {
+  const tmpDir = join(context.vaultDir, "tmp");
+  await mkdir(tmpDir, { recursive: true });
+  const input = join(tmpDir, `${Date.now()}-${process.pid}.placeholder`);
+  try {
+    await atomicWrite(input, content);
+    runChecked("sops", ["--encrypt", "--age", recipient, "--output", target, input], `encrypt ${target}`);
+  } finally {
+    await rm(input, { force: true });
+  }
+}
+
+async function applyVaultInit(context) {
+  if (context.options.safe) throw new Error("--safe never executes SOPS or age; run vault init without --safe after reviewing the preview");
+  let recipient = context.options["age-recipient"];
+  if (!recipient && !context.options["generate-age-key"]) throw new Error("vault init --apply requires --age-recipient or --generate-age-key");
+  if (!recipient) {
+    const keyPath = join(context.vaultDir, "age", "keys.txt");
+    await mkdir(dirname(keyPath), { recursive: true });
+    const output = runChecked("age-keygen", ["-o", keyPath], "generate an age key");
+    await chmod(keyPath, 0o600);
+    recipient = output.match(/age1[0-9a-z]+/)?.[0];
+    if (!recipient) throw new Error("age-keygen did not return a public recipient");
+  }
+  await mkdir(join(context.vaultDir, "tools"), { recursive: true });
+  await atomicWrite(join(context.vaultDir, ".sops.yaml"), `creation_rules:\n  - path_regex: ^tools/.*\\.sops\\.(yaml|env)$\n    age: ${recipient}\n`);
+  for (const requirement of vaultTools(context)) {
+    const inventory = `tool: ${requirement.tool}\naccess_class: agent-vault\nvariables:\n${requirement.names.map((name) => `  ${name}: __SET_LOCALLY_WITH_SOPS__`).join("\n")}\n`;
+    const env = `${requirement.names.map((name) => `${name}=__SET_LOCALLY_WITH_SOPS__`).join("\n")}\n`;
+    await encryptPlaceholder(context, recipient, join(context.vaultDir, "tools", `${requirement.tool}.sops.yaml`), inventory);
+    await encryptPlaceholder(context, recipient, join(context.vaultDir, "tools", `${requirement.tool}.sops.env`), env);
+  }
+  const leftovers = await readdir(join(context.vaultDir, "tmp"));
+  if (leftovers.length) throw new Error("vault tmp cleanliness check failed");
+}
+
+async function vaultValidate(context, verifyCrypto = false) {
+  const requirements = vaultTools(context);
+  const results = [];
+  for (const item of requirements) {
+    const inventory = join(context.vaultDir, "tools", `${item.tool}.sops.yaml`);
+    const env = join(context.vaultDir, "tools", `${item.tool}.sops.env`);
+    const inventoryEncrypted = await readText(inventory, "").then((content) => /(^|\n)sops:/.test(content));
+    const envEncrypted = await readText(env, "").then((content) => /(^|\n)sops:/.test(content));
+    let crypto = "not-requested";
+    if (verifyCrypto && await exists(inventory)) {
+      if (context.options.safe) throw new Error("--safe never decrypts vault records");
+      runChecked("sops", ["--decrypt", "--output", "/dev/null", inventory], `validate ${item.tool} inventory`);
+      runChecked("sops", ["--decrypt", "--output", "/dev/null", env], `validate ${item.tool} env`);
+      crypto = "verified-without-printing";
+    }
+    results.push({ tool: item.tool, inventory: inventoryEncrypted ? "encrypted" : await exists(inventory) ? "not-sops" : "missing", env: envEncrypted ? "encrypted" : await exists(env) ? "not-sops" : "missing", crypto });
+  }
+  const tmpDir = join(context.vaultDir, "tmp");
+  let tmpClean = true;
+  try { tmpClean = (await readdir(tmpDir)).length === 0; } catch (error) { if (error.code !== "ENOENT") throw error; }
+  return { ok: await exists(join(context.vaultDir, ".sops.yaml")) && tmpClean && results.every((item) => item.inventory === "encrypted" && item.env === "encrypted"), vault: displayPath(context, context.vaultDir), tmpClean, requirements: results };
 }
 
 async function uninstallPlan(context) {
   if (!context.previousState) return [];
   const operations = [];
   for (const item of context.previousState.managed ?? []) {
+    if (item.kind === "symlink") {
+      try {
+        const info = await lstat(item.path);
+        if (!info.isSymbolicLink() || (await readlink(item.path)) !== item.linkTarget) operations.push({ ...item, status: "conflict", reason: "managed symlink drifted" });
+        else operations.push({ ...item, status: "remove-symlink" });
+      } catch (error) {
+        if (error.code === "ENOENT") operations.push({ ...item, status: "already-missing" });
+        else throw error;
+      }
+      continue;
+    }
     const current = await readText(item.path, null);
     if (current === null) {
       operations.push({ ...item, status: "already-missing" });
@@ -484,6 +708,10 @@ async function applyUninstall(context, plan) {
   if (plan.some((item) => item.status === "conflict")) throw new Error("refusing uninstall while managed files have drifted");
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   for (const operation of plan) {
+    if (operation.status === "remove-symlink") {
+      await rm(operation.path, { force: true });
+      continue;
+    }
     if (!operation.current) continue;
     await atomicWrite(backupTarget(context.stateDir, operation.path, timestamp), operation.current);
     if (operation.status === "remove-block") {
@@ -514,7 +742,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
-    console.log("Usage: agent-os <setup|status|doctor|update|safe-uninstall|validate> [--profile ID] [--packs a,b] [--hosts codex,claude-code] [--home PATH] [--safe] [--apply] [--json]");
+    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--safe] [--apply] [--json]");
     return;
   }
 
@@ -530,6 +758,39 @@ async function main() {
 
   const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
+
+  if (command === "install") {
+    const plan = { apply: Boolean(options.apply), reviewedInstall: Boolean(options["reviewed-install"]), safe: Boolean(options.safe), installs: installPlan(context) };
+    if (options.apply) {
+      if (options.safe) throw new Error("--safe forbids installation; use the reviewed install flow without --safe after reviewing its plan");
+      if (!options["reviewed-install"]) throw new Error("install --apply requires --reviewed-install");
+      for (const item of plan.installs) {
+        if (item.status !== "review-required") throw new Error(`${item.id} cannot be installed automatically: ${item.reason}`);
+        const source = byId(bundle.sources.sources).get(bundle.tools.tools.find((tool) => tool.id === item.id).source);
+        const install = installCommand(source);
+        runChecked(install.command, install.args, `install ${item.id}`);
+      }
+    }
+    options.json ? console.log(JSON.stringify(plan)) : printHuman(plan);
+    return;
+  }
+
+  if (command === "vault") {
+    const subcommand = options._[1] ?? "help";
+    if (subcommand === "init") {
+      const plan = await vaultPlan(context);
+      if (options.apply) await applyVaultInit(context);
+      options.json ? console.log(JSON.stringify(plan)) : printHuman(plan);
+      return;
+    }
+    if (subcommand === "validate") {
+      const report = await vaultValidate(context, Boolean(options["verify-crypto"]));
+      options.json ? console.log(JSON.stringify(report)) : printHuman(report);
+      if (!report.ok) process.exitCode = 1;
+      return;
+    }
+    throw new Error("Usage: agent-os vault <init|validate> [--tools a,b] [--age-recipient age1…] [--generate-age-key] [--apply]");
+  }
 
   if (command === "setup" || command === "update") {
     const plan = await buildPlan(context);

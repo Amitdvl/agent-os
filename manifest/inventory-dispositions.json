@@ -57,26 +57,26 @@
     }
   ],
   "hooks": [
-    {"id": "commit-push-watcher", "disposition": "amit-strict-optional-disabled"},
-    {"id": "commit-push-hook-manager", "disposition": "amit-strict-template"},
+    {"id": "commit-push-watcher", "disposition": "strict-portable-optional-disabled"},
+    {"id": "commit-push-hook-manager", "disposition": "strict-portable-template"},
     {"id": "ctx7-guard", "disposition": "portable-core-optional"},
     {"id": "no-no-verify-guard", "disposition": "portable-core-optional"},
     {"id": "hook-runtime-state", "disposition": "private-machine-state"}
   ],
   "rules": [
-    {"id": "tool-allow-prefixes", "disposition": "amit-strict-generated"},
+    {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},
     {"id": "development-allow-prefixes", "disposition": "host-configured"},
     {"id": "absolute-binary-paths", "disposition": "generated-local-state"},
     {"id": "transient-login-rules", "disposition": "private-transient-state"}
   ],
   "policySurfaces": [
-    {"id": "identity-tone", "disposition": "amit-strict-local-config"},
+    {"id": "identity-tone", "disposition": "strict-portable-local-config"},
     {"id": "thread-naming", "disposition": "portable-core"},
-    {"id": "local-automations", "disposition": "amit-strict"},
-    {"id": "memory-disabled", "disposition": "amit-strict"},
-    {"id": "focus-protection", "disposition": "amit-strict"},
+    {"id": "local-automations", "disposition": "strict-portable"},
+    {"id": "memory-disabled", "disposition": "strict-portable"},
+    {"id": "focus-protection", "disposition": "strict-portable"},
     {"id": "repo-skill-ownership", "disposition": "portable-core"},
-    {"id": "local-work-autonomy", "disposition": "amit-strict"},
+    {"id": "local-work-autonomy", "disposition": "strict-portable"},
     {"id": "agent-vault", "disposition": "portable-core-contract"},
     {"id": "accessibility-fallbacks", "disposition": "portable-core"},
     {"id": "archive-freshness", "disposition": "portable-core"},
@@ -84,4 +84,3 @@
     {"id": "new-tool-onboarding", "disposition": "portable-core-command"}
   ]
 }
-

@@ -1,34 +1,25 @@
 # Troubleshooting
 
-## Node is missing or too old
+## Preview shows a conflict or drift
 
-Install Node.js 20 or newer through a reviewed local package manager, then rerun validation. Agent OS does not install Node itself.
+Do not delete the existing path. An unowned file, changed managed file, or changed symlink target is deliberately protected. Inspect ownership, preserve user work, and rerun the preview after reconciling it.
 
-## Setup reports a conflict
+## Doctor says a CLI is absent
 
-The destination exists without matching ledger ownership, or a managed file drifted. Do not delete it automatically. Review the file, choose which system should own it, and move or merge it manually before re-running preview.
+Core setup can still be healthy. Run `agent-os install --tools <id>` to see the reviewed source plan. `manual-unresolved` means Agent OS will not automate that installation.
 
-## An external tool is missing
+## Doctor says a vault requirement is missing
 
-Core can remain healthy while optional tools are missing. Review the source record in `manifest/sources.json`, verify current upstream documentation and license, install deliberately, then rerun doctor. `manual-unresolved` means installation must not be automated yet.
+Run `agent-os vault init --tools <id>` for a no-write plan. Create a new user vault; do not paste secrets into chat or copy a previous vault. `vault validate --verify-crypto` verifies through SOPS without printing plaintext.
 
-## Authentication is missing
+## Doctor says a human checkpoint remains
 
-Binary presence does not prove login. Follow the declared human checkpoint and use the new user's own account or encrypted vault. Never paste secrets into chat or copy Amit's credential directories.
+Complete the tool’s supported login, browser extension, account consent, telecom consent, or narrow macOS permission manually. Agent OS never clicks these dialogs or imports sessions.
 
-## macOS permission is missing
+## `--safe` does not show optional tools
 
-Grant the narrow permission in System Settings only when the selected tool needs it. Agent OS does not click permission dialogs or modify privacy databases.
+That is intentional. It applies only the portable core and cannot run installers or SOPS/age. Use a normal preview for optional packs after the core is working.
 
-## Update or uninstall refuses drift
+## Uninstall refuses
 
-This is intentional. Compare the current file/block with its backup and ledger entry. Preserve user edits, then explicitly reconcile ownership. Do not delete the state ledger to force removal.
-
-## Focus policy blocks an action
-
-Agent OS contains no unblock mechanism. It may verify, restore, or strengthen the protection.
-
-## Doctor says “not installed”
-
-Repository validation can still pass. Run a setup preview, review it, and apply only when you intend to configure that machine.
-
+Uninstall removes only unchanged ledger-owned files and links. It retains backups and non-secret configuration, so a user can recover rather than force removal.

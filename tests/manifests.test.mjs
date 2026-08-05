@@ -31,8 +31,8 @@ test("CLI validates the complete manifest graph", () => {
 test("default profile is opinionated and selects every capability pack", async () => {
   const profiles = await json("profiles");
   const packs = await json("packs");
-  assert.equal(profiles.defaultProfile, "amit-strict");
-  const profile = profiles.profiles.find((item) => item.id === "amit-strict");
+  assert.equal(profiles.defaultProfile, "strict-portable");
+  const profile = profiles.profiles.find((item) => item.id === "strict-portable");
   assert.deepEqual(new Set(profile.packs), new Set(["core", "local-productivity", "research", "communication", "creator"]));
   assert.deepEqual(new Set(profile.packs), new Set(packs.packs.map((item) => item.id)));
   assert.equal(profile.memory, "disabled");
@@ -65,14 +65,16 @@ test("all external tools have explicit source pins or unresolved markers", async
   }
 });
 
-test("portable assets contain no Amit-specific absolute path or embedded secret-looking value", async () => {
+test("portable assets contain no personal path, identity, excluded feature, or embedded secret-looking value", async () => {
   const roots = ["bin", "bootstrap", "commands", "manifest", "policies", "profiles", "skills", "templates", "tests"];
   const secretValue = /(?:api[_-]?key|auth[_-]?token|secret|password)\s*[:=]\s*["'][A-Za-z0-9_\-]{12,}["']/i;
-  const personalPath = ["", "Users", "amitdvl"].join("/");
+  const personalPath = ["", "Users", "ami" + "tdvl"].join("/");
   for (const root of roots) {
     for (const target of await filesUnder(join(ROOT, root))) {
       const content = await readFile(target, "utf8");
       assert.equal(content.includes(personalPath), false, `personal path in ${relative(ROOT, target)}`);
+      assert.equal(new RegExp(`\\b${"am" + "it"}\\b`, "i").test(content), false, `personal identity in ${relative(ROOT, target)}`);
+      assert.equal(new RegExp(`${"agent"}[ -]${"reach"}`, "i").test(content), false, `excluded feature in ${relative(ROOT, target)}`);
       assert.equal(secretValue.test(content), false, `secret-looking value in ${relative(ROOT, target)}`);
     }
   }
