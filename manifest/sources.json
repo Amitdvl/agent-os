@@ -5,6 +5,7 @@
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
     {"id": "notcrawl-brew", "kind": "homebrew", "locator": "openclaw/tap/notcrawl", "pin": "0.5.1-audited", "automation": "disabled"},
+    {"id": "notebridge-manual", "kind": "manual", "locator": "NoteBridge local CLI", "pin": "1.0.0", "automation": "disabled"},
     {"id": "notion-manual", "kind": "manual", "locator": "notion local CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "obsidian-manual", "kind": "manual", "locator": "obsidian CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "opencap-manual", "kind": "manual", "locator": "OpenCap", "pin": "0.1.4-audited", "automation": "disabled"},

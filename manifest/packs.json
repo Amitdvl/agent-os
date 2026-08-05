@@ -12,7 +12,7 @@
     {
       "id": "local-productivity",
       "description": "Local apps, personal knowledge, reminders, and macOS UI inspection.",
-      "tools": ["notion", "notcrawl", "obsidian", "remindctl", "peekaboo"],
+      "tools": ["notion", "notcrawl", "notebridge", "obsidian", "remindctl", "peekaboo"],
       "commands": [],
       "optionalCommands": [],
       "skills": []
