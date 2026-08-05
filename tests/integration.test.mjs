@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { access, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
@@ -9,6 +9,13 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CLI = join(ROOT, "bootstrap", "cli.mjs");
 const SANDBOX = join(ROOT, ".sandbox", `integration-${process.pid}`);
+
+test.after(async () => {
+  await rm(SANDBOX, { recursive: true, force: true });
+  await rmdir(join(ROOT, ".sandbox")).catch((error) => {
+    if (!["ENOENT", "ENOTEMPTY"].includes(error.code)) throw error;
+  });
+});
 
 async function exists(target) {
   try {
@@ -105,4 +112,3 @@ test("entrypoint scripts are executable", async () => {
     assert.ok(info.mode & 0o100, `${name} is not executable`);
   }
 });
-

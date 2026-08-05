@@ -25,7 +25,17 @@ Agent OS is being built and verified entirely inside this repository. No setup, 
 
 ## Verification evidence
 
-Pending final repository test run and completion audit. Exact commands and results will be recorded here after verification.
+- `node bootstrap/cli.mjs validate --json` — passed with `ok: true`, zero errors, and zero warnings.
+- `node --test tests/*.test.mjs` — 10/10 tests passed.
+- The integration suite proved repository-sandbox-only dry run, apply, status, doctor, update preview, uninstall preview/apply, pre-existing instruction preservation, and fail-closed unowned-file conflicts.
+- The manifest suite proved the default profile selects all five packs, all 19 audited tools and 89 installed skill entries have dispositions, all external tools have a source pin or explicit unresolved marker, portable assets contain no Amit-specific absolute path or embedded secret-looking value, and documentation links resolve.
+- `git diff --check`, Node syntax validation, shell syntax validation, and final clean-worktree checks are part of the completion audit.
+
+Local implementation commits:
+
+- `b6281ea` — verified blueprint and inventory.
+- `1befc3f` — portable manifests, policies, commands, skills, and templates.
+- `16c8252` — guarded lifecycle CLI, guides, and sandbox tests.
 
 ## Future deployment checklist
 
@@ -45,4 +55,3 @@ Pending final repository test run and completion audit. Exact commands and resul
 - External account authentication and macOS permission flows are intentionally not automated.
 - Exact parity depends on host features and external tool availability.
 - Unresolved or third-party skills/tools are declared rather than vendored.
-
