@@ -22,6 +22,11 @@
       "freshness": "Check archive status and explicitly select the sync source when freshness matters.", "safety": "Never expose tokens, signed URLs, cache databases, or private archive contents."
     },
     {
+      "id": "notebridge", "binary": "notebridge", "purpose": "Local Wispr Flow and Apple Notes reads, explicit exports, guarded Apple changes, and one-way mirroring.",
+      "packs": ["local-productivity"], "source": "notebridge-manual", "disposition": "external-local", "platforms": ["darwin"], "auth": ["macos-permission"],
+      "freshness": "Use doctor against current local provider state; Wispr reads do not need a sync.", "safety": "Wispr access is read-only. Apple writes require stable IDs, exact intent, and --apply --yes; mirrors are one-way and never delete Notes."
+    },
+    {
       "id": "notion", "binary": "notion", "purpose": "Notion API reads and explicit page creation/append.",
       "packs": ["local-productivity"], "source": "notion-manual", "disposition": "external-local", "platforms": ["darwin"], "auth": ["agent-vault"],
       "freshness": "Run an auth status check before authenticated work.", "safety": "Never print injected environment values; writes require target and content."

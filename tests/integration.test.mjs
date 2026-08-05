@@ -53,14 +53,14 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(setup.conflicts, 0);
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");
-  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 17);
+  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 18);
   const codexLink = join(home, ".codex", "skills", "birdclaw");
   const claudeLink = join(home, ".claude", "skills", "birdclaw");
   assert.ok((await lstat(codexLink)).isSymbolicLink());
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
-    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli doctor", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
+    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli doctor", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
   };
   for (const [id, phrase] of Object.entries(toolRequirements)) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
