@@ -33,3 +33,11 @@ Codex receives an Agent OS-delimited block in `AGENTS.md`, first-party skills, t
 ## Safe boundaries
 
 Tool templates preserve each tool’s preflight, data-root placeholder, freshness requirement, auth class, read/write boundary, limitation, and troubleshooting step. They never contain credential paths or values. “Exact intent” remains required for all external writes. Archive tools retain sync-before-answer requirements; Instagram retains its CLI-only rule.
+
+## Twin maintenance
+
+On an owner machine, Agent OS is a one-way portable twin of reusable local
+workflow behavior. Changes to tool contracts, commands, policies, routing,
+allow rules, and setup metadata are mirrored here in the same task and verified
+with the configured twin audit. Explicit inventory exclusions document items
+that are intentionally machine-only. Private state is never mirrored.

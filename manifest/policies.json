@@ -6,6 +6,7 @@
     {"id": "secrets", "path": "policies/secrets.md"},
     {"id": "freshness", "path": "policies/freshness.md"},
     {"id": "focus", "path": "policies/focus.md"},
+    {"id": "twin-sync", "path": "policies/twin-sync.md"},
     {"id": "strict-portable", "path": "policies/strict-portable.md"}
   ]
 }

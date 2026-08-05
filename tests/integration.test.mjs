@@ -162,5 +162,5 @@ test("update and uninstall refuse a drifted managed symlink", async (context) =>
 });
 
 test("entrypoint scripts are executable", async () => {
-  for (const name of ["agent-os", "setup", "install", "vault", "status", "doctor", "update", "safe-uninstall"]) assert.ok((await stat(join(ROOT, "bin", name))).mode & 0o100, `${name} is not executable`);
+  for (const name of ["agent-os", "setup", "install", "vault", "status", "doctor", "update", "safe-uninstall", "twin-audit"]) assert.ok((await stat(join(ROOT, "bin", name))).mode & 0o100, `${name} is not executable`);
 });

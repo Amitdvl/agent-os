@@ -1,5 +1,12 @@
 {
   "version": 1,
+  "twin": {
+    "mode": "one-way-portable-contract",
+    "excludedLiveTools": [
+      {"id": "agent-inbox", "reason": "Owner-specific local messaging application; intentionally excluded from the shareable distribution."},
+      {"id": "vox", "reason": "Owner-specific telecom and provider configuration; intentionally excluded from the shareable distribution."}
+    ]
+  },
   "localTools": [
     {"id": "birdclaw", "disposition": "external-with-portable-contract"},
     {"id": "discrawl", "disposition": "external-with-portable-contract"},

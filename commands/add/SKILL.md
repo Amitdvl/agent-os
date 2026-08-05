@@ -20,6 +20,17 @@ Use `/add <tool-name-or-url>`. With no argument, ask for the tool, package, repo
 
 Stop for an unidentified tool, unsafe/conflicting upstream identity, unresolved ownership, unavailable required credentials, or an unrequested interactive/paid/remote action.
 
+## Twin synchronization gate
+
+Do not finish a portable local-workflow change on only one side. When the owner
+machine's reusable tool, slash command, policy, routing rule, setup metadata,
+or skill contract changes, mirror its portable contract into Agent OS in the
+same task. Update manifests, source metadata, templates, generated behavior,
+docs, and tests; run `validate`, the full test suite, `git diff --check`, and
+the configured twin audit. An intentionally machine-only item needs an explicit
+inventory exclusion and reason. Never mirror credentials, sessions, archives,
+identities, absolute paths, or other private machine state.
+
 ## Report
 
 Return Tool (binary/version/source); Integration (template/registry/routing/symlink/rule/vault); Verification (commands/results); and Blocked (exact condition/next action).
