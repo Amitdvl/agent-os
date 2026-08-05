@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 
-import { readdir, readFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { realpath, readdir, readFile } from "node:fs/promises";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-function option(name) {
+function option(name, { required = true } = {}) {
   const index = process.argv.indexOf(name);
-  if (index === -1 || !process.argv[index + 1]) throw new Error(`${name} is required`);
+  if (index === -1) {
+    if (required) throw new Error(`${name} is required`);
+    return null;
+  }
+  if (!process.argv[index + 1]) throw new Error(`${name} requires a path`);
   return resolve(process.argv[index + 1]);
 }
 
@@ -19,7 +23,7 @@ function registryToolIds(text) {
 
 async function commandIds(root) {
   const entries = await readdir(root, { withFileTypes: true });
-  const ids = await Promise.all(entries.filter((entry) => entry.isDirectory()).map(async (entry) => {
+  const ids = await Promise.all(entries.filter((entry) => entry.isDirectory() || entry.isSymbolicLink()).map(async (entry) => {
     try {
       await readFile(join(root, entry.name, "SKILL.md"), "utf8");
       return entry.name;
@@ -36,11 +40,55 @@ function difference(left, right) {
   return left.filter((item) => !other.has(item));
 }
 
+function isWithin(target, root) {
+  const path = relative(root, target);
+  return path === "" || (path !== ".." && !path.startsWith(`..${sep}`));
+}
+
+async function auditCommands(liveRoot, commands, forbidRoot) {
+  const [resolvedRoot, resolvedForbiddenRoot] = await Promise.all([
+    realpath(liveRoot),
+    forbidRoot ? realpath(forbidRoot) : null,
+  ]);
+  const hostSkillIds = await commandIds(resolvedRoot);
+  const sources = await Promise.all(commands.map(async (command) => {
+    const path = join(resolvedRoot, command.id, "SKILL.md");
+    const expectedPath = join(ROOT, command.path);
+    const expected = await readFile(expectedPath, "utf8");
+    try {
+      const resolvedPath = await realpath(path);
+      const content = await readFile(resolvedPath, "utf8");
+      return {
+        id: command.id,
+        expectedPath: relative(ROOT, expectedPath),
+        livePath: path,
+        resolvedPath,
+        status: content === expected ? "match" : "content-mismatch",
+        forbidden: Boolean(resolvedForbiddenRoot && isWithin(resolvedPath, resolvedForbiddenRoot)),
+      };
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return {
+          id: command.id,
+          expectedPath: relative(ROOT, expectedPath),
+          livePath: path,
+          resolvedPath: null,
+          status: "missing",
+          forbidden: false,
+        };
+      }
+      throw error;
+    }
+  }));
+  return { resolvedRoot, hostSkillIds, sources };
+}
+
 async function main() {
   const liveRegistry = option("--live-registry");
   const liveCommands = option("--live-commands");
   const liveGoalPrompt = option("--live-goal-prompt");
   const liveInstructions = option("--live-instructions");
+  const forbidRoot = option("--forbid-root", { required: false });
   const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
@@ -56,10 +104,10 @@ async function main() {
   const exclusionIds = exclusions.map((item) => item.id).sort();
   const missingTools = difference(liveTools, [...portableTools, ...exclusionIds]);
   const extraTools = difference(portableTools, liveTools);
-  const liveCommandIds = await commandIds(liveCommands);
-  const portableCommandIds = JSON.parse(commandsManifest).commands.filter((item) => item.path).map((item) => item.id).sort();
-  const missingCommands = difference(liveCommandIds, portableCommandIds);
-  const extraCommands = difference(portableCommandIds, liveCommandIds);
+  const portableCommands = JSON.parse(commandsManifest).commands.filter((item) => item.path);
+  const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
+  const portableCommandIds = portableCommands.map((item) => item.id).sort();
+  const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
   const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt"];
   const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
@@ -69,12 +117,25 @@ async function main() {
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
   if (extraTools.length) failures.push(`Agent OS tools absent from live registry: ${extraTools.join(", ")}`);
-  if (missingCommands.length) failures.push(`live commands missing from Agent OS: ${missingCommands.join(", ")}`);
-  if (extraCommands.length) failures.push(`Agent OS commands absent from live source: ${extraCommands.join(", ")}`);
+  for (const source of commandAudit.sources) {
+    if (source.status === "missing") failures.push(`portable command missing from host skill root: ${source.id}`);
+    if (source.status === "content-mismatch") failures.push(`portable command content mismatch: ${source.id}`);
+    if (source.forbidden) failures.push(`portable command resolves under forbidden root: ${source.id} -> ${source.resolvedPath}`);
+  }
   if (missingLiveGoalPhrases.length) failures.push(`live goal-prompt is missing count-gate phrases: ${missingLiveGoalPhrases.join(", ")}`);
   if (missingPortableGoalPhrases.length) failures.push(`portable goal-prompt is missing count-gate phrases: ${missingPortableGoalPhrases.join(", ")}`);
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
-  const report = { ok: failures.length === 0, liveTools, portableTools, exclusions, liveCommandIds, portableCommandIds, failures };
+  const report = {
+    ok: failures.length === 0,
+    liveTools,
+    portableTools,
+    exclusions,
+    commandRoot: commandAudit.resolvedRoot,
+    portableCommandIds,
+    commandSources: commandAudit.sources,
+    ignoredHostSkills,
+    failures,
+  };
   console.log(JSON.stringify(report, null, 2));
   if (failures.length) process.exitCode = 1;
 }
