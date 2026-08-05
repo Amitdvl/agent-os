@@ -64,7 +64,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   };
   for (const [id, phrase] of Object.entries(toolRequirements)) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
-    for (const heading of ["## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    for (const heading of ["## Setup and configuration", "## Tool-specific workflow", "## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
   }
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["birdclaw"\]/);
@@ -86,6 +86,8 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.deepEqual(catalogue.automations, []);
   assert.deepEqual(catalogue.plugins, []);
   assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator"]);
+  assert.deepEqual(catalogue.classifiedCatalogue.map((item) => item.group).filter((item, index, all) => index === all.indexOf(item)), ["personal-slash-commands", "workflows", "local-tools", "standalone-skills"]);
+  assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === "birdclaw").source, "managed local-tools registry");
 
   const beforeUpdate = await readFile(join(home, ".agent-os", "state.json"), "utf8");
   const update = JSON.parse(run(["update", "--home", home, "--safe", "--json"], 0, noTools).stdout);

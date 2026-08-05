@@ -50,6 +50,28 @@ const TOOL_CONTRACTS = {
   "yt-dlp": { root: "<user-selected download destination>", preflight: ["yt-dlp --version"], reads: ["yt-dlp --no-playlist --skip-download <single-public-url>"], writes: ["A single authorized --no-playlist download to an explicit destination"], limits: "No cookies, login, proxy, geo-bypass, background, or bulk retrieval.", fix: "Install from a reviewed source and use only public, authorized media." },
 };
 
+const TOOL_DETAILS = {
+  "agent-inbox": "Use bounded JSON list/get/reply-status reads. Send only the narrowest requested type, then read back resolve/archive changes.",
+  birdclaw: "Check archive db stats; use cached whois/search/links and exact date ranges. Sync again after a requested remote write.",
+  discrawl: "Run a full sync before archive answers and after supported writes; prefer concise summaries over raw private messages.",
+  "instagram-cli": "Use fresh bounded inbox JSON and returned thread IDs. Mark-seen/download are writes. Never use the Instagram website or browser automation.",
+  notcrawl: "Use status/doctor before selecting a sync source. Exports mutate local output; publish --push needs exact remote intent and never writes back to Notion.",
+  notion: "Use only the new user's vault requirement. A 404 usually means the target was not shared with the integration.",
+  obsidian: "Configured vault paths are user-owned. Search/read/backlinks are reads; create, append, rename, move, and delete are exact-target writes.",
+  opencap: "Check status first; prefer named windows. Event-log milestones, and only stop/share/edit/delete requested recordings.",
+  opencli: "Run doctor/profile list; browser commands operate on a selected logged-in profile and extensions are manual checkpoints.",
+  peekaboo: "Run permissions and inspect apps/windows first. UI clicks, typing, menus, clipboard, and dialogs need clear authority.",
+  "rdt-cli": "Keep requests bounded and sequential; short indexes require a fresh listing. Exports use task-local paths and interactions require exact target/text.",
+  remindctl: "Use JSON and read back writes. Native Reminders UI is freshest for Today/current/subtasks; never use it for calendar events.",
+  spogo: "Check auth and bound search/history. Playback, queue/device/library/playlist/volume/shuffle/repeat are user-visible writes.",
+  "twitter-cli": "Prefer Birdclaw for history. Use bounded YAML/JSON and never verbose diagnostics; verify requested live writes with narrow reads.",
+  vox: "Use a new encrypted vault, never plaintext env. Calls/webhooks/tunnels/recording need number, caller ID, purpose, disclosure, consent, and review.",
+  wacli: "Use JSON and --read-only for exploration. Sends, reactions, account/group/channel and state mutations need exact intent.",
+  wacrawl: "Read-only archive tooling: sync before answers; never write into the app container or expose archive/backup data.",
+  xurl: "Check auth without inline values or verbose mode. API mutations, DMs, media, and app actions are exact-intent writes.",
+  "yt-dlp": "Inspect one public URL with --no-playlist. Every output needs source, scope, and destination; never use cookies or bypasses.",
+};
+
 function hash(value) {
   return createHash("sha256").update(value).digest("hex");
 }
@@ -298,7 +320,7 @@ function renderToolSkill(tool, source) {
   const contract = TOOL_CONTRACTS[tool.id];
   if (!contract) throw new Error(`missing portable tool contract for ${tool.id}`);
   const auth = tool.auth.join(", ");
-  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\ninstall_source: ${source.kind}:${source.locator}\nsource_pin: ${source.pin}\n---\n\n# ${tool.id}\n\nThis managed template routes Agent OS to the upstream \`${tool.binary}\` binary after the user has deliberately installed it. Binary presence does not prove authentication.\n\n## Data and authentication\n\n- Data root: ${contract.root}\n- Authentication: ${auth}\n- Credential rule: Never inspect, print, copy, or migrate credentials, sessions, archives, browser state, or private app state.\n\n## Preflight\n\n${contract.preflight.map((command) => `- \`${command}\``).join("\n")}\n\n## Freshness\n\n${tool.freshness}\n\n## Safe reads\n\n${contract.reads.map((command) => `- \`${command}\``).join("\n")}\n\n## Guarded writes\n\n${contract.writes.map((command) => `- ${command}`).join("\n")}\n\n${tool.safety}\n\n## Limitations\n\n${contract.limits}\n\n## Troubleshooting\n\n${contract.fix}\n`;
+  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\ninstall_source: ${source.kind}:${source.locator}\nsource_pin: ${source.pin}\n---\n\n# ${tool.id}\n\nThis managed template routes Agent OS to the upstream \`${tool.binary}\` binary after the user has deliberately installed it. Binary presence does not prove authentication.\n\n## Setup and configuration\n\nInstall only through the reviewed source plan. Configuration path: ${contract.root}. This is a placeholder for the new user's user-owned data root; authentication is never copied.\n\n## Tool-specific workflow\n\n${TOOL_DETAILS[tool.id]}\n\n## Data and authentication\n\n- Data root: ${contract.root}\n- Authentication: ${auth}\n- Credential rule: Never inspect, print, copy, or migrate credentials, sessions, archives, browser state, or private app state.\n\n## Preflight\n\n${contract.preflight.map((command) => `- \`${command}\``).join("\n")}\n\n## Freshness\n\n${tool.freshness}\n\n## Safe reads\n\n${contract.reads.map((command) => `- \`${command}\``).join("\n")}\n\n## Guarded writes\n\n${contract.writes.map((command) => `- ${command}`).join("\n")}\n\n${tool.safety}\n\n## Limitations\n\n${contract.limits}\n\n## Troubleshooting\n\n${contract.fix}\n`;
 }
 
 function managedRecord(previousState, path) {
@@ -551,6 +573,14 @@ async function statusReport(context, catalogue = false) {
     };
     report.automations = [...new Set([...(await directoryNames(join(context.stateDir, "automations"))), ...(await directoryNames(join(context.codexHome, "automations"))), ...(await directoryNames(join(context.claudeHome, "automations")))])].sort();
     report.plugins = [...new Set([...(await directoryNames(join(context.codexHome, "plugins"))), ...(await directoryNames(join(context.claudeHome, "plugins")))])].sort();
+    report.classifiedCatalogue = [
+      ...report.commands.map((item) => ({ group: "personal-slash-commands", id: item.id, description: item.purpose, source: "manifest/commands.json" })),
+      ...report.workflows.map((item) => ({ group: "workflows", id: item.id, description: item.description, source: "manifest/packs.json" })),
+      ...report.automations.map((id) => ({ group: "active-automations", id, description: "directory entry", source: "host/state automations directory" })),
+      ...tools.map((item) => ({ group: "local-tools", id: item.id, description: item.binary, source: "managed local-tools registry" })),
+      ...report.plugins.map((id) => ({ group: "plugins", id, description: "directory entry", source: "host plugins directory" })),
+      ...report.skills.map((item) => ({ group: "standalone-skills", id: item.id, description: item.description, source: "manifest/skills.json" })),
+    ];
   }
   return report;
 }

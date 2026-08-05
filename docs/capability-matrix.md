@@ -1,14 +1,14 @@
 # Capability Matrix
 
-| Capability | Portable deployment | User checkpoint | Doctor distinction |
+| Capability | Portable behavior | User-configured value | Human-only checkpoint |
 |---|---|---|---|
-| Core policy and commands | Safe core setup | Host app sign-in | not installed / managed drift |
-| Tool registry and templates | Selected non-safe pack | Review selected tools | registry absent / present |
-| Local CLI | Reviewed install plan | Install from verified source | CLI absent / available |
-| SOPS + age vault | Vault plan and encrypted placeholders | New key and user-entered values | missing vault requirement / present |
-| Service login | Tool contract only | OAuth, account consent, browser session | human checkpoint |
-| macOS privacy | Tool contract only | Accessibility, Screen Recording, Reminders | permission checkpoint |
-| Archive integrations | Freshness rules and templates | User-owned archive and sync | CLI state only; never archive inspection |
-| External writes | Exact-intent policy | Exact target/content/action | never inferred from binary presence |
+| Core policy and commands | Safe core setup and recovery-first command contracts | Host app sign-in | Host setup and managed-drift review |
+| Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
+| Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |
+| SOPS + age vault | Encrypted requirement placeholders and no-output crypto validation | New key/recipient and user-entered values | Key generation and secret entry |
+| Service login | Explicit auth boundary in every contract | OAuth/account consent/browser profile | Login/extension approval |
+| macOS privacy | Permission diagnosis and read-first fallback | Accessibility, Screen Recording, Reminders | System Settings approval |
+| Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
+| External writes | Exact-intent, target, content, and verify-after-write rules | Requested target/content/action | User authorization |
 
 All 19 audited tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.
