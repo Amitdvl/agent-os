@@ -74,8 +74,7 @@
     {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
-    {"id": "config-project-record", "disposition": "project-specific-reference-only"},
-    {"id": "agent-os-migration-followup", "disposition": "one-shot-reference-only"}
+    {"id": "config-project-record", "disposition": "project-specific-reference-only"}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},
