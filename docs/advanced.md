@@ -35,7 +35,7 @@ The state ledger records hashes, not secrets. If a managed file or block drifts,
 
 ## Packs and optional tools
 
-The profile chooses packs. Pack tools are external declarations; setup generates routing/safety skills but does not install binaries. Agent Reach is an unselected optional research tool. Third-party workflow skill sets such as gstack remain external and are not copied from caches.
+The profile chooses packs. Pack tools are external declarations; setup generates routing/safety skills but does not install binaries. Third-party workflow skill sets such as gstack remain external and are not copied from caches.
 
 ## Updating
 
@@ -67,4 +67,3 @@ Repository tests use only `.sandbox/` under the checkout:
 npm test
 npm run validate
 ```
-

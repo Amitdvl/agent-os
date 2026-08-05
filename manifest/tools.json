@@ -95,12 +95,6 @@
       "id": "yt-dlp", "binary": "yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads.",
       "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
       "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
-    },
-    {
-      "id": "agent-reach", "binary": "agent-reach", "purpose": "Optional upstream research-channel installer, router, and doctor.",
-      "packs": ["research"], "source": "agent-reach-optional", "disposition": "third-party-optional", "platforms": ["darwin"], "auth": ["channel-specific"],
-      "freshness": "Use its doctor only after the user deliberately installs it.", "safety": "Never mandatory, never a wrapper for all tools, and never auto-connect browser sessions."
     }
   ]
 }
-

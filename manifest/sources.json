@@ -2,7 +2,6 @@
   "version": 1,
   "sources": [
     {"id": "agent-inbox-manual", "kind": "manual", "locator": "agent-inbox", "pin": "manual-unresolved", "automation": "disabled"},
-    {"id": "agent-reach-optional", "kind": "git", "locator": "https://github.com/Panniantong/Agent-Reach", "pin": "v1.5.0-docs-audited", "automation": "disabled"},
     {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
@@ -23,4 +22,3 @@
     {"id": "yt-dlp-brew", "kind": "homebrew", "locator": "yt-dlp", "pin": "2026.7.4-audited", "automation": "disabled"}
   ]
 }
-
