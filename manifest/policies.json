@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "policies": [
+    {"id": "core", "path": "policies/core.md"},
+    {"id": "external-actions", "path": "policies/external-actions.md"},
+    {"id": "secrets", "path": "policies/secrets.md"},
+    {"id": "freshness", "path": "policies/freshness.md"},
+    {"id": "focus", "path": "policies/focus.md"},
+    {"id": "amit-strict", "path": "policies/amit-strict.md"}
+  ]
+}
+

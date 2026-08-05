@@ -1,0 +1,15 @@
+{
+  "profile": "amit-strict",
+  "packs": ["core", "local-productivity", "research", "communication", "creator"],
+  "hosts": ["codex", "claude-code"],
+  "identity": {
+    "displayName": "",
+    "addressAs": "",
+    "occasionalPraise": ""
+  },
+  "paths": {
+    "obsidianVault": ""
+  },
+  "vaultAdapter": ""
+}
+

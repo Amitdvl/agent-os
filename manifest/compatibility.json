@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "platforms": ["darwin"],
+  "architectures": ["arm64", "x64"],
+  "runtime": {
+    "name": "node",
+    "minimumMajor": 20,
+    "externalDependencies": []
+  },
+  "hosts": [
+    {
+      "id": "codex",
+      "instructionFile": "AGENTS.md",
+      "skillDirectory": "skills",
+      "commandMode": "skills"
+    },
+    {
+      "id": "claude-code",
+      "instructionFile": "CLAUDE.md",
+      "skillDirectory": "skills",
+      "commandDirectory": "commands",
+      "commandMode": "markdown"
+    }
+  ]
+}
+

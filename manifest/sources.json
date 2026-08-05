@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "sources": [
+    {"id": "agent-inbox-manual", "kind": "manual", "locator": "agent-inbox", "pin": "manual-unresolved", "automation": "disabled"},
+    {"id": "agent-reach-optional", "kind": "git", "locator": "https://github.com/Panniantong/Agent-Reach", "pin": "v1.5.0-docs-audited", "automation": "disabled"},
+    {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
+    {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
+    {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
+    {"id": "notcrawl-brew", "kind": "homebrew", "locator": "openclaw/tap/notcrawl", "pin": "0.5.1-audited", "automation": "disabled"},
+    {"id": "notion-manual", "kind": "manual", "locator": "notion local CLI", "pin": "manual-unresolved", "automation": "disabled"},
+    {"id": "obsidian-manual", "kind": "manual", "locator": "obsidian CLI", "pin": "manual-unresolved", "automation": "disabled"},
+    {"id": "opencap-manual", "kind": "manual", "locator": "OpenCap", "pin": "0.1.4-audited", "automation": "disabled"},
+    {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.6", "automation": "disabled"},
+    {"id": "peekaboo-audited", "kind": "homebrew", "locator": "peekaboo", "pin": "3.7.1-audited", "automation": "disabled"},
+    {"id": "rdt-cli-git", "kind": "git", "locator": "https://github.com/public-clis/rdt-cli.git", "pin": "5e4fb3720d5c174e976cd425ccc3b879d52cac66", "automation": "disabled"},
+    {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled"},
+    {"id": "spogo-brew", "kind": "homebrew", "locator": "steipete/tap/spogo", "pin": "0.10.0-audited", "automation": "disabled"},
+    {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
+    {"id": "vox-manual", "kind": "git", "locator": "Vox upstream source required", "pin": "201c025fabc5b353295a6dc079c32f3bdb2ec77e-audited", "automation": "disabled"},
+    {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},
+    {"id": "wacrawl-audited", "kind": "homebrew", "locator": "wacrawl", "pin": "0.3.1-audited", "automation": "disabled"},
+    {"id": "xurl-manual", "kind": "homebrew-or-npm", "locator": "xdevplatform/tap/xurl or @xdevplatform/xurl", "pin": "manual-unresolved", "automation": "disabled"},
+    {"id": "yt-dlp-brew", "kind": "homebrew", "locator": "yt-dlp", "pin": "2026.7.4-audited", "automation": "disabled"}
+  ]
+}
+
