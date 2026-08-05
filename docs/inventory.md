@@ -2,7 +2,7 @@
 
 The manifest is the source of truth for the portable inventory:
 
-- `manifest/tools.json` — 19 audited tool identities, binaries, safety, freshness, source IDs, and auth classes.
+- `manifest/tools.json` — 17 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secrets.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, and creator packs.

@@ -12,7 +12,7 @@
     {
       "id": "local-productivity",
       "description": "Local apps, personal knowledge, reminders, and macOS UI inspection.",
-      "tools": ["agent-inbox", "notion", "notcrawl", "obsidian", "remindctl", "peekaboo"],
+      "tools": ["notion", "notcrawl", "obsidian", "remindctl", "peekaboo"],
       "commands": [],
       "optionalCommands": [],
       "skills": []
@@ -28,7 +28,7 @@
     {
       "id": "communication",
       "description": "Guarded messaging, social account actions, and phone workflows.",
-      "tools": ["wacli", "wacrawl", "discrawl", "twitter-cli", "xurl", "instagram-cli", "vox"],
+      "tools": ["wacli", "wacrawl", "discrawl", "twitter-cli", "xurl", "instagram-cli"],
       "commands": [],
       "optionalCommands": [],
       "skills": []
@@ -36,7 +36,7 @@
     {
       "id": "creator",
       "description": "Recording, playback, and public-media production helpers.",
-      "tools": ["opencap", "spogo", "yt-dlp", "vox"],
+      "tools": ["opencap", "spogo", "yt-dlp"],
       "commands": [],
       "optionalCommands": [],
       "skills": []

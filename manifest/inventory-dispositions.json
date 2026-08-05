@@ -1,7 +1,6 @@
 {
   "version": 1,
   "localTools": [
-    {"id": "agent-inbox", "disposition": "external-with-portable-contract"},
     {"id": "birdclaw", "disposition": "external-with-portable-contract"},
     {"id": "discrawl", "disposition": "external-with-portable-contract"},
     {"id": "instagram-cli", "disposition": "external-with-portable-contract"},
@@ -15,7 +14,6 @@
     {"id": "remindctl", "disposition": "external-with-portable-contract"},
     {"id": "spogo", "disposition": "external-with-portable-contract"},
     {"id": "twitter-cli", "disposition": "external-with-portable-contract"},
-    {"id": "vox", "disposition": "external-with-portable-contract"},
     {"id": "wacli", "disposition": "external-with-portable-contract"},
     {"id": "wacrawl", "disposition": "external-with-portable-contract"},
     {"id": "xurl", "disposition": "external-with-portable-contract"},
@@ -33,7 +31,7 @@
     {
       "id": "local-tools",
       "disposition": "external-with-portable-contract",
-      "skills": ["agent-inbox", "birdclaw", "discrawl", "instagram-cli", "notcrawl", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "vox", "wacli", "wacrawl", "xurl", "yt-dlp"]
+      "skills": ["birdclaw", "discrawl", "instagram-cli", "notcrawl", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp"]
     },
     {
       "id": "commands",

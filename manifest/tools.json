@@ -2,11 +2,6 @@
   "version": 1,
   "tools": [
     {
-      "id": "agent-inbox", "binary": "agent-inbox", "purpose": "Local Agent Inbox reads and explicitly requested sends or status changes.",
-      "packs": ["local-productivity"], "source": "agent-inbox-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["local-app"],
-      "freshness": "Use bounded JSON reads and verify sends from CLI output.", "safety": "Mutate inbox state only when target and action are clear."
-    },
-    {
       "id": "birdclaw", "binary": "birdclaw", "purpose": "X local archive analysis and guarded live sync/actions.",
       "packs": ["research", "communication"], "source": "birdclaw-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["local-archive", "human-login"],
       "freshness": "Refresh the relevant archive unless the user requests no refresh or asks only about setup.", "safety": "Never inspect credential files; require exact intent for remote actions and protect private DMs."
@@ -70,11 +65,6 @@
       "id": "twitter-cli", "binary": "twitter", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions.",
       "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
       "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes."
-    },
-    {
-      "id": "vox", "binary": "vox", "purpose": "Self-hosted Twilio/OpenAI Realtime phone bridge.",
-      "packs": ["communication", "creator"], "source": "vox-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["agent-vault", "telecom-consent"],
-      "freshness": "Inspect the installed interface before relying on it.", "safety": "No call without exact number, caller ID, purpose, disclosure, consent, and legal review."
     },
     {
       "id": "wacli", "binary": "wacli", "purpose": "WhatsApp linked-device live reads and writes.",
