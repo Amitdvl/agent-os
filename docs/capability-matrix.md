@@ -11,4 +11,4 @@
 | Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
 | External writes | Exact-intent, target, content, and verify-after-write rules | Requested target/content/action | User authorization |
 
-All 17 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.
+All 18 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.

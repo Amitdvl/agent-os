@@ -1,36 +1,129 @@
 ---
 name: add
-description: Use when /add onboards a machine-local CLI or service for future Agent OS use.
+description: Use when the user invokes /add to onboard a machine-local CLI or external tool for automatic agent use across Codex local tools, AGENTS guidance, Agent Vault inventory, and the Agent OS portable registry.
 ---
 
 # Add
 
-Use `/add <tool-name-or-url>`. With no argument, ask for the tool, package, repository, or documentation URL.
+Use `/add` when the user wants a new machine-local CLI, website adapter, external
+tool, or service-backed command prepared for automatic future agent use.
+
+## Usage
+
+```text
+/add <tool-name-or-url>
+/add https://github.com/openclaw/notcrawl
+/add rdt-cli
+```
+
+No argument: ask for the target tool name, package, repository, documentation
+URL, or binary.
+
+## Operating Principle
+
+Deliver a working agent-facing local-tool integration, not just notes. Discover
+the tool's real install path, commands, auth model, data roots, write surfaces,
+and safety boundaries before editing shared instructions. Preserve unrelated
+dirty work and never expose secrets.
 
 ## Workflow
 
-1. Inspect the Agent OS worktree and installed portable registry/host links; preserve unrelated changes. Check an existing binary only when it is already known.
-2. Discover the upstream from primary documentation, release/package metadata, and installed help. Identify binary, supported install/version/help commands, setup/config and data-root placeholders, auth model, structured output, safe reads, guarded writes, destructive/account mutations, limitations, and license/provenance.
-3. `/add` authorizes the named local installation/configuration flow. First show `agent-os install --tools <id>` and a setup preview. Execute only `install --apply --reviewed-install` after source review. Never silently log in, grant OAuth/permissions, add extensions, or mutate a remote service.
-4. Update the Agent OS source mirror: tool/source/pack/secret manifests; canonical tool template; central registry rendering; host symlink plan; broad binary allow rule; portable global routing policy; and vault requirement metadata. Keep generated host copies equivalent through the central template.
-5. For secrets, create only a new independent encrypted-vault requirement/placeholder. Never copy, inspect, print, or request values in chat. Interactive login, browser extensions, consent, macOS permissions, and remote changes remain human checkpoints.
-6. Verify `command -v`, version/help where installed; manifest validation; tests; rendered registry; tool folder; host symlink; and allow-rule plan.
+1. Inspect current state:
+   - Check `git status --short` in the Agent OS repository.
+   - Check whether the tool already exists in the live Codex local-tools registry, the Agent OS tool manifest, and the live Codex skill symlink root.
+   - Check `command -v <binary>` when a likely binary name is known.
+2. Discover the upstream tool:
+   - For repository or documentation URLs, inspect README, install docs, release notes, package manifests, and CLI help.
+   - Identify binary names, install methods, version command, help command, config paths, data roots, credential sources, structured output flags, read commands, write commands, and destructive/account-mutating commands.
+   - Prefer primary docs and the installed CLI's own help over inferred behavior.
+3. Install or configure only what is needed for agent use:
+   - Use the upstream-recommended package manager when it matches this machine.
+   - Do not silently install browser extensions, grant OAuth access, log into accounts, or mutate remote state.
+   - For auth, use Agent Vault before asking the user; never ask for pasted secrets in chat.
+4. Create or update local tool integration:
+   - Write the live Codex local-tools skill file for `<tool>`.
+   - Add or update the `<tool>` entry in the live Codex local-tools registry.
+   - Create the live Codex skill symlink for `<tool>` pointing at the local-tools skill folder.
+5. Mirror into Agent OS:
+   - In the same task, update the Agent OS portable tool manifest, source metadata, capability pack, canonical tool contract, generated registry/symlink/allow-rule behavior, secret-requirement metadata, documentation, and tests.
+   - If the tool is intentionally machine-only or cannot be shared safely, record a specific Agent OS inventory exclusion and reason; never silently omit it.
+   - Run Agent OS validation, tests, `git diff --check`, and `./bin/twin-audit` against the live registry, command source, goal-prompt skill, and global instructions. Commit the intended Agent OS change locally.
+6. Update global routing guidance:
+   - Add concise guidance to the live Codex `AGENTS.md` under `Local Machine CLIs`.
+   - Include when to use the tool, freshness/sync expectations, write-safety boundaries, and secret-safety rules.
+7. Update Agent Vault when needed:
+   - Use the global `agent-secrets` skill for credentials, tokens, OAuth, browser sessions, SaaS accounts, package registries, deploy targets, databases, webhooks, or secret-bearing config paths.
+   - Add or update encrypted inventory under the Agent Vault tools directory.
+   - Capture env var names, scopes, source paths, account/project names, and agent-vs-human access classification.
+   - Store actual values only when safe under Agent Vault rules.
+   - Verify the Agent Vault tmp directory is empty after secret operations.
+8. Verify the integration:
+   - Run `command -v <binary>`.
+   - Run the tool's version and help commands.
+   - Validate the live local-tool registry and Agent OS tool manifest.
+   - Run `npm run validate` and `npm test` in the Agent OS repository.
+   - Verify the `.codex/skills/<tool>/SKILL.md` symlink resolves.
 
-## Stop conditions
+## Skill Document Requirements
 
-Stop for an unidentified tool, unsafe/conflicting upstream identity, unresolved ownership, unavailable required credentials, or an unrequested interactive/paid/remote action.
+Each local-tool `SKILL.md` must include:
 
-## Twin synchronization gate
+- Frontmatter with `name`, `description`, and install metadata when available.
+- Local setup notes: install command, binary path, setup version, config paths,
+  data roots, and credential sources.
+- Safety rules: secrets, read/write boundaries, remote mutations, destructive
+  commands, and exact-user-intent requirements.
+- Preflight commands.
+- Common read commands and, when applicable, guarded write commands.
+- Troubleshooting and limitations.
 
-Do not finish a portable local-workflow change on only one side. When the owner
-machine's reusable tool, slash command, policy, routing rule, setup metadata,
-or skill contract changes, mirror its portable contract into Agent OS in the
-same task. Update manifests, source metadata, templates, generated behavior,
-docs, and tests; run `validate`, the full test suite, `git diff --check`, and
-the configured twin audit. An intentionally machine-only item needs an explicit
-inventory exclusion and reason. Never mirror credentials, sessions, archives,
-identities, absolute paths, or other private machine state.
+## Registry Requirements
 
-## Report
+Each registry entry must include:
 
-Return Tool (binary/version/source); Integration (template/registry/routing/symlink/rule/vault); Verification (commands/results); and Blocked (exact condition/next action).
+- `purpose`: concise routing summary.
+- `binary`: executable agents should call.
+- `skill`: live Codex local-tools skill path for `<tool>`.
+- `skill_symlink`: live Codex skill symlink path for `<tool>`.
+- `data_root`: concrete path, `tool-owned`, external service name, or `none`.
+- `secrets`: `none`, `external`, a specific Agent Vault path, or a concise
+  description of browser/tool-owned credentials.
+- `removable: false`.
+
+## Verification Commands
+
+Resolve the registry and skill-root variables from the active machine's
+`AGENTS.md` and local-tool registry before running:
+
+```bash
+command -v <binary>
+<binary> --version || <binary> version
+<binary> --help
+ruby -ryaml -e 'ARGV.each { |f| YAML.load_file(f); puts "ok #{f}" }' "$CODEX_LOCAL_TOOLS_REGISTRY"
+npm run validate
+npm test
+test -f "$CODEX_SKILL_ROOT/<tool>/SKILL.md"
+```
+
+When Agent Vault is touched, verify decryptability without printing plaintext
+and confirm the Agent Vault tmp directory is empty.
+
+## Stop Conditions
+
+- The target tool cannot be identified from the user's input.
+- Installation requires an account login, OAuth grant, browser extension, or
+  paid/remote action that the user has not explicitly requested.
+- Upstream docs conflict with installed CLI behavior in a way that affects safe
+  operation.
+- Existing dirty changes overlap the files that must be edited and ownership
+  cannot be determined.
+- Secrets are required but unavailable through Agent Vault and cannot be safely
+  created during the task.
+
+## Output Contract
+
+- `Tool`: name, binary, version, and install source.
+- `Integration`: local skill, registry, AGENTS guidance, source mirror, Agent OS
+  twin status, symlink, and Agent Vault status.
+- `Verification`: exact commands and results.
+- `Blocked`: exact blocker and next action, if not completed.

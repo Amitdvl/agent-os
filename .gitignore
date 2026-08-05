@@ -6,9 +6,10 @@ node_modules/
 *.log
 *.tmp
 *.bak
+__pycache__/
+*.pyc
 *.sops.env
 *.sops.yaml
 .env
 .env.*
 !.env.example
-

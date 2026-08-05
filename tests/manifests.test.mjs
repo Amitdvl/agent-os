@@ -15,8 +15,8 @@ async function filesUnder(root) {
   const result = [];
   for (const entry of await readdir(root, { withFileTypes: true })) {
     const target = join(root, entry.name);
-    if (entry.isDirectory()) result.push(...await filesUnder(target));
-    else if (entry.isFile()) result.push(target);
+    if (entry.isDirectory() && entry.name !== "__pycache__") result.push(...await filesUnder(target));
+    else if (entry.isFile() && !entry.name.endsWith(".pyc")) result.push(target);
   }
   return result;
 }
@@ -39,6 +39,17 @@ test("default profile is opinionated and selects every capability pack", async (
   assert.equal(profile.externalWrites, "exact-intent");
 });
 
+test("core installs all four portable commands by default", async () => {
+  const packs = await json("packs");
+  const commands = await json("commands");
+  const core = packs.packs.find((pack) => pack.id === "core");
+  assert.deepEqual(core.commands, ["add", "commands", "teach", "trunk-finish"]);
+  assert.deepEqual(core.optionalCommands, []);
+  const selected = commands.commands.filter((command) => core.commands.includes(command.id));
+  assert.equal(selected.length, 4);
+  assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
@@ -47,10 +58,29 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 88);
-  assert.equal(new Set(installedSkills).size, 88);
+  assert.equal(installedSkills.length, 80);
+  assert.equal(new Set(installedSkills).size, 80);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
+  for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
+});
+
+test("portable automation, hook, and skill-cleaner assets have declared sources without legacy ownership", async () => {
+  const dispositions = await json("inventory-dispositions");
+  const portablePaths = [
+    "skills/skill-cleaner/SKILL.md",
+    "templates/hooks/commit-push-watcher/codex_commit_push_watcher.py",
+    "templates/hooks/commit-push-watcher/manage_commit_push_hook.sh",
+    "templates/hooks/block-no-verify/block_no_verify.sh",
+    "templates/hooks/ctx7-guard/ctx7_guard.py",
+    "templates/hooks/ctx7-guard/ctx7_guard_config.example.json",
+    ...dispositions.automationTemplates.map((item) => item.path),
+    ...dispositions.hooks.filter((item) => item.path).map((item) => item.path),
+  ];
+  for (const path of portablePaths) {
+    const content = await readFile(join(ROOT, path), "utf8");
+    assert.equal(content.includes("agent-system"), false, `${path} retains legacy ownership`);
+  }
 });
 
 test("all external tools have explicit source pins or unresolved markers", async () => {
@@ -95,15 +125,16 @@ test("documentation links resolve inside the repository", async () => {
 
 test("portable command and goal contracts retain their required workflow sections", async () => {
   const required = {
-    "commands/add/SKILL.md": ["## Workflow", "## Stop conditions", "## Report", "reviewed-install", "allow rule"],
-    "commands/commands/SKILL.md": ["deterministic order", "personal slash commands", "standalone skills", "credential"],
-    "commands/teach/SKILL.md": ["## Source resolution", "## Teaching loop", "exactly one targeted question", "--student"],
-    "commands/trunk-finish/SKILL.md": ["recovery-first", "sensitive surfaces", "worktrees", "## Report"],
+    "commands/add/SKILL.md": ["## Operating Principle", "## Workflow", "## Skill Document Requirements", "## Registry Requirements", "## Verification Commands", "## Stop Conditions", "## Output Contract", "Agent OS"],
+    "commands/commands/SKILL.md": ["## Usage", "## Workflow", "## Rules", "agent-os status --catalog --json", "personal slash commands", "active automations", "credential files", "Agent OS"],
+    "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
+    "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
     "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting"],
   };
   for (const [path, phrases] of Object.entries(required)) {
     const content = await readFile(join(ROOT, path), "utf8");
     for (const phrase of phrases) assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${path} missing ${phrase}`);
+    if (path.startsWith("commands/")) assert.doesNotMatch(content, /agent-system/, `${path} retains an active legacy dependency`);
   }
 });
 

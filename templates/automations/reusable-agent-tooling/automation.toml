@@ -1,0 +1,21 @@
+version = 1
+id = "{{automation_id}}"
+kind = "cron"
+name = "Reusable agent tooling harvest"
+prompt = """Run a read-only reusable-agent-tooling harvest from configured paths.
+
+Inspect only the configured source repository and Agent OS checkout for skills,
+commands, scripts, hooks, templates, tests, and runbooks that another project
+could use with configuration only.
+
+For at most five candidates, report name, source path, category, portable
+bucket, what to parameterize, privacy boundary, and recommended next action.
+Do not copy, edit, create, delete, move, commit, push, or open a pull request.
+Do not report secrets, local account data, private archives, or production facts.
+"""
+status = "PAUSED"
+rrule = "{{rrule}}"
+model = "{{model}}"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["{{agent_os_root}}"]

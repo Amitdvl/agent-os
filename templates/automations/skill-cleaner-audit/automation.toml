@@ -1,0 +1,23 @@
+version = 1
+id = "{{automation_id}}"
+kind = "cron"
+name = "Skill cleaner audit"
+prompt = """Run a read-only Agent OS skill-cleaner audit.
+
+From the Agent OS checkout, run:
+`node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --root {{skill_root}} --months {{months}} --max-log-mb {{max_log_mb}} --json`
+
+Report budget pressure, duplicate families, long-description candidates, and
+inactive candidates. Recommendations are advisory only.
+
+Hard rules:
+- Do not edit, delete, disable, move, commit, push, or open a pull request.
+- Do not expose credentials, tokens, raw session logs, private messages, or
+  complete private skill contents.
+"""
+status = "PAUSED"
+rrule = "{{rrule}}"
+model = "{{model}}"
+reasoning_effort = "medium"
+execution_environment = "local"
+cwds = ["{{agent_os_root}}"]
