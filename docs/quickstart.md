@@ -20,6 +20,11 @@ Agent OS is preview-first. It can set up the portable core without installing so
 
 `--safe` is real: it selects only the `core` pack and refuses installation, SOPS/age execution, and vault decryption. It creates only Agent OS policy, first-party skills, and commands. The first command is always a no-write preview; `--apply` is separately required.
 
+Core setup also manages `~/.local/bin/agent-os` as a symlink to this checkout's
+launcher, so the installed `/commands` and `/add` contracts can invoke
+`agent-os`. An existing unowned launcher is a conflict rather than a file to
+overwrite.
+
 ## Add optional capabilities later
 
 Preview a full tool deployment (managed registry, templates, symlinks, and Codex binary allow rules):
@@ -42,5 +47,23 @@ Only after independently reviewing the source, license, and command may a user i
 ```
 
 This never logs in, grants access, installs browser extensions, or mutates remote accounts. A `manual-unresolved` source remains a human checkpoint.
+
+## Optional owner-machine command cutover
+
+The separate Codex-only cutover is for an owner machine that already has the
+three legacy command links. It is not part of `setup`, does not adopt tool
+links, and always previews first:
+
+```sh
+./bin/live-cutover --legacy-root <legacy-root>
+./bin/live-cutover --legacy-root <legacy-root> --apply
+./bin/live-rollback
+./bin/live-rollback --apply
+```
+
+The first apply requires the declared legacy root. It accepts only the exact
+legacy `add`, `commands`, and `trunk-finish` symlinks, creates `teach` only when
+absent, and changes one recognized sentence in Codex `AGENTS.md`. It records
+local rollback metadata and refuses unknown or drifted state.
 
 See the [fresh-Mac walkthrough](fresh-mac-walkthrough.md) for the friend-friendly sequence and [troubleshooting](troubleshooting.md) for next actions.

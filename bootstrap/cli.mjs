@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { access, chmod, lstat, mkdir, readFile, readdir, readlink, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { access, chmod, lstat, mkdir, readFile, readdir, readlink, realpath, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { homedir, platform } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
@@ -24,6 +24,10 @@ const MANIFEST_NAMES = [
 ];
 const START_PREFIX = "<!-- agent-os:start";
 const END_MARKER = "<!-- agent-os:end -->";
+const LIVE_CUTOVER_COMMAND_IDS = ["add", "commands", "teach", "trunk-finish"];
+const LEGACY_COMMAND_IDS = ["add", "commands", "trunk-finish"];
+const LEGACY_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; `agent-system/skills` is only the upstream source for reusable global assets.";
+const CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; Agent OS is the canonical portable source for reusable global assets.";
 
 // These are portable *templates*, not machine configuration. Every selected
 // tool receives the same complete section structure, with only safe command
@@ -181,13 +185,19 @@ async function validateBundle(bundle) {
     if (!(await exists(target))) errors.push(`${item.id} path does not exist: ${item.path}`);
   }
 
+  const inventory = bundle["inventory-dispositions"];
+  for (const item of [...(inventory.hooks ?? []), ...(inventory.automationTemplates ?? []), ...(inventory.referenceOnly ?? [])]) {
+    if (!item.id || !item.disposition) errors.push("inventory item is missing id or disposition");
+    if (item.path && !(await exists(join(REPO_ROOT, item.path)))) errors.push(`inventory path does not exist: ${item.path}`);
+  }
+
   if (bundle["schema-version"].manifestSchema !== 1) errors.push("unsupported manifest schema");
   return { errors, warnings };
 }
 
 function parseArgs(argv) {
   const result = { _: [] };
-  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config", "--tools", "--vault-dir", "--age-recipient"]);
+  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config", "--tools", "--vault-dir", "--age-recipient", "--legacy-root"]);
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (!value.startsWith("--")) {
@@ -274,6 +284,14 @@ function selectedSkills(context) {
 function selectedCommands(context) {
   const ids = new Set(context.packs.flatMap((pack) => pack.commands ?? []));
   return context.bundle.commands.commands.filter((command) => ids.has(command.id) && command.path && command.selectedByDefault);
+}
+
+function launcherPath(context) {
+  return join(context.userHome, ".local", "bin", "agent-os");
+}
+
+function canonicalLauncherTarget() {
+  return join(REPO_ROOT, "bin", "agent-os");
 }
 
 async function renderInstructionBlock(context) {
@@ -370,6 +388,8 @@ async function buildPlan(context) {
   const tools = selectedTools(context);
   const sourceMap = byId(context.bundle.sources.sources);
   operations.push({ kind: "file", path: join(context.localToolsRoot, "registry.json"), content: renderRegistry(tools), id: "local-tools:registry" });
+  const launcher = launcherPath(context);
+  operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), id: "agent-os:launcher" });
   for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
@@ -522,6 +542,294 @@ async function stateHealth(context) {
   return { installed: true, managed, drift };
 }
 
+function cutoverStatePath(context) {
+  return join(context.stateDir, "live-cutover-state.json");
+}
+
+function cutoverBackupPath(context) {
+  return join(context.stateDir, "live-cutover", "AGENTS.md.original");
+}
+
+function cutoverPaths(context) {
+  return {
+    agents: join(context.codexHome, "AGENTS.md"),
+    skills: join(context.codexHome, "skills"),
+  };
+}
+
+function canonicalCommandTarget(id) {
+  return join(REPO_ROOT, "commands", id);
+}
+
+function normalManagedLauncher(context) {
+  const path = launcherPath(context);
+  return context.previousState?.managed?.find((item) => item.kind === "symlink" && item.path === path) ?? null;
+}
+
+async function readCutoverState(context) {
+  try {
+    return await readJson(cutoverStatePath(context));
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function inspectCutoverLink(path) {
+  try {
+    const info = await lstat(path);
+    if (!info.isSymbolicLink()) return { kind: info.isDirectory() ? "directory" : "file", rawTarget: null, resolvedTarget: null };
+    const rawTarget = await readlink(path);
+    try {
+      return { kind: "symlink", rawTarget, resolvedTarget: await realpath(path) };
+    } catch (error) {
+      if (error.code === "ENOENT") return { kind: "broken-symlink", rawTarget, resolvedTarget: null };
+      throw error;
+    }
+  } catch (error) {
+    if (error.code === "ENOENT") return { kind: "missing", rawTarget: null, resolvedTarget: null };
+    throw error;
+  }
+}
+
+function exactGuidancePlan(content) {
+  if (content === null) return { status: "conflict", reason: "Codex AGENTS.md is missing", original: null, next: null };
+  const legacyCount = content.split(LEGACY_GUIDANCE).length - 1;
+  const targetCount = content.split(CUTOVER_GUIDANCE).length - 1;
+  if (legacyCount === 1 && targetCount === 0) return { status: "replace-guidance", reason: null, original: content, next: content.replace(LEGACY_GUIDANCE, CUTOVER_GUIDANCE) };
+  if (legacyCount === 0 && targetCount === 1) return { status: "already-cut-over", reason: null, original: content, next: content };
+  return { status: "conflict", reason: "Codex AGENTS.md does not contain exactly one recognized cutover guidance sentence", original: content, next: null };
+}
+
+async function inspectAppliedCutover(context, state) {
+  const paths = cutoverPaths(context);
+  const links = {};
+  const drift = [];
+  for (const id of LIVE_CUTOVER_COMMAND_IDS) {
+    const current = await inspectCutoverLink(join(paths.skills, id));
+    const expected = state?.links?.[id];
+    const canonical = canonicalCommandTarget(id);
+    const matches = current.kind === "symlink" && expected && current.rawTarget === expected.appliedTarget && current.resolvedTarget === canonical;
+    links[id] = matches ? "managed" : current.kind;
+    if (!matches) drift.push(`command:${id}`);
+  }
+  const launcher = await inspectCutoverLink(launcherPath(context));
+  const expectedLauncher = state?.launcher;
+  const launcherMatches = launcher.kind === "symlink" && expectedLauncher && launcher.rawTarget === expectedLauncher.appliedTarget && launcher.resolvedTarget === canonicalLauncherTarget();
+  if (!launcherMatches) drift.push("launcher");
+  const guidance = await readText(paths.agents, null);
+  const guidanceMatches = Boolean(state?.guidance?.appliedHash) && guidance !== null && hash(guidance) === state.guidance.appliedHash;
+  if (!guidanceMatches) drift.push("guidance");
+  return { links, launcher: launcherMatches ? (expectedLauncher.created ? "managed" : "preserved-managed") : launcher.kind, guidance: guidanceMatches ? "managed" : guidance === null ? "missing" : "drifted", drift };
+}
+
+async function liveCutoverPlan(context) {
+  const state = await readCutoverState(context);
+  const paths = cutoverPaths(context);
+  if (state?.status === "applied") {
+    const applied = await inspectAppliedCutover(context, state);
+    return {
+      action: "live-cutover",
+      apply: Boolean(context.options.apply),
+      mode: applied.drift.length ? "drift" : "already-applied",
+      operations: LIVE_CUTOVER_COMMAND_IDS.map((id) => ({ path: displayPath(context, join(paths.skills, id)), status: applied.links[id], reason: null })).concat([{ path: displayPath(context, launcherPath(context)), status: applied.launcher, reason: null }, { path: displayPath(context, paths.agents), status: applied.guidance, reason: null }]),
+      conflicts: applied.drift.map((item) => `managed ${item} drifted`),
+      state,
+      guidance: null,
+    };
+  }
+  if (state && state.status !== "rolled-back") {
+    return { action: "live-cutover", apply: Boolean(context.options.apply), mode: "unknown-state", operations: [], conflicts: ["existing live-cutover state is incomplete or unrecognized"], state, guidance: null };
+  }
+
+  const guidance = exactGuidancePlan(await readText(paths.agents, null));
+  const operations = [];
+  const conflicts = [];
+  let legacyRoot = null;
+  if (context.options["legacy-root"]) {
+    try {
+      legacyRoot = await realpath(resolve(context.options["legacy-root"]));
+    } catch {
+      conflicts.push("legacy root is not resolvable");
+    }
+  } else if (context.options.apply) {
+    conflicts.push("live-cutover --apply requires --legacy-root for the first apply");
+  }
+  for (const id of LEGACY_COMMAND_IDS) {
+    const path = join(paths.skills, id);
+    const current = await inspectCutoverLink(path);
+    const expectedLegacy = legacyRoot ? join(legacyRoot, "commands", id) : null;
+    const adoptable = current.kind === "symlink" && expectedLegacy !== null && current.resolvedTarget === expectedLegacy;
+    operations.push({ path: displayPath(context, path), status: adoptable ? "adopt-legacy-link" : current.kind, reason: adoptable ? null : "must be a symlink resolving exactly to the declared legacy command" , current });
+    if (!adoptable) conflicts.push(`command:${id} is not an adoptable legacy symlink`);
+  }
+  const teachPath = join(paths.skills, "teach");
+  const teach = await inspectCutoverLink(teachPath);
+  operations.push({ path: displayPath(context, teachPath), status: teach.kind === "missing" ? "create-link" : teach.kind, reason: teach.kind === "missing" ? null : "teach must be absent before first cutover", current: teach });
+  if (teach.kind !== "missing") conflicts.push("command:teach must be absent before first cutover");
+  const launcher = await inspectCutoverLink(launcherPath(context));
+  const normalLauncher = normalManagedLauncher(context);
+  const launcherManagedByNormalLifecycle = launcher.kind === "symlink" && normalLauncher && launcher.rawTarget === normalLauncher.linkTarget && launcher.resolvedTarget === canonicalLauncherTarget();
+  const launcherCreatable = launcher.kind === "missing";
+  operations.push({ path: displayPath(context, launcherPath(context)), status: launcherCreatable ? "create-launcher" : launcherManagedByNormalLifecycle ? "preserve-managed-launcher" : launcher.kind, reason: launcherCreatable || launcherManagedByNormalLifecycle ? null : "launcher must be absent or managed by the Agent OS lifecycle", current: launcher });
+  if (!launcherCreatable && !launcherManagedByNormalLifecycle) conflicts.push("launcher is not absent or known Agent OS-managed state");
+  operations.push({ path: displayPath(context, paths.agents), status: guidance.status, reason: guidance.reason });
+  if (guidance.status === "conflict") conflicts.push(`guidance: ${guidance.reason}`);
+  if (!state && guidance.status === "already-cut-over") conflicts.push("guidance is already replaced but no live-cutover state exists");
+  return { action: "live-cutover", apply: Boolean(context.options.apply), mode: "first-apply", operations, conflicts, state, guidance, legacyRoot };
+}
+
+async function replaceSymlink(path, target) {
+  await mkdir(dirname(path), { recursive: true });
+  const temporary = join(dirname(path), `.${Date.now()}-${process.pid}.agent-os-link`);
+  await symlink(target, temporary);
+  await rename(temporary, path);
+}
+
+async function applyLiveCutover(context, plan) {
+  if (plan.mode === "already-applied") return;
+  if (plan.conflicts.length) throw new Error(`refusing live cutover with ${plan.conflicts.length} conflict(s): ${plan.conflicts.join("; ")}`);
+  if (!context.options["legacy-root"]) throw new Error("live-cutover --apply requires --legacy-root for the first apply");
+  const paths = cutoverPaths(context);
+  const links = {};
+  for (const id of LEGACY_COMMAND_IDS) {
+    const current = plan.operations.find((item) => item.path === displayPath(context, join(paths.skills, id))).current;
+    links[id] = { originalTarget: current.rawTarget, originalResolvedTarget: current.resolvedTarget, appliedTarget: canonicalCommandTarget(id), appliedResolvedTarget: canonicalCommandTarget(id) };
+  }
+  links.teach = { originalTarget: null, originalResolvedTarget: null, appliedTarget: canonicalCommandTarget("teach"), appliedResolvedTarget: canonicalCommandTarget("teach") };
+  const launcherOperation = plan.operations.find((item) => item.path === displayPath(context, launcherPath(context)));
+  const launcher = launcherOperation.current;
+  const pending = {
+    version: 1,
+    status: "pending",
+    appliedAt: null,
+    links,
+    launcher: {
+      originalTarget: launcher.rawTarget,
+      originalResolvedTarget: launcher.resolvedTarget,
+      appliedTarget: launcher.kind === "missing" ? canonicalLauncherTarget() : launcher.rawTarget,
+      appliedResolvedTarget: canonicalLauncherTarget(),
+      created: launcher.kind === "missing",
+    },
+    guidance: {
+      backup: relative(context.stateDir, cutoverBackupPath(context)),
+      originalHash: hash(plan.guidance.original),
+      appliedHash: hash(plan.guidance.next),
+    },
+  };
+  await atomicWrite(cutoverBackupPath(context), plan.guidance.original);
+  await atomicWrite(cutoverStatePath(context), `${JSON.stringify(pending, null, 2)}\n`);
+  for (const id of LIVE_CUTOVER_COMMAND_IDS) await replaceSymlink(join(paths.skills, id), canonicalCommandTarget(id));
+  if (pending.launcher.created) await replaceSymlink(launcherPath(context), canonicalLauncherTarget());
+  await atomicWrite(paths.agents, plan.guidance.next);
+  const state = { ...pending, status: "applied", appliedAt: new Date().toISOString() };
+  await atomicWrite(cutoverStatePath(context), `${JSON.stringify(state, null, 2)}\n`);
+}
+
+async function liveRollbackPlan(context) {
+  const state = await readCutoverState(context);
+  const paths = cutoverPaths(context);
+  if (!state || state.status === "rolled-back") return { action: "live-rollback", apply: Boolean(context.options.apply), mode: "not-applied", operations: [], conflicts: [], state: state ?? null, guidance: null };
+  if (state.status === "pending") return pendingRollbackPlan(context, state);
+  if (state.status !== "applied") return { action: "live-rollback", apply: Boolean(context.options.apply), mode: "unknown-state", operations: [], conflicts: ["live-cutover state is incomplete or unrecognized"], state, guidance: null };
+  const applied = await inspectAppliedCutover(context, state);
+  const backup = await readText(cutoverBackupPath(context), null);
+  const conflicts = [...applied.drift];
+  if (backup === null || hash(backup) !== state.guidance.originalHash) conflicts.push("guidance-backup");
+  const operations = LEGACY_COMMAND_IDS.map((id) => ({ path: displayPath(context, join(paths.skills, id)), status: applied.links[id] === "managed" ? "restore-link" : "conflict", reason: applied.links[id] === "managed" ? null : "managed command drifted" }));
+  operations.push({ path: displayPath(context, join(paths.skills, "teach")), status: applied.links.teach === "managed" ? "remove-link" : "conflict", reason: applied.links.teach === "managed" ? null : "managed command drifted" });
+  operations.push({ path: displayPath(context, launcherPath(context)), status: applied.launcher === "managed" || applied.launcher === "preserved-managed" ? state.launcher.created ? "remove-launcher" : "preserve-launcher" : "conflict", reason: applied.launcher === "managed" || applied.launcher === "preserved-managed" ? null : "managed launcher drifted" });
+  operations.push({ path: displayPath(context, paths.agents), status: applied.guidance === "managed" && !conflicts.includes("guidance-backup") ? "restore-guidance" : "conflict", reason: applied.guidance === "managed" ? (conflicts.includes("guidance-backup") ? "original guidance backup drifted" : null) : "managed guidance drifted" });
+  return { action: "live-rollback", apply: Boolean(context.options.apply), mode: "applied", operations, conflicts, state, guidance: backup };
+}
+
+function matchesRecordedLink(current, record, canonical) {
+  const original = record.originalTarget === null
+    ? current.kind === "missing"
+    : current.kind === "symlink" && current.rawTarget === record.originalTarget && current.resolvedTarget === record.originalResolvedTarget;
+  const applied = current.kind === "symlink" && current.rawTarget === record.appliedTarget && current.resolvedTarget === canonical;
+  return { original, applied };
+}
+
+async function pendingRollbackPlan(context, state) {
+  const paths = cutoverPaths(context);
+  const backup = await readText(cutoverBackupPath(context), null);
+  const conflicts = [];
+  if (!state.links || !state.launcher || !state.guidance || backup === null || hash(backup ?? "") !== state.guidance?.originalHash) conflicts.push("cutover-state-or-guidance-backup");
+  const restore = { links: {}, launcher: null, guidance: null };
+  const operations = [];
+  for (const id of LIVE_CUTOVER_COMMAND_IDS) {
+    const record = state.links?.[id];
+    const current = await inspectCutoverLink(join(paths.skills, id));
+    if (!record) {
+      conflicts.push(`command:${id}:missing-state`);
+      operations.push({ path: displayPath(context, join(paths.skills, id)), status: "conflict", reason: "missing recorded target" });
+      continue;
+    }
+    const match = matchesRecordedLink(current, record, canonicalCommandTarget(id));
+    if (!match.original && !match.applied) {
+      conflicts.push(`command:${id}:unknown-drift`);
+      operations.push({ path: displayPath(context, join(paths.skills, id)), status: "conflict", reason: "current target is neither recorded original nor canonical applied target" });
+      continue;
+    }
+    restore.links[id] = match.applied;
+    operations.push({ path: displayPath(context, join(paths.skills, id)), status: match.applied ? (id === "teach" ? "remove-link" : "restore-link") : "already-original", reason: null });
+  }
+  const launcherCurrent = await inspectCutoverLink(launcherPath(context));
+  const launcherMatch = state.launcher ? matchesRecordedLink(launcherCurrent, state.launcher, canonicalLauncherTarget()) : { original: false, applied: false };
+  if (!launcherMatch.original && !launcherMatch.applied) {
+    conflicts.push("launcher:unknown-drift");
+    operations.push({ path: displayPath(context, launcherPath(context)), status: "conflict", reason: "current target is neither recorded original nor canonical applied target" });
+  } else {
+    restore.launcher = launcherMatch.applied;
+    operations.push({ path: displayPath(context, launcherPath(context)), status: launcherMatch.applied && state.launcher.created ? "remove-launcher" : launcherMatch.applied ? "restore-launcher" : "already-original", reason: null });
+  }
+  const guidance = await readText(paths.agents, null);
+  const guidanceOriginal = guidance !== null && state.guidance && hash(guidance) === state.guidance.originalHash;
+  const guidanceApplied = guidance !== null && state.guidance && hash(guidance) === state.guidance.appliedHash;
+  if (!guidanceOriginal && !guidanceApplied) {
+    conflicts.push("guidance:unknown-drift");
+    operations.push({ path: displayPath(context, paths.agents), status: "conflict", reason: "guidance is neither recorded original nor recorded applied content" });
+  } else {
+    restore.guidance = guidanceApplied;
+    operations.push({ path: displayPath(context, paths.agents), status: guidanceApplied ? "restore-guidance" : "already-original", reason: null });
+  }
+  return { action: "live-rollback", apply: Boolean(context.options.apply), mode: "pending", operations, conflicts, state, guidance: backup, restore };
+}
+
+async function applyLiveRollback(context, plan) {
+  if (plan.mode === "not-applied") return;
+  if (plan.conflicts.length) throw new Error(`refusing live rollback with ${plan.conflicts.length} conflict(s): ${plan.conflicts.join("; ")}`);
+  const paths = cutoverPaths(context);
+  if (plan.mode === "pending") {
+    for (const id of LEGACY_COMMAND_IDS) if (plan.restore.links[id]) await replaceSymlink(join(paths.skills, id), plan.state.links[id].originalTarget);
+    if (plan.restore.links.teach) await rm(join(paths.skills, "teach"), { force: true });
+    if (plan.restore.launcher) {
+      if (plan.state.launcher.originalTarget === null) await rm(launcherPath(context), { force: true });
+      else await replaceSymlink(launcherPath(context), plan.state.launcher.originalTarget);
+    }
+    if (plan.restore.guidance) await atomicWrite(paths.agents, plan.guidance);
+    const pendingState = { ...plan.state, status: "rolled-back", rolledBackAt: new Date().toISOString() };
+    await atomicWrite(cutoverStatePath(context), `${JSON.stringify(pendingState, null, 2)}\n`);
+    return;
+  }
+  for (const id of LEGACY_COMMAND_IDS) await replaceSymlink(join(paths.skills, id), plan.state.links[id].originalTarget);
+  await rm(join(paths.skills, "teach"), { force: true });
+  if (plan.state.launcher.created) await rm(launcherPath(context), { force: true });
+  await atomicWrite(paths.agents, plan.guidance);
+  const state = { ...plan.state, status: "rolled-back", rolledBackAt: new Date().toISOString() };
+  await atomicWrite(cutoverStatePath(context), `${JSON.stringify(state, null, 2)}\n`);
+}
+
+async function liveCutoverStatus(context) {
+  const state = await readCutoverState(context);
+  if (!state) return { status: "not-applied", commands: {}, guidance: "not-managed" };
+  if (state.status === "rolled-back") return { status: "rolled-back", commands: {}, guidance: "restored" };
+  if (state.status !== "applied") return { status: "unknown-state", commands: {}, guidance: "unknown" };
+  const applied = await inspectAppliedCutover(context, state);
+  return { status: applied.drift.length ? "drift" : "applied", commands: applied.links, launcher: applied.launcher, guidance: applied.guidance, drift: applied.drift };
+}
+
 async function directoryNames(path) {
   try {
     return (await readdir(path, { withFileTypes: true })).map((entry) => entry.name).filter((name) => !name.startsWith(".")).sort();
@@ -533,6 +841,7 @@ async function directoryNames(path) {
 
 async function statusReport(context, catalogue = false) {
   const health = await stateHealth(context);
+  const liveCutover = await liveCutoverStatus(context);
   const tools = [];
   const requirements = context.bundle.secrets.requirements;
   for (const tool of selectedTools(context)) {
@@ -559,6 +868,7 @@ async function statusReport(context, catalogue = false) {
     drift: health.drift,
     registry: { path: displayPath(context, registryPath), status: await exists(registryPath) ? "present" : "absent" },
     vault: { path: displayPath(context, context.vaultDir), config: await exists(join(context.vaultDir, ".sops.yaml")) ? "present" : "absent", tmpClean },
+    liveCutover,
     tools,
   };
   if (catalogue) {
@@ -592,6 +902,7 @@ async function doctorReport(context) {
     { id: "runtime", ok: runtimeMajor >= context.bundle.compatibility.runtime.minimumMajor, detail: `Node ${process.versions.node}` },
     { id: "platform", ok: context.bundle.compatibility.platforms.includes(platform()), detail: platform() },
     { id: "managed-state", ok: status.drift.length === 0, detail: status.installed ? `${status.drift.length} drift item(s)` : "not installed; repository is still valid" },
+    { id: "live-cutover", ok: status.liveCutover.status !== "drift" && status.liveCutover.status !== "unknown-state", detail: status.liveCutover.status },
   ];
   return {
     ok: coreChecks.every((item) => item.ok),
@@ -602,6 +913,7 @@ async function doctorReport(context) {
       status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup --safe to review the core-only plan.",
       "Use agent-os install --tools <id> for a reviewed installation plan; it is preview-only unless explicitly confirmed.",
       "Use agent-os vault init for an independent SOPS + age vault preview, then complete logins and macOS permissions manually.",
+      "Use agent-os live-cutover --legacy-root <legacy-root> to preview the separate Codex command cutover.",
     ],
   };
 }
@@ -772,10 +1084,13 @@ async function applyUninstall(context, plan) {
 
 function printHuman(object) {
   if (object.operations) {
-    console.log(`Profile: ${object.profile}`);
-    console.log(`Packs: ${object.packs.join(", ")}`);
-    console.log(`Hosts: ${object.hosts.join(", ")}`);
+    if (object.profile) {
+      console.log(`Profile: ${object.profile}`);
+      console.log(`Packs: ${object.packs.join(", ")}`);
+      console.log(`Hosts: ${object.hosts.join(", ")}`);
+    }
     for (const operation of object.operations) console.log(`${operation.status.padEnd(10)} ${operation.path}${operation.reason ? ` — ${operation.reason}` : ""}`);
+    for (const conflict of object.conflicts ?? []) console.log(`conflict   ${conflict}`);
     console.log(object.apply ? "Apply requested." : "Preview only; no files changed.");
     return;
   }
@@ -786,7 +1101,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
-    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--safe] [--apply] [--json]");
+    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|live-cutover|live-rollback|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--apply] [--json]");
     return;
   }
 
@@ -800,7 +1115,7 @@ async function main() {
   }
   if (validation.errors.length) throw new Error(`invalid manifests: ${validation.errors.join("; ")}`);
 
-  const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall"].includes(command);
+  const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
 
   if (command === "install") {
@@ -840,6 +1155,20 @@ async function main() {
     const plan = await buildPlan(context);
     const summary = planSummary(context, plan);
     if (options.apply) await applyPlan(context, plan);
+    options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
+    return;
+  }
+  if (command === "live-cutover") {
+    const plan = await liveCutoverPlan(context);
+    const summary = { apply: Boolean(options.apply), mode: plan.mode, operations: plan.operations.map(({ path, status, reason }) => ({ path, status, reason: reason ?? null })), conflicts: plan.conflicts };
+    if (options.apply) await applyLiveCutover(context, plan);
+    options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
+    return;
+  }
+  if (command === "live-rollback") {
+    const plan = await liveRollbackPlan(context);
+    const summary = { apply: Boolean(options.apply), mode: plan.mode, operations: plan.operations.map(({ path, status, reason }) => ({ path, status, reason: reason ?? null })), conflicts: plan.conflicts };
+    if (options.apply) await applyLiveRollback(context, plan);
     options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
     return;
   }
