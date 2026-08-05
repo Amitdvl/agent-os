@@ -62,8 +62,6 @@ Each row classifies the binary separately from the reusable routing/safety contr
 | `xurl` | X OAuth/API transport and guarded live actions | Homebrew or npm source declared in skill; installed version unresolved | research, communication | Third-party dependency; portable skill contract | `~/.xurl` private; no inline auth or verbose headers; pin exact upstream release. |
 | `yt-dlp` | Public-media metadata/subtitles and authorized downloads | Homebrew `yt-dlp` 2026.7.4; `ffmpeg` 8.1.2 | research, creator | Third-party dependency; portable skill contract | Public/authorized media only, bounded downloads, no cookies/proxy bypass; licenses must be retained if redistributed. |
 
-Agent Reach is **not** part of the current machine inventory. It may be declared as an unselected, third-party research-pack alternative. It must never wrap or replace direct upstream tools by default.
-
 ## Slash commands
 
 | Command | Effective state | Purpose | Disposition |
@@ -133,4 +131,3 @@ The following are represented only by requirement names and human setup steps: A
 5. Preserve `amit-strict` focus, memory, autonomy, freshness, write-intent, and secret rules.
 6. Declare every external skill/tool as pinned, manual, or intentionally unavailable; never silently fall back to copying local caches.
 7. Treat fresh-Mac authentication and macOS permissions as human checkpoints, not installer success.
-

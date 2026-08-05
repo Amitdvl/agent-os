@@ -21,7 +21,6 @@ This matrix is the human-readable view of `manifest/tools.json` and `manifest/pa
 | Reddit | research, communication | `rdt` | browser-session | none | Manual account status |
 | Browser-backed sites | research | `opencli` | browser-session | desktop Chrome/Chromium | `opencli doctor` manually |
 | Public media | research, creator | `yt-dlp`, optional `ffmpeg` | none | none | Version checks; no download in doctor |
-| Agent Reach alternative | research | `agent-reach` | channel-specific | upstream-dependent | Optional; unselected; manual install |
 | WhatsApp archive | communication | `wacrawl` | local archive | macOS WhatsApp Desktop | Manual status/sync |
 | WhatsApp live | communication | `wacli` | human-login | linked-device support | Manual doctor |
 | Discord archive/live | communication | `discrawl` | human-login/token provider | none | Manual full sync/status |
@@ -29,4 +28,3 @@ This matrix is the human-readable view of `manifest/tools.json` and `manifest/pa
 | Phone bridge | communication, creator | `vox` | agent-vault/telecom-consent | local tunnel/provider | Help check only until explicit call setup |
 | Screen video | creator | `opencap` | macos-permission/tool account | macOS | Manual record status; no recording in doctor |
 | Spotify | creator | `spogo` | browser-session | desktop browser | Manual auth status; no playback in doctor |
-

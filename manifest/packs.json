@@ -21,7 +21,6 @@
       "id": "research",
       "description": "Local archives, public web/media, and current platform research.",
       "tools": ["birdclaw", "xurl", "twitter-cli", "rdt-cli", "opencli", "yt-dlp"],
-      "optionalTools": ["agent-reach"],
       "commands": [],
       "optionalCommands": [],
       "skills": []
@@ -44,4 +43,3 @@
     }
   ]
 }
-

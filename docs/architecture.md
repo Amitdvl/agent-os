@@ -74,7 +74,7 @@ Identity and praise language is a configurable profile extension. It is not inhe
 
 - **core**: global instruction rendering, command catalogue, secrets contract, goal prompting, finishing, verification, hook templates, status/doctor.
 - **local-productivity**: Agent Inbox, Notion, Notion archive, Obsidian, Apple Reminders, Peekaboo.
-- **research**: Birdclaw, X transports, Reddit, OpenCLI, public media, optional Agent Reach, external research skills.
+- **research**: Birdclaw, X transports, Reddit, OpenCLI, public media, and external research skills.
 - **communication**: WhatsApp live/archive, Discord, X writes, Instagram CLI, Vox.
 - **creator**: OpenCap, Spotify control, media processing, image/speech/video skill declarations.
 
@@ -165,4 +165,3 @@ Authentication classes:
 - Publishing the repository or creating a remote.
 - Replacing upstream tools with a wrapper.
 - Claiming a fresh-Mac installation has succeeded before it is run on a separate environment.
-
