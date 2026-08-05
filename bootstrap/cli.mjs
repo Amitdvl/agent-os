@@ -502,6 +502,15 @@ async function stateHealth(context) {
   return { installed: true, managed, drift };
 }
 
+async function directoryNames(path) {
+  try {
+    return (await readdir(path, { withFileTypes: true })).map((entry) => entry.name).filter((name) => !name.startsWith(".")).sort();
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
 async function statusReport(context, catalogue = false) {
   const health = await stateHealth(context);
   const tools = [];
@@ -534,7 +543,14 @@ async function statusReport(context, catalogue = false) {
   };
   if (catalogue) {
     report.commands = context.bundle.commands.commands.map(({ id, disposition, selectedByDefault, purpose }) => ({ id, disposition, selectedByDefault, purpose }));
+    report.workflows = context.bundle.packs.packs.map(({ id, description }) => ({ id, description }));
     report.skills = context.bundle.skills.skills;
+    report.hostSkills = {
+      codex: await directoryNames(join(context.codexHome, "skills")),
+      "claude-code": await directoryNames(join(context.claudeHome, "skills")),
+    };
+    report.automations = [...new Set([...(await directoryNames(join(context.stateDir, "automations"))), ...(await directoryNames(join(context.codexHome, "automations"))), ...(await directoryNames(join(context.claudeHome, "automations")))])].sort();
+    report.plugins = [...new Set([...(await directoryNames(join(context.codexHome, "plugins"))), ...(await directoryNames(join(context.claudeHome, "plugins")))])].sort();
   }
   return report;
 }
