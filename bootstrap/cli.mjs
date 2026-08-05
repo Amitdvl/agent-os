@@ -29,7 +29,6 @@ const END_MARKER = "<!-- agent-os:end -->";
 // tool receives the same complete section structure, with only safe command
 // examples and placeholders for private data roots.
 const TOOL_CONTRACTS = {
-  "agent-inbox": { root: "<Agent Inbox application data>", preflight: ["agent-inbox --help"], reads: ["agent-inbox list --json"], writes: ["agent-inbox send … (only with an exact recipient and message)"], limits: "The CLI is not a replacement for permission to send or resolve messages.", fix: "Open the local app and confirm its command-line integration is enabled." },
   birdclaw: { root: "<user-home>/.birdclaw", preflight: ["birdclaw --help"], reads: ["birdclaw sync", "birdclaw search --json --max 20"], writes: ["Explicit tweet, reply, DM, mute, or block command only after exact user intent"], limits: "Archive freshness and available history depend on the user's own account sync.", fix: "Complete the tool's supported login locally; never inspect its cookie or database files." },
   discrawl: { root: "<tool-owned Discord archive>", preflight: ["discrawl --help"], reads: ["discrawl sync --full", "discrawl search <query>"], writes: ["Supported discrawl send only with an exact channel and message"], limits: "A full archive sync is required before answering from Discord data.", fix: "Use the tool's documented account setup; do not expose a bot token." },
   "instagram-cli": { root: "<user-home>/.instagram-cli", preflight: ["instagram-cli --version", "instagram-cli auth whoami"], reads: ["instagram-cli inbox --output json --limit 20"], writes: ["instagram-cli send/reply only with exact thread and content"], limits: "There is intentionally no Instagram website or browser-automation fallback.", fix: "The user must run instagram-cli auth login locally when the session is absent or expired." },
@@ -43,7 +42,6 @@ const TOOL_CONTRACTS = {
   remindctl: { root: "<Apple Reminders database>", preflight: ["remindctl --help"], reads: ["remindctl list"], writes: ["Create/update/complete/delete only with exact list, reminder, date, and action"], limits: "Results can lag native state and access requires macOS permission.", fix: "Grant Reminders access in System Settings, then verify in the native app." },
   spogo: { root: "<tool-owned Spotify session>", preflight: ["spogo auth status"], reads: ["spogo now-playing"], writes: ["Playback, queue, device, library, playlist, and volume changes only on exact request"], limits: "Player changes are visible remote writes and browser credentials remain opaque.", fix: "Complete the supported user login or browser import locally." },
   "twitter-cli": { root: "<tool-owned browser-session state>", preflight: ["twitter --help"], reads: ["twitter search <query> --json --max 20"], writes: ["Post/reply/quote/delete/like/follow only with exact target and content"], limits: "Use Birdclaw for historical archive work; do not print auth diagnostics.", fix: "Connect a user-owned browser session through the tool's documented flow." },
-  vox: { root: "<tool-owned local Vox configuration>", preflight: ["vox --help"], reads: ["vox --help"], writes: ["Outbound call/configuration only with exact number, caller ID, purpose, consent, and disclosure"], limits: "Calls, recordings, telecom rules, public tunnels, and provider changes remain human-reviewed.", fix: "Create the required vault records and complete provider/consent setup before any call." },
   wacli: { root: "<tool-owned WhatsApp linked-device state>", preflight: ["wacli --help"], reads: ["wacli status"], writes: ["Send, reaction, archive, pin, group/channel, or account mutation only with exact target/action"], limits: "Linked-device sessions are user-owned and must never be read from disk.", fix: "Link the user's own device through the supported interactive flow." },
   wacrawl: { root: "<WhatsApp Desktop local archive>", preflight: ["wacrawl sync"], reads: ["wacrawl sync", "wacrawl search <query>"], writes: ["None: this integration is archive read-only"], limits: "Sync before answering unless the user opts out or asks only about setup.", fix: "Install WhatsApp Desktop and let the user establish their own archive." },
   xurl: { root: "<tool-owned X API configuration>", preflight: ["xurl --help"], reads: ["xurl --help"], writes: ["Any authenticated action only with exact target/content"], limits: "OAuth configuration is user-owned; never use inline credentials or verbose auth output.", fix: "Complete the supported OAuth setup locally." },
@@ -51,7 +49,6 @@ const TOOL_CONTRACTS = {
 };
 
 const TOOL_DETAILS = {
-  "agent-inbox": "Use bounded JSON list/get/reply-status reads. Send only the narrowest requested type, then read back resolve/archive changes.",
   birdclaw: "Check archive db stats; use cached whois/search/links and exact date ranges. Sync again after a requested remote write.",
   discrawl: "Run a full sync before archive answers and after supported writes; prefer concise summaries over raw private messages.",
   "instagram-cli": "Use fresh bounded inbox JSON and returned thread IDs. Mark-seen/download are writes. Never use the Instagram website or browser automation.",
@@ -65,7 +62,6 @@ const TOOL_DETAILS = {
   remindctl: "Use JSON and read back writes. Native Reminders UI is freshest for Today/current/subtasks; never use it for calendar events.",
   spogo: "Check auth and bound search/history. Playback, queue/device/library/playlist/volume/shuffle/repeat are user-visible writes.",
   "twitter-cli": "Prefer Birdclaw for history. Use bounded YAML/JSON and never verbose diagnostics; verify requested live writes with narrow reads.",
-  vox: "Use a new encrypted vault, never plaintext env. Calls/webhooks/tunnels/recording need number, caller ID, purpose, disclosure, consent, and review.",
   wacli: "Use JSON and --read-only for exploration. Sends, reactions, account/group/channel and state mutations need exact intent.",
   wacrawl: "Read-only archive tooling: sync before answers; never write into the app container or expose archive/backup data.",
   xurl: "Check auth without inline values or verbose mode. API mutations, DMs, media, and app actions are exact-intent writes.",

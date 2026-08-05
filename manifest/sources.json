@@ -1,7 +1,6 @@
 {
   "version": 1,
   "sources": [
-    {"id": "agent-inbox-manual", "kind": "manual", "locator": "agent-inbox", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
@@ -15,7 +14,6 @@
     {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled"},
     {"id": "spogo-brew", "kind": "homebrew", "locator": "steipete/tap/spogo", "pin": "0.10.0-audited", "automation": "disabled"},
     {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
-    {"id": "vox-manual", "kind": "git", "locator": "Vox upstream source required", "pin": "201c025fabc5b353295a6dc079c32f3bdb2ec77e-audited", "automation": "disabled"},
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},
     {"id": "wacrawl-audited", "kind": "homebrew", "locator": "wacrawl", "pin": "0.3.1-audited", "automation": "disabled"},
     {"id": "xurl-manual", "kind": "homebrew-or-npm", "locator": "xdevplatform/tap/xurl or @xdevplatform/xurl", "pin": "manual-unresolved", "automation": "disabled"},
