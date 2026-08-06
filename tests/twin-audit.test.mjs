@@ -34,9 +34,9 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(unrelated), { recursive: true });
     await writeFile(unrelated, "---\nname: unrelated-tool\n---\n");
   }
-  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\nLead owns acceptance.\n");
+  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\nMultiple files and theoretical parallelism are insufficient.\nLead owns acceptance.\n");
   await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
-  await writeFile(instructions, "## Agent OS Twin Synchronization\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. The lead defines scope. Never claim a model or delegation occurred.\n");
+  await writeFile(instructions, "## Agent OS Twin Synchronization\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. Multiple files alone are insufficient. When uncertain, keep the work single-agent. The lead defines scope. Never claim a model or delegation occurred.\n");
   return { registry, commandRoot, goal, orchestration, instructions, commands };
 }
 

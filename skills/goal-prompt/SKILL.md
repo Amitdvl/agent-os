@@ -17,7 +17,9 @@ Use goal framing for multi-turn work, verification-heavy outcomes, meaningful tr
 
 ## Orchestration
 
-For a substantial `/goal`, require the `orchestration` workflow in the prompt:
+For a `/goal` that clearly meets the orchestration activation conditions, require
+the `orchestration` workflow in the prompt. `/goal` alone, multiple files, task
+length, or theoretical parallelism is never enough:
 the lead owns acceptance, delegates bounded work to role-appropriate workers,
 and independently verifies the final result. Name a specific model only when
 the runtime exposes model selection; otherwise require the same lead/worker

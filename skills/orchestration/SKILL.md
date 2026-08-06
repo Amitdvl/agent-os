@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: Coordinate substantial multi-step work through a lead agent and bounded specialist subagents. Use automatically for work spanning multiple systems or independent surfaces, risky or irreversible changes, long-running goals, parallelizable investigation, or tasks that need independent review and verification. Do not use for simple, well-scoped work that one agent can safely finish and verify directly.
+description: Coordinate genuinely multi-track or high-risk work through a lead agent and bounded specialist subagents. Use automatically only when the task has multiple independently valuable workstreams or a sensitive/irreversible change needs independent risk review. Do not use merely because work spans files, is lengthy, uses /goal, or could theoretically be split.
 ---
 
 # Orchestration
@@ -9,15 +9,12 @@ Use the smallest role team that improves correctness or throughput. The lead own
 
 ## Activation
 
-Treat work as substantial when it has one or more of these traits:
+Use orchestration only when one of these conditions is clearly true:
 
-- It spans multiple independent systems, files, or decisions.
-- It changes live workflow, secrets, permissions, deployments, data, or another sensitive surface.
-- It needs research plus implementation, independent review, or a real verification loop.
-- It can be split into independent tasks without concurrent edits to the same surface.
-- It is a long-running `/goal` or needs a defensible Done/Not Done verdict.
+1. The outcome needs two or more independently valuable workstreams with separate deliverables and evidence—for example, research that materially informs implementation plus an independent review, or two isolated system changes that can proceed without touching shared state.
+2. The task changes a sensitive or irreversible external surface—such as production data, permissions, deployments, secrets, or money—and an independent risk review materially reduces the chance of harm.
 
-Keep direct execution for simple, well-scoped work with a clear verification step. Do not create agents merely to look busy.
+Do **not** orchestrate merely because the work spans multiple files, has several implementation steps, is lengthy, uses `/goal`, or can theoretically be divided. A normal feature, bug fix, refactor, UI component, or one-system migration remains direct work unless it clearly meets a condition above. When uncertain, keep the work single-agent.
 
 ## Lead Contract
 
