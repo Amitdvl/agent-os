@@ -56,7 +56,9 @@ the underlying design and audit evidence.
 Agent OS is the privacy-preserving twin of its owner's reusable local workflow.
 When changing a portable local tool, slash command, policy, routing rule, or
 setup contract, mirror that behavior into this repository in the same task and
-run validation, tests, `git diff --check`, and the configured twin audit.
+run validation, tests, `git diff --check`, and the configured twin audit. Commit
+the intended Agent OS change and push it to the configured `origin`; never
+force-push or publish unrelated project work.
 Machine-only items need an explicit exclusion; credentials, sessions, archives,
 identities, and machine-specific paths must never enter this repository.
 
