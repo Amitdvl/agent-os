@@ -79,6 +79,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(await readFile(join(home, ".codex", "skills", id, "SKILL.md"), "utf8"), new RegExp(`name: ${id}`));
     assert.match(await readFile(join(home, ".claude", "commands", `${id}.md`), "utf8"), new RegExp(`name: ${id}`));
   }
+  for (const hostHome of [join(home, ".codex"), join(home, ".claude")]) {
+    const orchestration = await readFile(join(hostHome, "skills", "orchestration", "SKILL.md"), "utf8");
+    assert.match(orchestration, /name: orchestration/);
+    assert.match(orchestration, /## Completion Gate/);
+  }
 
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(status.installed, true);

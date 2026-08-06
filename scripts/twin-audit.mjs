@@ -83,13 +83,28 @@ async function auditCommands(liveRoot, commands, forbidRoot) {
   return { resolvedRoot, hostSkillIds, sources };
 }
 
+async function auditSkill(livePath, portablePath) {
+  const [resolvedPath, liveContent, portableContent] = await Promise.all([
+    realpath(livePath),
+    readFile(livePath, "utf8"),
+    readFile(portablePath, "utf8"),
+  ]);
+  return {
+    livePath,
+    resolvedPath,
+    expectedPath: relative(ROOT, portablePath),
+    status: liveContent === portableContent ? "match" : "content-mismatch",
+  };
+}
+
 async function main() {
   const liveRegistry = option("--live-registry");
   const liveCommands = option("--live-commands");
   const liveGoalPrompt = option("--live-goal-prompt");
+  const liveOrchestration = option("--live-orchestration");
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
-  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText] = await Promise.all([
+  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, orchestrationAudit] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
     readFile(liveInstructions, "utf8"),
@@ -97,6 +112,7 @@ async function main() {
     readFile(join(ROOT, "manifest", "inventory-dispositions.json"), "utf8"),
     readFile(join(ROOT, "manifest", "commands.json"), "utf8"),
     readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"),
+    auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
   ]);
   const liveTools = registryToolIds(registryText);
   const portableTools = JSON.parse(toolsManifest).tools.map((tool) => tool.id).sort();
@@ -108,12 +124,15 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const portableCommandIds = portableCommands.map((item) => item.id).sort();
   const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
-  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt"];
+  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "lead owns acceptance"];
   const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
   const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
   const missingPortableGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedPortableGoal.includes(phrase));
   const instructionPresent = instructions.includes("## Agent OS Twin Synchronization");
+  const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
+  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "the lead defines scope", "never claim a model or delegation occurred"];
+  const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
   if (extraTools.length) failures.push(`Agent OS tools absent from live registry: ${extraTools.join(", ")}`);
@@ -124,7 +143,9 @@ async function main() {
   }
   if (missingLiveGoalPhrases.length) failures.push(`live goal-prompt is missing count-gate phrases: ${missingLiveGoalPhrases.join(", ")}`);
   if (missingPortableGoalPhrases.length) failures.push(`portable goal-prompt is missing count-gate phrases: ${missingPortableGoalPhrases.join(", ")}`);
+  if (orchestrationAudit.status !== "match") failures.push("live orchestration skill content mismatch");
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
+  if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,
     liveTools,
@@ -133,6 +154,7 @@ async function main() {
     commandRoot: commandAudit.resolvedRoot,
     portableCommandIds,
     commandSources: commandAudit.sources,
+    orchestration: orchestrationAudit,
     ignoredHostSkills,
     failures,
   };

@@ -7,7 +7,7 @@
       "displayName": "Strict Portable",
       "description": "An opinionated portable workflow with safe defaults and no inherited private identity.",
       "packs": ["core", "local-productivity", "research", "communication", "creator"],
-      "policies": ["core", "external-actions", "secrets", "freshness", "focus", "twin-sync", "strict-portable"],
+      "policies": ["core", "external-actions", "secrets", "freshness", "focus", "orchestration", "twin-sync", "strict-portable"],
       "identityMode": "local-config",
       "memory": "disabled",
       "externalWrites": "exact-intent",

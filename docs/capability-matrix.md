@@ -3,6 +3,7 @@
 | Capability | Portable behavior | User-configured value | Human-only checkpoint |
 |---|---|---|---|
 | Core policy and commands | Safe core setup and recovery-first command contracts | Host app sign-in | Host setup and managed-drift review |
+| Task orchestration | Lead-owned acceptance, bounded role assignments, independent verification | Available model/agent selection | Review of any destructive or external action |
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |
 | SOPS + age vault | Encrypted requirement placeholders and no-output crypto validation | New key/recipient and user-entered values | Key generation and secret entry |

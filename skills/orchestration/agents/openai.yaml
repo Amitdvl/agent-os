@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Orchestration"
+  short_description: "Lead substantial work with specialist agents"
+  default_prompt: "Use $orchestration to plan, delegate, review, and verify this substantial task."

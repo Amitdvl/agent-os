@@ -15,6 +15,14 @@ Use goal framing for multi-turn work, verification-heavy outcomes, meaningful tr
 4. For visual work, require flows/states, design-system and responsive constraints, visual comparisons where useful, and manual polish review; images are context, not sole proof.
 5. Require progress artifacts for long work (meaningful commits, status artifact, preview, or check-ins), final cleanup, diff review, evidence, and residual risks.
 
+## Orchestration
+
+For a substantial `/goal`, require the `orchestration` workflow in the prompt:
+the lead owns acceptance, delegates bounded work to role-appropriate workers,
+and independently verifies the final result. Name a specific model only when
+the runtime exposes model selection; otherwise require the same lead/worker
+separation without pretending a model was used.
+
 Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
 
 ## Mandatory character-count gate

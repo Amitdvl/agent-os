@@ -57,6 +57,11 @@
       "skills": ["last30days", "remotion-best-practices"]
     },
     {
+      "id": "agent-os-core-skills",
+      "disposition": "portable-core",
+      "skills": ["orchestration"]
+    },
+    {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
       "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cli-for-agents", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
@@ -88,6 +93,7 @@
     {"id": "local-automations", "disposition": "strict-portable"},
     {"id": "memory-disabled", "disposition": "strict-portable"},
     {"id": "focus-protection", "disposition": "strict-portable"},
+    {"id": "task-orchestration", "disposition": "portable-core"},
     {"id": "repo-skill-ownership", "disposition": "portable-core"},
     {"id": "local-work-autonomy", "disposition": "strict-portable"},
     {"id": "agent-vault", "disposition": "portable-core-contract"},
