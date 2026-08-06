@@ -131,6 +131,8 @@ async function main() {
   const missingPortableGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedPortableGoal.includes(phrase));
   const instructionPresent = instructions.includes("## Agent OS Twin Synchronization");
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
+  const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
+  const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "multiple files", "ask the human whether to orchestrate", "the lead defines scope", "never claim a model or delegation occurred"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const failures = [];
@@ -145,6 +147,7 @@ async function main() {
   if (missingPortableGoalPhrases.length) failures.push(`portable goal-prompt is missing count-gate phrases: ${missingPortableGoalPhrases.join(", ")}`);
   if (orchestrationAudit.status !== "match") failures.push("live orchestration skill content mismatch");
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
+  if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,

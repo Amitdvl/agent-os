@@ -8,8 +8,12 @@ templates, generated behavior, documentation, and tests in the same task.
 
 Before completion, run Agent OS validation, its full tests, `git diff --check`,
 and the configured twin audit against the owner machine's declared live sources.
-Commit the intended Agent OS mirror change locally. A machine-only item must be
-an explicit inventory exclusion with a reason, never an undocumented omission.
+Commit the intended Agent OS mirror change locally, then push it to the
+configured Agent OS `origin` before completion. Never force-push or push
+unrelated project work. If `origin`, authentication, or the push is unavailable,
+report the exact blocker rather than claiming the change is published. A
+machine-only item must be an explicit inventory exclusion with a reason, never
+an undocumented omission.
 
 Mirror only portable contracts. Never copy credentials, secret values, sessions,
 private archives, recordings, identities, account data, or machine-specific
