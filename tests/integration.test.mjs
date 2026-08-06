@@ -73,6 +73,10 @@ test("full deployment renders central registry, host symlinks, rules, status and
     for (const heading of ["## Setup and configuration", "## Tool-specific workflow", "## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
   }
+  const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
+  assert.match(noteBridgeContract, /retrieve raw_content/i);
+  assert.match(noteBridgeContract, /existing title explicitly/i);
+  assert.match(noteBridgeContract, /original-content prefix/i);
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["birdclaw"\]/);
   assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
   for (const id of ["add", "commands", "teach", "trunk-finish"]) {
