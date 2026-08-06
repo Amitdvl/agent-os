@@ -58,8 +58,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 80);
-  assert.equal(new Set(installedSkills).size, 80);
+  assert.equal(installedSkills.length, 81);
+  assert.equal(new Set(installedSkills).size, 81);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -130,6 +130,7 @@ test("portable command and goal contracts retain their required workflow section
     "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
     "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
     "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting"],
+    "skills/orchestration/SKILL.md": ["## Activation", "## Lead Contract", "## Assignments", "## Coordination Rules", "## Completion Gate", "Never claim a model or delegation occurred"],
   };
   for (const [path, phrases] of Object.entries(required)) {
     const content = await readFile(join(ROOT, path), "utf8");

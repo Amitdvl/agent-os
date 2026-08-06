@@ -21,6 +21,7 @@ async function writeFixture(root, { extraSkill = false } = {}) {
   const registry = join(root, "registry.yaml");
   const commandRoot = join(root, "skills");
   const goal = join(root, "goal-prompt.md");
+  const orchestration = join(root, "orchestration.md");
   const instructions = join(root, "AGENTS.md");
   await writeFile(registry, `version: 1\ntools:\n${[...tools, "agent-inbox", "vox"].sort().map((id) => `  ${id}:`).join("\n")}\n`);
   for (const command of commands) {
@@ -33,13 +34,14 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(unrelated), { recursive: true });
     await writeFile(unrelated, "---\nname: unrelated-tool\n---\n");
   }
-  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\n");
-  await writeFile(instructions, "## Agent OS Twin Synchronization\n");
-  return { registry, commandRoot, goal, instructions, commands };
+  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\nLead owns acceptance.\n");
+  await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
+  await writeFile(instructions, "## Agent OS Twin Synchronization\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. The lead defines scope. Never claim a model or delegation occurred.\n");
+  return { registry, commandRoot, goal, orchestration, instructions, commands };
 }
 
 function auditArgs(fixture) {
-  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-instructions", fixture.instructions];
+  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions];
 }
 
 test("twin audit accepts four mirrored commands and ignores unrelated host skills", async (context) => {
@@ -88,4 +90,12 @@ test("twin audit still reports unexpected live tool drift", async (context) => {
   const tools = JSON.parse(await readFile(join(ROOT, "manifest", "tools.json"), "utf8")).tools.map((item) => item.id);
   await writeFile(fixture.registry, `version: 1\ntools:\n${[...tools.filter((id) => id !== "birdclaw"), "agent-inbox", "vox"].sort().map((id) => `  ${id}:`).join("\n")}\n`);
   assert.match(run(auditArgs(fixture), 1).stdout, /birdclaw/);
+});
+
+test("twin audit detects live orchestration skill drift", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(fixture.orchestration, "mismatched orchestration skill\n");
+  assert.match(run(auditArgs(fixture), 1).stdout, /live orchestration skill content mismatch/);
 });
