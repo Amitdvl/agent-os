@@ -23,7 +23,8 @@ length, or theoretical parallelism is never enough:
 the lead owns acceptance, delegates bounded work to role-appropriate workers,
 and independently verifies the final result. Name a specific model only when
 the runtime exposes model selection; otherwise require the same lead/worker
-separation without pretending a model was used.
+separation without pretending a model was used. When the activation decision
+is genuinely uncertain, ask the human whether to orchestrate.
 
 Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
 

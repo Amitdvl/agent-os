@@ -124,14 +124,14 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const portableCommandIds = portableCommands.map((item) => item.id).sort();
   const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
-  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "multiple files", "theoretical parallelism", "lead owns acceptance"];
+  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "multiple files", "theoretical parallelism", "lead owns acceptance", "ask the human whether to orchestrate"];
   const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
   const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
   const missingPortableGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedPortableGoal.includes(phrase));
   const instructionPresent = instructions.includes("## Agent OS Twin Synchronization");
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
-  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "multiple files", "when uncertain, keep the work single-agent", "the lead defines scope", "never claim a model or delegation occurred"];
+  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "multiple files", "ask the human whether to orchestrate", "the lead defines scope", "never claim a model or delegation occurred"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
