@@ -14,7 +14,7 @@ Use orchestration only when one of these conditions is clearly true:
 1. The outcome needs two or more independently valuable workstreams with separate deliverables and evidence—for example, research that materially informs implementation plus an independent review, or two isolated system changes that can proceed without touching shared state.
 2. The task changes a sensitive or irreversible external surface—such as production data, permissions, deployments, secrets, or money—and an independent risk review materially reduces the chance of harm.
 
-Do **not** orchestrate merely because the work spans multiple files, has several implementation steps, is lengthy, uses `/goal`, or can theoretically be divided. A normal feature, bug fix, refactor, UI component, or one-system migration remains direct work unless it clearly meets a condition above. When uncertain, keep the work single-agent.
+Do **not** orchestrate merely because the work spans multiple files, has several implementation steps, is lengthy, uses `/goal`, or can theoretically be divided. A normal feature, bug fix, refactor, UI component, or one-system migration remains direct work unless it clearly meets a condition above. When the activation decision is genuinely uncertain, ask the human whether to orchestrate.
 
 ## Lead Contract
 
