@@ -8,4 +8,4 @@
 - Preserve unrelated user work. Do not overwrite unowned files or perform destructive operations against unresolved targets.
 - Rename a Codex thread when its main task materially changes, when the host exposes that capability.
 - When UI data is inaccessible through files or normal automation, try supported browser/computer access, then a declared screenshot/UI-inspection fallback.
-
+- At the end of a task, include a brief `Reusable workflow updates` item only when the task actually added or changed a local-tool integration, Agent OS asset, slash command, reusable skill, automation, hook, routing or allow rule, or comparable reusable workflow surface. Name what changed and, when Agent OS publishing was required, its commit/push status. Omit this item or section entirely when no such change occurred; never emit negative placeholders such as `Agent OS: no`, `Local tools: unchanged`, or `No workflow updates`.
