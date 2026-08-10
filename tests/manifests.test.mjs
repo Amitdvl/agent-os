@@ -39,14 +39,14 @@ test("default profile is opinionated and selects every capability pack", async (
   assert.equal(profile.externalWrites, "exact-intent");
 });
 
-test("core installs all four portable commands by default", async () => {
+test("core installs all five portable commands by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
-  assert.deepEqual(core.commands, ["add", "commands", "teach", "trunk-finish"]);
+  assert.deepEqual(core.commands, ["add", "commands", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(core.optionalCommands, []);
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
-  assert.equal(selected.length, 4);
+  assert.equal(selected.length, 5);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
 });
 
@@ -58,8 +58,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 81);
-  assert.equal(new Set(installedSkills).size, 81);
+  assert.equal(installedSkills.length, 82);
+  assert.equal(new Set(installedSkills).size, 82);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -127,6 +127,7 @@ test("portable command and goal contracts retain their required workflow section
   const required = {
     "commands/add/SKILL.md": ["## Operating Principle", "## Workflow", "## Skill Document Requirements", "## Registry Requirements", "## Verification Commands", "## Stop Conditions", "## Output Contract", "Agent OS"],
     "commands/commands/SKILL.md": ["## Usage", "## Workflow", "## Rules", "agent-os status --catalog --json", "personal slash commands", "active automations", "credential files", "Agent OS"],
+    "commands/trashness/SKILL.md": ["## Operating Principle", "## Eligible Categories", "## Absolute Exclusions", "## Approval Contract", "## Deletion Workflow", "## Monthly Automation Behavior", "protected-names", "permanent deletion", "exact manifest"],
     "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
     "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
     "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting", "multiple files", "theoretical parallelism", "ask the human whether to orchestrate"],
