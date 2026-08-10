@@ -1,6 +1,7 @@
 # Agent OS
 
-Agent OS is my opinionated portable workflow for Codex and Claude Code. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.
+Agent OS is my macOS-only opinionated portable workflow for Codex and Claude Code. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.ץ
+
 
 ## The easy path: ask Codex
 
