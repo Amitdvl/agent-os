@@ -30,6 +30,7 @@
   "commands": [
     {"id": "add", "disposition": "portable-core"},
     {"id": "commands", "disposition": "portable-core"},
+    {"id": "trashness", "disposition": "portable-core"},
     {"id": "trunk-finish", "disposition": "portable-core"},
     {"id": "teach", "disposition": "portable-core"},
     {"id": "margins", "disposition": "intentionally-excluded"},
@@ -44,7 +45,7 @@
     {
       "id": "commands",
       "disposition": "portable-core",
-      "skills": ["add", "commands", "trunk-finish"]
+      "skills": ["add", "commands", "trashness", "trunk-finish"]
     },
     {
       "id": "gstack",
@@ -76,7 +77,8 @@
   ],
   "automationTemplates": [
     {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
-    {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"}
+    {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"},
+    {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
     {"id": "config-project-record", "disposition": "project-specific-reference-only"}

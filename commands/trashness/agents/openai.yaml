@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trashness"
+  short_description: "Approve and delete high-confidence Mac trash"
+  default_prompt: "Scan this Mac for high-confidence disposable files, show the exact deletion set, wait for my approval, then delete and verify only what I approved."

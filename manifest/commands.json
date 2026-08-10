@@ -16,6 +16,13 @@
       "purpose": "Show the current capability catalogue derived from manifests and installed state."
     },
     {
+      "id": "trashness",
+      "path": "commands/trashness/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Scan for high-confidence disposable Mac files, require exact approval, then permanently delete and verify only the approved set."
+    },
+    {
       "id": "trunk-finish",
       "path": "commands/trunk-finish/SKILL.md",
       "disposition": "portable-core",

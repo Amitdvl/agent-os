@@ -44,14 +44,14 @@ function auditArgs(fixture) {
   return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions];
 }
 
-test("twin audit accepts four mirrored commands and ignores unrelated host skills", async (context) => {
+test("twin audit accepts five mirrored commands and ignores unrelated host skills", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));
   const fixture = await writeFixture(root, { extraSkill: true });
   const report = JSON.parse(run(auditArgs(fixture)).stdout);
   assert.equal(report.ok, true);
-  assert.deepEqual(report.portableCommandIds, ["add", "commands", "teach", "trunk-finish"]);
-  assert.deepEqual(report.commandSources.map((source) => source.status), ["match", "match", "match", "match"]);
+  assert.deepEqual(report.portableCommandIds, ["add", "commands", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(report.commandSources.map((source) => source.status), ["match", "match", "match", "match", "match"]);
   assert.deepEqual(report.ignoredHostSkills, ["unrelated-tool"]);
 });
 

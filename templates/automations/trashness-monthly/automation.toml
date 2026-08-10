@@ -1,0 +1,25 @@
+version = 1
+id = "{{automation_id}}"
+kind = "cron"
+name = "Monthly Trashness cleanup"
+prompt = """Use the `trashness` command package to run the complete monthly Mac cleanup workflow.
+
+Discover only high-confidence disposable files, present the exact Trashness
+manifest, and wait in this task for explicit approval. After approval, continue
+in the same task: permanently delete only the approved set, verify every result,
+and report reclaimed space.
+
+Hard rules:
+- Invocation or scheduling is not approval.
+- Never auto-approve, fabricate a reply, or delete before explicit approval.
+- Enforce the machine-local Trashness protected-name list.
+- Do not use Mole or another broad cleaner.
+- Do not use sudo, empty Trash wholesale, or widen the approved manifest.
+- If approval never arrives, delete nothing.
+"""
+status = "PAUSED"
+rrule = "{{rrule}}"
+model = "{{model}}"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["{{home_root}}"]
