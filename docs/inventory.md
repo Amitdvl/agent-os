@@ -11,6 +11,10 @@ The manifest is the source of truth for the portable inventory:
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
 
+The portable core policy also makes reusable-workflow reporting conditional:
+completion summaries name local-tool, Agent OS, command, skill, automation, hook,
+or routing changes only when they occurred, and omit negative placeholder rows.
+
 The local-productivity pack includes NoteBridge for local Wispr Flow and Apple Notes inspection, explicit exports, guarded Apple changes, and one-way Wispr-to-Apple mirroring. Apple body edits preserve the note's retrieved rich HTML, explicitly retain its title, and require a read-back check; a tool must not rewrite a normalized text body.
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.

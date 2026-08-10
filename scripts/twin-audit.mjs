@@ -104,7 +104,7 @@ async function main() {
   const liveOrchestration = option("--live-orchestration");
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
-  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, orchestrationAudit] = await Promise.all([
+  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
     readFile(liveInstructions, "utf8"),
@@ -112,6 +112,7 @@ async function main() {
     readFile(join(ROOT, "manifest", "inventory-dispositions.json"), "utf8"),
     readFile(join(ROOT, "manifest", "commands.json"), "utf8"),
     readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"),
+    readFile(join(ROOT, "policies", "core.md"), "utf8"),
     auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
   ]);
   const liveTools = registryToolIds(registryText);
@@ -135,6 +136,10 @@ async function main() {
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "multiple files", "ask the human whether to orchestrate", "the lead defines scope", "never claim a model or delegation occurred"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
+  const normalizedPortableCore = portableCorePolicy.replace(/\s+/g, " ").toLowerCase();
+  const missingLiveWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const missingPortableWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedPortableCore.includes(phrase));
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
   if (extraTools.length) failures.push(`Agent OS tools absent from live registry: ${extraTools.join(", ")}`);
@@ -149,6 +154,8 @@ async function main() {
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
+  if (missingLiveWorkflowSummaryPhrases.length) failures.push(`live global instructions are missing conditional workflow-summary phrases: ${missingLiveWorkflowSummaryPhrases.join(", ")}`);
+  if (missingPortableWorkflowSummaryPhrases.length) failures.push(`portable core policy is missing conditional workflow-summary phrases: ${missingPortableWorkflowSummaryPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,
     liveTools,
