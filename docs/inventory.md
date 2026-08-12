@@ -25,6 +25,10 @@ but never carries account labels, desktop user-data roots, local SQLite archives
 or session material. A full-cache scan reads all files already present in that
 local profile; it does not fetch uncached remote history.
 
+For a correctly isolated profile, the generic Discrawl `wiretap --full-cache`
+operation may import classifiable cached DMs into that profile's own archive.
+It must not access Discord as the user, combine profile data, or publish DMs.
+
 ## Portable workflow templates
 
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
