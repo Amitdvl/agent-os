@@ -81,7 +81,8 @@
     {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
-    {"id": "config-project-record", "disposition": "project-specific-reference-only"}
+    {"id": "config-project-record", "disposition": "project-specific-reference-only"},
+    {"id": "discrawl-account-profile-isolation", "disposition": "private-machine-state", "reason": "Discord account-to-profile mappings, desktop user-data roots, local archives, and identity labels are private machine state."}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},
