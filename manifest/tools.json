@@ -9,7 +9,7 @@
     {
       "id": "discrawl", "binary": "discrawl", "purpose": "Discord archive sync/search and supported explicit writes.",
       "packs": ["communication"], "source": "discrawl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
-      "freshness": "Run a full sync before answering from message data and again after supported writes. Use a full-cache wiretap scan for locally cached direct messages.", "safety": "Do not expose tokens or private message content beyond the request; never combine distinct account profiles."
+      "freshness": "Run a full sync before answering from message data and again after supported writes.", "safety": "Do not expose tokens or private message content beyond the request."
     },
     {
       "id": "instagram-cli", "binary": "instagram-cli", "purpose": "Instagram Direct/profile reads and explicit messaging actions.",
