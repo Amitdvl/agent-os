@@ -19,6 +19,11 @@ The local-productivity pack includes NoteBridge for local Wispr Flow and Apple N
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
 
+Discord account-to-profile mappings and their Discrawl Desktop archive locations
+are private machine state. Agent OS may document the generic isolation pattern,
+but never carries account labels, desktop user-data roots, local SQLite archives,
+or session material.
+
 ## Portable workflow templates
 
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
