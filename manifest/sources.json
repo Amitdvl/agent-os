@@ -2,7 +2,7 @@
   "version": 1,
   "sources": [
     {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
-    {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
+    {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.13.1-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
     {"id": "notcrawl-brew", "kind": "homebrew", "locator": "openclaw/tap/notcrawl", "pin": "0.5.1-audited", "automation": "disabled"},
     {"id": "notebridge-manual", "kind": "manual", "locator": "NoteBridge local CLI", "pin": "1.0.0", "automation": "disabled", "review_notes": "Apple body edits are whole-document replacements: preserve retrieved raw rich content, set the existing title explicitly, and verify the read-back."},
