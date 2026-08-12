@@ -22,8 +22,7 @@ Intentional exclusions include accounts, credentials, encryption identities, bro
 Discord account-to-profile mappings and their Discrawl Desktop archive locations
 are private machine state. Agent OS may document the generic isolation pattern,
 but never carries account labels, desktop user-data roots, local SQLite archives,
-or session material. A full-cache scan reads all files already present in that
-local profile; it does not fetch uncached remote history.
+or session material.
 
 ## Portable workflow templates
 
