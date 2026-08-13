@@ -11,6 +11,8 @@ The manifest is the source of truth for the portable inventory:
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
 
+The `remindctl` contract creates new reminders with high (urgent) priority by default, unless the user explicitly specifies another priority.
+
 The portable core policy also makes reusable-workflow reporting conditional:
 completion summaries name local-tool, Agent OS, command, skill, automation, hook,
 or routing changes only when they occurred, and omit negative placeholder rows.
