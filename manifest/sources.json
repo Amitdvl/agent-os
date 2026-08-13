@@ -12,7 +12,7 @@
     {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.6", "automation": "disabled"},
     {"id": "peekaboo-audited", "kind": "homebrew", "locator": "peekaboo", "pin": "3.7.1-audited", "automation": "disabled"},
     {"id": "rdt-cli-git", "kind": "git", "locator": "https://github.com/public-clis/rdt-cli.git", "pin": "5e4fb3720d5c174e976cd425ccc3b879d52cac66", "automation": "disabled"},
-    {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled"},
+    {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled", "review_notes": "New reminders default to high (urgent) priority unless the user specifies another priority."},
     {"id": "spogo-brew", "kind": "homebrew", "locator": "steipete/tap/spogo", "pin": "0.10.0-audited", "automation": "disabled"},
     {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},

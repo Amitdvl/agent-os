@@ -59,7 +59,7 @@
     {
       "id": "remindctl", "binary": "remindctl", "purpose": "Apple Reminders reads and explicit create/update/complete/delete actions.",
       "packs": ["local-productivity"], "source": "remindctl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
-      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action."
+      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action; new reminders default to high (urgent) priority unless the user specifies otherwise."
     },
     {
       "id": "spogo", "binary": "spogo", "purpose": "Spotify search, playback, queue, library, playlists, and listening data.",

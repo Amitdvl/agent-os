@@ -3,6 +3,7 @@
 - Treat the current thread, explicit project files, and current tool state as the source of truth. Do not create or rely on hidden memory files.
 - Read project instructions before editing. Keep reusable global skills separate from repo-owned `.agents/skills`.
 - Use registered local tools for their declared capabilities. Check the installed interface when exact command support matters.
+- Create new Apple Reminders at high (urgent) priority unless the user explicitly requests another priority.
 - Prefer structured, bounded output and read-only inspection first.
 - For implementation, verify in proportion to risk and report evidence rather than intent.
 - Preserve unrelated user work. Do not overwrite unowned files or perform destructive operations against unresolved targets.
