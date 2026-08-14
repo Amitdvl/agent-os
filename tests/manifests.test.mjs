@@ -130,8 +130,8 @@ test("portable command and goal contracts retain their required workflow section
     "commands/trashness/SKILL.md": ["## Operating Principle", "## Eligible Categories", "## Absolute Exclusions", "## Approval Contract", "## Deletion Workflow", "## Monthly Automation Behavior", "protected-names", "permanent deletion", "exact manifest"],
     "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
     "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
-    "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting", "multiple files", "theoretical parallelism", "ask the human whether to orchestrate"],
-    "skills/orchestration/SKILL.md": ["## Activation", "## Lead Contract", "## Assignments", "## Coordination Rules", "## Completion Gate", "multiple files", "ask the human whether to orchestrate", "Never claim a model or delegation occurred"],
+    "skills/goal-prompt/SKILL.md": ["3,800", "at most three", "visual work", "metric gaming", "Progress reporting", "`/goal` is an orchestration trigger", "beginning of the goal", "Never claim a model or delegation occurred"],
+    "skills/orchestration/SKILL.md": ["## Activation", "## Lead Contract", "## Assignments", "## Coordination Rules", "## Completion Gate", "every `/goal` activates orchestration", "multiple files", "Never claim a model or delegation occurred"],
   };
   for (const [path, phrases] of Object.entries(required)) {
     const content = await readFile(join(ROOT, path), "utf8");

@@ -34,9 +34,9 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(unrelated), { recursive: true });
     await writeFile(unrelated, "---\nname: unrelated-tool\n---\n");
   }
-  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\nMultiple files and theoretical parallelism are insufficient.\nLead owns acceptance. Ask the human whether to orchestrate.\n");
+  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\n`/goal` is an orchestration trigger at the beginning of the goal.\nThe lead owns integration.\n");
   await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
-  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. Multiple files alone are insufficient. Ask the human whether to orchestrate. The lead defines scope. Never claim a model or delegation occurred.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
+  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. `/goal` is an explicit orchestration trigger. At the beginning of the goal. The lead owns integration. Never claim a model or delegation occurred.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
   return { registry, commandRoot, goal, orchestration, instructions, commands };
 }
 
