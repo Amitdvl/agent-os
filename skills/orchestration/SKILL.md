@@ -9,12 +9,24 @@ Use the smallest role team that improves correctness or throughput. The lead own
 
 ## Activation
 
-Use orchestration only when one of these conditions is clearly true:
+**Default rule: every `/goal` activates orchestration.** Treat `/goal` as an
+explicit trigger, not a suggestion. Invoke this workflow at the beginning of
+the goal, establish a lead, and assign bounded worker or reviewer roles when
+delegation is available. Do not decline orchestration merely because the task
+is one feature, one system, spans multiple files, is long-running, or appears
+too easy to parallelize. If delegation is unavailable, keep the lead contract
+and state that limitation explicitly.
+
+Outside `/goal`, use orchestration when one of these conditions is clearly true:
 
 1. The outcome needs two or more independently valuable workstreams with separate deliverables and evidence—for example, research that materially informs implementation plus an independent review, or two isolated system changes that can proceed without touching shared state.
 2. The task changes a sensitive or irreversible external surface—such as production data, permissions, deployments, secrets, or money—and an independent risk review materially reduces the chance of harm.
 
-Do **not** orchestrate merely because the work spans multiple files, has several implementation steps, is lengthy, uses `/goal`, or can theoretically be divided. A normal feature, bug fix, refactor, UI component, or one-system migration remains direct work unless it clearly meets a condition above. When the activation decision is genuinely uncertain, ask the human whether to orchestrate.
+For non-`/goal` work, do **not** orchestrate merely because the work spans
+multiple files, has several implementation steps, is lengthy, or can
+theoretically be divided. When the activation decision is genuinely uncertain,
+ask the human whether to orchestrate. Never claim a model or delegation
+occurred when it did not.
 
 ## Lead Contract
 

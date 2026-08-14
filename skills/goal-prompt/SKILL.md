@@ -17,14 +17,16 @@ Use goal framing for multi-turn work, verification-heavy outcomes, meaningful tr
 
 ## Orchestration
 
-For a `/goal` that clearly meets the orchestration activation conditions, require
-the `orchestration` workflow in the prompt. `/goal` alone, multiple files, task
-length, or theoretical parallelism is never enough:
-the lead owns acceptance, delegates bounded work to role-appropriate workers,
-and independently verifies the final result. Name a specific model only when
-the runtime exposes model selection; otherwise require the same lead/worker
-separation without pretending a model was used. When the activation decision
-is genuinely uncertain, ask the human whether to orchestrate.
+Every `/goal` prompt must explicitly activate the `orchestration` workflow at
+the beginning of the goal. `/goal` is an orchestration trigger by default; do
+not make orchestration conditional on task length, file count, parallelism, or
+whether the work appears easy. Require a lead, explicit scope/non-goals/
+acceptance checks, bounded worker or reviewer roles when delegation is
+available, and independent final verification by the lead. If delegation is
+unavailable, require the lead contract anyway and state that limitation.
+Outside `/goal`, use orchestration when the task has multiple independently
+valuable workstreams with separate evidence or a sensitive/irreversible
+external change needing independent risk review. Never claim a model or delegation occurred when it did not.
 
 Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
 

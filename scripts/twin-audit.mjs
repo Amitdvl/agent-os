@@ -125,7 +125,7 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const portableCommandIds = portableCommands.map((item) => item.id).sort();
   const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
-  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "multiple files", "theoretical parallelism", "lead owns acceptance", "ask the human whether to orchestrate"];
+  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "orchestration trigger", "beginning of the goal", "lead"];
   const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
   const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
@@ -134,7 +134,7 @@ async function main() {
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
-  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "multiple files", "ask the human whether to orchestrate", "the lead defines scope", "never claim a model or delegation occurred"];
+  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "`/goal` is an explicit orchestration trigger", "at the beginning of the goal", "the lead owns integration", "never claim a model or delegation occurred"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
   const normalizedPortableCore = portableCorePolicy.replace(/\s+/g, " ").toLowerCase();
