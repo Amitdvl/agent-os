@@ -66,7 +66,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
-    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli doctor", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
+    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
   };
   for (const [id, phrase] of Object.entries(toolRequirements)) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");

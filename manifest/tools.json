@@ -42,9 +42,9 @@
       "freshness": "Check recording status before starting a recording.", "safety": "Record only on request; sharing, deletion, trim, and rename require exact targets."
     },
     {
-      "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters and Browser Bridge automation.",
+      "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters, including authenticated X bookmark-folder research, and Browser Bridge automation.",
       "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
-      "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters.", "safety": "Never inspect cookies or session storage; browser/account writes require exact intent."
+      "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters. For named X bookmark folders, use the folder adapter first; if X returns its folder-index 404, mine OpenCLI's current bookmark corpus and label it as corpus-wide.", "safety": "Never inspect cookies, session storage, or traces to obtain a folder ID; browser/account writes require exact intent."
     },
     {
       "id": "peekaboo", "binary": "peekaboo", "purpose": "macOS screen, app, window inspection and UI automation support.",
