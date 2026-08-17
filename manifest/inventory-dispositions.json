@@ -60,12 +60,12 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["orchestration"]
+      "skills": ["cli-for-agents", "orchestration"]
     },
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cli-for-agents", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
     }
   ],
   "hooks": [

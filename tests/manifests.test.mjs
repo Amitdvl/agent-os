@@ -50,6 +50,16 @@ test("core installs all five portable commands by default", async () => {
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
 });
 
+test("CLI design guidance is portable and defaults custom CLIs to Go", async () => {
+  const skills = await json("skills");
+  const dispositions = await json("inventory-dispositions");
+  const entry = skills.skills.find((item) => item.id === "cli-for-agents");
+  assert.deepEqual(entry, { id: "cli-for-agents", path: "skills/cli-for-agents/SKILL.md", disposition: "portable-core" });
+  assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("cli-for-agents"));
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  assert.match(content, /Build custom CLIs in Go\./);
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
