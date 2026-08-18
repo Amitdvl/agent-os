@@ -16,6 +16,13 @@
       "purpose": "Show the current capability catalogue derived from manifests and installed state."
     },
     {
+      "id": "ground",
+      "path": "commands/ground/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Distill one valuable source into a concise, source-linked OS Library record using the V.A.L.U.E. classification formula."
+    },
+    {
       "id": "trashness",
       "path": "commands/trashness/SKILL.md",
       "disposition": "portable-core",
