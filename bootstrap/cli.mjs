@@ -51,6 +51,7 @@ const TOOL_CONTRACTS = {
   wacrawl: { root: "<WhatsApp Desktop local archive>", preflight: ["wacrawl sync"], reads: ["wacrawl sync", "wacrawl search <query>"], writes: ["None: this integration is archive read-only"], limits: "Sync before answering unless the user opts out or asks only about setup.", fix: "Install WhatsApp Desktop and let the user establish their own archive." },
   xurl: { root: "<tool-owned X API configuration>", preflight: ["xurl --help"], reads: ["xurl --help"], writes: ["Any authenticated action only with exact target/content"], limits: "OAuth configuration is user-owned; never use inline credentials or verbose auth output.", fix: "Complete the supported OAuth setup locally." },
   "yt-dlp": { root: "<user-selected download destination>", preflight: ["yt-dlp --version"], reads: ["yt-dlp --no-playlist --skip-download <single-public-url>"], writes: ["A single authorized --no-playlist download to an explicit destination"], limits: "No cookies, login, proxy, geo-bypass, background, or bulk retrieval.", fix: "Install from a reviewed source and use only public, authorized media." },
+  youtube: { root: "<no local data; existing OpenCLI browser session>", preflight: ["youtube --help", "opencli doctor"], reads: ["youtube inspect <single-YouTube-url>", "youtube watch-later --limit 20"], writes: ["youtube save <single-YouTube-url> --yes only with exact user intent"], limits: "The built-in Watch Later list is browser-only; this wrapper never reads cookies or session files.", fix: "Build the reviewed local wrapper, enable the OpenCLI Browser Bridge, and sign into YouTube in the selected user-owned browser profile." },
 };
 
 const TOOL_DETAILS = {
@@ -72,6 +73,7 @@ const TOOL_DETAILS = {
   wacrawl: "Read-only archive tooling: sync before answers; never write into the app container or expose archive/backup data.",
   xurl: "Check auth without inline values or verbose mode. API mutations, DMs, media, and app actions are exact-intent writes.",
   "yt-dlp": "Inspect one public URL with --no-playlist. Every output needs source, scope, and destination; never use cookies or bypasses.",
+  youtube: "Use yt-dlp only for metadata; use the wrapper only for explicit Watch Later saves. Require --yes for non-interactive writes and report success only after the checkbox is selected.",
 };
 
 function hash(value) {

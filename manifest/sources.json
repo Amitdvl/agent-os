@@ -18,6 +18,7 @@
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},
     {"id": "wacrawl-audited", "kind": "homebrew", "locator": "wacrawl", "pin": "0.3.1-audited", "automation": "disabled"},
     {"id": "xurl-manual", "kind": "homebrew-or-npm", "locator": "xdevplatform/tap/xurl or @xdevplatform/xurl", "pin": "manual-unresolved", "automation": "disabled"},
-    {"id": "yt-dlp-brew", "kind": "homebrew", "locator": "yt-dlp", "pin": "2026.7.4-audited", "automation": "disabled"}
+    {"id": "yt-dlp-brew", "kind": "homebrew", "locator": "yt-dlp", "pin": "2026.7.4-audited", "automation": "disabled"},
+    {"id": "youtube-wrapper-agent-os", "kind": "agent-os-template", "locator": "templates/local-tools/youtube", "pin": "1.0.0", "automation": "disabled"}
   ]
 }

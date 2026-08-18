@@ -2,7 +2,7 @@
 
 The repository provides a portable, preview-first workflow. It has no live deployment dependency: testing uses isolated temporary homes only.
 
-Current coverage includes manifest validation, core-only safe setup, four default core commands, full two-host deployment, central registry rendering, 18 tool templates, host symlink plans, generated allow rules, install dry-runs, fixture-only SOPS/age vault initialization/validation, a separate Codex command-cutover/rollback transaction, status/doctor distinctions, drift/conflict refusal, and safe uninstall.
+Current coverage includes manifest validation, core-only safe setup, four default core commands, full two-host deployment, central registry rendering, 19 tool templates, host symlink plans, generated allow rules, install dry-runs, fixture-only SOPS/age vault initialization/validation, a separate Codex command-cutover/rollback transaction, status/doctor distinctions, drift/conflict refusal, and safe uninstall.
 
 Run these checks before a release:
 

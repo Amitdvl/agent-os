@@ -53,7 +53,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(setup.conflicts, 0);
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");
-  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 18);
+  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 19);
   const launcher = join(home, ".local", "bin", "agent-os");
   assert.ok((await lstat(launcher)).isSymbolicLink());
   assert.equal(await realpath(launcher), join(ROOT, "bin", "agent-os"));
@@ -66,7 +66,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
-    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist",
+    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
   };
   for (const [id, phrase] of Object.entries(toolRequirements)) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");

@@ -90,6 +90,11 @@
       "id": "yt-dlp", "binary": "yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads.",
       "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
       "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
+    },
+    {
+      "id": "youtube", "binary": "youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session.",
+      "packs": ["research"], "source": "youtube-wrapper-agent-os", "disposition": "external-local", "platforms": ["darwin"], "auth": ["browser-session"],
+      "freshness": "Run OpenCLI doctor immediately before browser-backed saves and inspect the submitted YouTube URL with yt-dlp when metadata is needed.", "safety": "Never inspect cookies or session files; Watch Later saves require the exact URL, explicit user intent, and --yes; report success only after the selected state is verified."
     }
   ]
 }
