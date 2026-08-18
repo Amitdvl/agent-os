@@ -5,7 +5,7 @@
       "id": "core",
       "description": "Agent policy, portable commands, first-party skills, guard templates, status, and diagnostics.",
       "tools": [],
-      "commands": ["add", "commands", "teach", "trashness", "trunk-finish"],
+      "commands": ["add", "commands", "ground", "teach", "trashness", "trunk-finish"],
       "optionalCommands": [],
       "skills": ["agent-os", "agent-secrets", "goal-prompt", "orchestration", "tool-routing"]
     },

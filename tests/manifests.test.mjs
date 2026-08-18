@@ -39,14 +39,14 @@ test("default profile is opinionated and selects every capability pack", async (
   assert.equal(profile.externalWrites, "exact-intent");
 });
 
-test("core installs all five portable commands by default", async () => {
+test("core installs all six portable commands by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
-  assert.deepEqual(core.commands, ["add", "commands", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(core.commands, ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(core.optionalCommands, []);
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
-  assert.equal(selected.length, 5);
+  assert.equal(selected.length, 6);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
 });
 
@@ -68,8 +68,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 83);
-  assert.equal(new Set(installedSkills).size, 83);
+  assert.equal(installedSkills.length, 85);
+  assert.equal(new Set(installedSkills).size, 85);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -137,6 +137,7 @@ test("portable command and goal contracts retain their required workflow section
   const required = {
     "commands/add/SKILL.md": ["## Operating Principle", "## Workflow", "## Skill Document Requirements", "## Registry Requirements", "## Verification Commands", "## Stop Conditions", "## Output Contract", "Agent OS"],
     "commands/commands/SKILL.md": ["## Usage", "## Workflow", "## Rules", "agent-os status --catalog --json", "personal slash commands", "active automations", "credential files", "Agent OS"],
+    "commands/ground/SKILL.md": ["## Usage", "## Operating Principle", "## The V.A.L.U.E. Formula", "## Source Handling", "## OS Library Record", "## Output Contract", "one source per invocation", "retrieval-first"],
     "commands/trashness/SKILL.md": ["## Operating Principle", "## Eligible Categories", "## Absolute Exclusions", "## Approval Contract", "## Deletion Workflow", "## Monthly Automation Behavior", "protected-names", "permanent deletion", "exact manifest"],
     "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
     "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
