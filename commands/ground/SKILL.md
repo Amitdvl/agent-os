@@ -1,12 +1,12 @@
 ---
 name: ground
-description: Use when the user invokes /ground, says “Ground this,” or says “Save this to OS” for one valuable source to become a concise, source-linked OS Library entry that is easy to retrieve and apply.
+description: Use when the user supplies one or more sources and asks—or clearly implies—that they should become study-ready, memorable, reusable, source-linked knowledge. Recognize the intent semantically; `/ground`, “Ground these,” and “Save this to OS” are examples, not required wording.
 ---
 
 # Ground
 
-Use this workflow to distill a single source into a retrieval-first knowledge
-record in the user's OS Library. `/ground` is the compact form; it is not a
+Use this workflow to distill supplied sources into retrieval-first knowledge
+records in the user's OS Library. `/ground` is the compact form; it is not a
 requirement.
 
 ## Usage
@@ -18,20 +18,33 @@ requirement.
 
 ## Natural-language activation
 
-Recognize these two requests as grounding even when the user does not type
-`/ground`:
+Recognize grounding by **semantic intent, not by a fixed phrase**. Activate
+this workflow when both are true:
 
-- “Ground this.”
-- “Save this to OS.”
+1. One or more concrete sources are supplied or unambiguously referenced in
+   the current context; and
+2. The user asks—or the request plainly implies—that the material should be
+   turned into durable knowledge for studying, understanding, remembering,
+   applying, deciding, or saving.
 
-Use the same workflow, classification, storage, and output contract. If no
-source is identifiable in the current message or attached context, ask for the
-one source to ground; do not guess which earlier item the user means.
+Examples that must activate the workflow include “Ground this,” “Ground
+these,” “Save this to OS,” “make these study-ready,” “turn this into something
+I’ll remember,” and a source followed by context such as “for studying and
+understanding this concept.” These are examples only: match the job the user
+wants done, even if none of these words appear.
+
+Do not activate merely because a source appears in a casual conversation or
+because the user asks a narrow factual question about it. If a concrete source
+and a durable-learning or reuse intent are both present, activate without
+asking the user to type `/ground`. If the source is not identifiable, ask for
+the specific source; do not guess which earlier item the user means.
 
 The source may be a YouTube video, X article/thread, essay, playbook, personal
 note, video file, PDF/document, image, or other supplied material. Process
-one source per invocation. Do not bulk import a folder, playlist, feed, or thread
-collection without an explicit follow-up request.
+each distinct source as its own record. A message may contain several clearly
+delimited sources (for example, two links after “Ground these”); apply the
+workflow to each of them in that invocation. Do not bulk import a folder,
+playlist, feed, or thread collection without an explicit follow-up request.
 
 ## Operating Principle
 
@@ -144,7 +157,7 @@ source, or imply validation beyond the available evidence.
 
 ## Output Contract
 
-After saving, respond with a five-line value card:
+After saving, respond with a five-line value card for each source:
 
 ```text
 Grounded: [title]
