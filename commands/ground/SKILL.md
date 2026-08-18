@@ -61,6 +61,29 @@ Apply this compact classification to every grounded item:
 Use at most three tags. The title, Area, and Use cue do most of the retrieval
 work; tags are a last-mile aid, not a taxonomy.
 
+## OS Order Contract
+
+Grounding owns organization. The user should never have to file, rename, tag,
+or clean up a grounded item.
+
+- Store every source as its own material page. Never combine two sources in one
+  page, even when they are closely related.
+- Put a material page under exactly one broad, durable umbrella page in OS
+  Library. Use the best existing Area umbrella first; create a new umbrella
+  only when the source clearly does not fit one already there. Do not create
+  umbrellas for source formats, individual creators, dates, or one-off topics.
+- Before creating a page, check the relevant umbrella and OS Library for the
+  canonical source URL/file and a materially matching title. Update the
+  existing record when it is the same source; do not create a duplicate.
+- Name material pages after the source's durable idea or original title, not
+  "Grounded item," a date, or a generic format label.
+- After each save, verify the parent chain is `OS Library → Area umbrella →
+  material page` and leave the material's V.A.L.U.E. metadata and value card
+  inside that page. Do the necessary filing as part of the invocation.
+- Keep umbrellas broad and stable. If classification is genuinely ambiguous,
+  choose the most useful retrieval Area rather than sending work back to the
+  user or creating an Inbox for them to maintain.
+
 ## Source Handling
 
 1. Identify the source and use the narrowest suitable read-only tool.
@@ -80,7 +103,8 @@ work; tags are a last-mile aid, not a taxonomy.
 
 ## OS Library Record
 
-When the OS Library is available, create one record with:
+When the OS Library is available, create one material page under its selected
+Area umbrella with:
 
 ```text
 Title

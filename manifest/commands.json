@@ -20,7 +20,7 @@
       "path": "commands/ground/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Distill one valuable source into a concise, source-linked OS Library record using the V.A.L.U.E. classification formula; supports /ground, “Ground this,” and “Save this to OS.”"
+      "purpose": "Distill one valuable source into a concise, source-linked OS Library material page using V.A.L.U.E.; auto-files it under a durable Area umbrella and supports /ground, “Ground this,” and “Save this to OS.”"
     },
     {
       "id": "trashness",
