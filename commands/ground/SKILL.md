@@ -1,6 +1,6 @@
 ---
 name: ground
-description: Use when the user invokes /ground or naturally asks to ground, save, distill, extract, or turn one valuable source into a concise, source-linked OS Library entry that is easy to retrieve and apply.
+description: Use when the user invokes /ground, says “Ground this,” or says “Save this to OS” for one valuable source to become a concise, source-linked OS Library entry that is easy to retrieve and apply.
 ---
 
 # Ground
@@ -18,13 +18,11 @@ requirement.
 
 ## Natural-language activation
 
-Treat a clear request to preserve and distill one supplied source as grounding,
-even when the user does not type `/ground`. Examples include:
+Recognize these two requests as grounding even when the user does not type
+`/ground`:
 
 - “Ground this.”
 - “Save this to OS.”
-- “Pull out the useful parts and keep it for later.”
-- “Turn this video/article/note into a reusable playbook.”
 
 Use the same workflow, classification, storage, and output contract. If no
 source is identifiable in the current message or attached context, ask for the
