@@ -1,12 +1,13 @@
 ---
 name: ground
-description: Use when the user invokes /ground to turn one valuable source into a concise, source-linked OS Library entry that is easy to retrieve and apply.
+description: Use when the user invokes /ground or naturally asks to ground, save, distill, extract, or turn one valuable source into a concise, source-linked OS Library entry that is easy to retrieve and apply.
 ---
 
 # Ground
 
-Use `/ground` to distill a single source into a retrieval-first knowledge
-record in the user's OS Library.
+Use this workflow to distill a single source into a retrieval-first knowledge
+record in the user's OS Library. `/ground` is the compact form; it is not a
+requirement.
 
 ## Usage
 
@@ -14,6 +15,20 @@ record in the user's OS Library.
 /ground <URL | file path | Notion page | pasted text>
 /ground <source> --title "optional title" --domain "optional domain"
 ```
+
+## Natural-language activation
+
+Treat a clear request to preserve and distill one supplied source as grounding,
+even when the user does not type `/ground`. Examples include:
+
+- “Ground this.”
+- “Save this to OS.”
+- “Pull out the useful parts and keep it for later.”
+- “Turn this video/article/note into a reusable playbook.”
+
+Use the same workflow, classification, storage, and output contract. If no
+source is identifiable in the current message or attached context, ask for the
+one source to ground; do not guess which earlier item the user means.
 
 The source may be a YouTube video, X article/thread, essay, playbook, personal
 note, video file, PDF/document, image, or other supplied material. Process
