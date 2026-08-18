@@ -20,7 +20,7 @@
       "path": "commands/ground/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Distill one valuable source into a concise, source-linked OS Library record using the V.A.L.U.E. classification formula."
+      "purpose": "Distill one valuable source into a concise, source-linked OS Library record using the V.A.L.U.E. classification formula; supports /ground and clear natural-language requests."
     },
     {
       "id": "trashness",

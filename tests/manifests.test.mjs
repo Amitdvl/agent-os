@@ -137,7 +137,7 @@ test("portable command and goal contracts retain their required workflow section
   const required = {
     "commands/add/SKILL.md": ["## Operating Principle", "## Workflow", "## Skill Document Requirements", "## Registry Requirements", "## Verification Commands", "## Stop Conditions", "## Output Contract", "Agent OS"],
     "commands/commands/SKILL.md": ["## Usage", "## Workflow", "## Rules", "agent-os status --catalog --json", "personal slash commands", "active automations", "credential files", "Agent OS"],
-    "commands/ground/SKILL.md": ["## Usage", "## Operating Principle", "## The V.A.L.U.E. Formula", "## Source Handling", "## OS Library Record", "## Output Contract", "one source per invocation", "retrieval-first"],
+    "commands/ground/SKILL.md": ["## Usage", "## Natural-language activation", "## Operating Principle", "## The V.A.L.U.E. Formula", "## Source Handling", "## OS Library Record", "## Output Contract", "one source per invocation", "retrieval-first", "Ground this."],
     "commands/trashness/SKILL.md": ["## Operating Principle", "## Eligible Categories", "## Absolute Exclusions", "## Approval Contract", "## Deletion Workflow", "## Monthly Automation Behavior", "protected-names", "permanent deletion", "exact manifest"],
     "commands/teach/SKILL.md": ["## Usage", "## Source Resolution", "## Teaching Loop", "One question at a time", "--student", "motivation and tradeoffs"],
     "commands/trunk-finish/SKILL.md": ["recovery-first", "## Operating Principle", "## Workflow", "## Repair Behavior", "sensitive surfaces", "worktrees", "## Stop Conditions", "## Output Contract"],
