@@ -20,7 +20,7 @@
       "path": "commands/ground/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Turn supplied sources with study, retention, or reuse intent into separate concise, source-linked OS Library material pages using V.A.L.U.E.; semantic intent activates it, so /ground, “Ground these,” and “Save this to OS” are examples rather than required phrases. Upload local sources as cleanly named, clickable file attachments with matching clickable source-text links rather than storing transient paths."
+      "purpose": "Turn supplied sources with study, retention, or reuse intent into separate concise, source-linked OS Library material pages using V.A.L.U.E.; semantic intent activates it, so /ground, “Ground these,” and “Save this to OS” are examples rather than required phrases. Upload local sources as clickable file attachments whose actual displayed file-block names are clean human filenames, with matching clickable source-text links rather than transient paths."
     },
     {
       "id": "trashness",
