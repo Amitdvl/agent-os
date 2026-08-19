@@ -128,6 +128,9 @@ clickable file block on the material page.
 - In the page metadata and `## Source` section, name the attached file; never
   display an ephemeral or machine-local path such as `/tmp`, `/private`, a
   remote-attachment directory, or a workspace path as the source link.
+- Render that clean filename as a real, clickable text link to the attached
+  file block or another stable source location. A plain filename is not a
+  source link. Do not use a temporary signed download URL as the durable link.
 - Keep one visible `Original file` attachment block per material page. Its
   rendered filename must be the clean filename, not the upload transport name.
 - Verify both the attachment and filename after saving. A raw-text copy may
@@ -171,8 +174,8 @@ Write this body in the record:
 - [limits, uncertainty, contradictions, or freshness risk]
 
 ## Source
-[canonical URL, or `Original file: [clean attached filename]`, plus evidence
-pointers]
+[canonical URL, or `Original file: [clean attached filename](stable attachment
+link)`, plus evidence pointers]
 ```
 
 Preserve the raw source. Never replace it with the distillation, fabricate a
