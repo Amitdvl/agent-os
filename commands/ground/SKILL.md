@@ -133,8 +133,13 @@ clickable file block on the material page.
   source link. Do not use a temporary signed download URL as the durable link.
 - Keep one visible `Original file` attachment block per material page. Its
   rendered filename must be the clean filename, not the upload transport name.
-- Verify both the attachment and filename after saving. A raw-text copy may
-  supplement the attachment, but it does not replace it.
+- Set the attachment's actual file-block `name` / filename display field to
+  that clean filename. A caption, page title, or adjacent source-text link
+  does not satisfy this requirement.
+- Verify the rendered filename on the attachment control itself after saving
+  (or read back the file block’s `name` field when visual inspection is not
+  available), in addition to verifying the attachment and clickable link. A
+  raw-text copy may supplement the attachment, but it does not replace it.
 - If the destination cannot accept an uploaded file, state that exact blocker
   and preserve the supplied raw text only when doing so is appropriate; do not
   masquerade a local path as a usable link.
