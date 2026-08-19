@@ -125,12 +125,13 @@ clickable file block on the material page.
   and retain its extension. Remove transport prefixes, sequence numbers,
   UUIDs, upload-directory names, and slug-like separators. For example,
   `1-why-bootstrap-wins.md` becomes `Why Bootstrap Wins.md`.
-- In the page metadata and `## Source` section, name the attached file; never
-  display an ephemeral or machine-local path such as `/tmp`, `/private`, a
-  remote-attachment directory, or a workspace path as the source link.
-- Render that clean filename as a real, clickable text link to the attached
-  file block or another stable source location. A plain filename is not a
-  source link. Do not use a temporary signed download URL as the durable link.
+- Put a prominent, real, clickable source link in the `Source URL/File`
+  metadata above the value card (for example, `Source: Open original Markdown
+  file ↗`). It must target the attached file block or another stable source
+  location—not an ephemeral or machine-local path such as `/tmp`, `/private`,
+  a remote-attachment directory, or a workspace path.
+- Use a clear action label rather than a bare filename when it improves
+  scanability. A plain filename is not a source link. Do not use a temporary signed download URL as the durable link.
 - Keep one visible `Original file` attachment block per material page. Its
   rendered filename must be the clean filename, not the upload transport name.
 - Set the attachment's actual file-block `name` / filename display field to
@@ -138,8 +139,12 @@ clickable file block on the material page.
   does not satisfy this requirement.
 - Verify the rendered filename on the attachment control itself after saving
   (or read back the file block’s `name` field when visual inspection is not
-  available), in addition to verifying the attachment and clickable link. A
-  raw-text copy may supplement the attachment, but it does not replace it.
+  available), in addition to verifying the attachment and prominent clickable
+  link.
+- The attached original preserves the raw source. Do not add a raw-source dump,
+  duplicate attachment caption, redundant `## Source` section, or generic
+  evidence filler by default. Include extra source text only when it materially
+  improves retrieval or the user asks for it.
 - If the destination cannot accept an uploaded file, state that exact blocker
   and preserve the supplied raw text only when doing so is appropriate; do not
   masquerade a local path as a usable link.
@@ -178,13 +183,13 @@ Write this body in the record:
 ## Caveats
 - [limits, uncertainty, contradictions, or freshness risk]
 
-## Source
-[canonical URL, or `Original file: [clean attached filename](stable attachment
-link)`, plus evidence pointers]
+[Source URL/File metadata contains the visible clickable source link; the
+original file attachment appears once below the value content.]
 ```
 
-Preserve the raw source. Never replace it with the distillation, fabricate a
-source, or imply validation beyond the available evidence.
+Preserve the raw source through its original attachment. Never replace it with
+the distillation, fabricate a source, or imply validation beyond the available
+evidence.
 
 ## Output Contract
 
