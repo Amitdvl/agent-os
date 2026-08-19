@@ -133,6 +133,56 @@ make it clickable.
 - After saving, verify both the visible linked label and the rendered link's
   target/href. Seeing URL-shaped text is not verification that it is clickable.
 
+### Link completion gate
+
+Treat links as a checked deliverable, not presentation text. Before writing,
+make an expected-source manifest with one stable ID per supplied primary or
+supporting source and record its kind, human label, canonical target, and
+expected destination identity.
+For multiple sources, the saved record must be a bijection: every expected
+source appears exactly once as its own prominent link, and no extra source-like
+link is substituted for one of them.
+
+After writing, re-read the complete material page and its child blocks from the
+destination. Do not validate from the payload that was sent. The read-back must
+prove all of the following:
+
+- Every source has a concise human label and a non-null hyperlink target. The
+  visible label must not be a URL, filesystem path, filename standing in for a
+  link, or metadata sentence.
+- Every saved href equals the intended canonical target. Resolve every external
+  target and confirm the final identity; a redirect is acceptable only when it
+  lands on the intended source. Record access controls or bot-blocked publisher
+  responses explicitly rather than treating them as successful fetches.
+- For an internal Notion page or block, retrieve the exact target ID, confirm
+  the object kind, and confirm it is neither archived nor in trash.
+- For an uploaded source, the metadata link targets the exact live file-block
+  anchor, the file block has the required clean name, and the page contains one
+  metadata link plus one file block—never a signed download URL, local path,
+  duplicate caption, or raw-source dump.
+- A whole-page scan finds no bare URLs, URL-shaped link labels, `/tmp`,
+  `/private`, remote-attachment paths, signed URLs, redundant `Source` heading,
+  duplicated primary-source entry, or generic evidence-pointer filler.
+
+Normalize the expected manifest and the destination read-back into the JSON
+shape consumed by `scripts/validate-link-record.mjs`, then run:
+
+```sh
+node scripts/validate-link-record.mjs <record.json>
+```
+
+`record.blocks` must include every block on the saved page. Each expected
+source entry includes `id`, `kind`, `label`, `target`, `placement` (`metadata`
+for a primary source or `supporting` for research), and a `verification` object
+with `status: "resolved"` and `resolved_target`; source-link rich-text segments
+carry the matching `source_id`. Give every represented source its own block.
+Metadata links must appear above the Value card and supporting links after it.
+File entries also include `block_id` and `file_name`; Notion entries include
+`object_id` and resolved object metadata. Treat any validator error as
+unfinished work: repair, re-read, and run it again. Never say `Grounded`,
+`Saved`, `fixed`, `done`, or `closed` until every material record passes and
+every target has been checked.
+
 ### Durable file attachments
 
 For a user-supplied local file, an attachment path is only a temporary input
