@@ -114,6 +114,25 @@ or clean up a grounded item.
    retrieval cues. If the source is thin, say so and assign a lower Value or
    recommend not saving it.
 
+### Durable web links
+
+For a URL source, save the canonical URL as an actual rich-text hyperlink or
+bookmark. Never paste a bare URL as plain text and assume the destination will
+make it clickable.
+
+- Put one prominent titled source link in the `Source URL/File` metadata above
+  the value card, such as `Source: Watch Magnus Carlsen’s Evolution ↗` or
+  `Source: Read the original article ↗`.
+- Use a concise human label derived from the source title and medium. Do not
+  turn the source line into a metadata dump. Creator, publication date,
+  duration, caption language, and evidence pointers belong in the value
+  content only when they materially help retrieval or support a claim.
+- When one material record genuinely uses multiple web sources, give each one
+  its own titled hyperlink. Do not leave raw URLs in a redundant `## Source`
+  section.
+- After saving, verify both the visible linked label and the rendered link's
+  target/href. Seeing URL-shaped text is not verification that it is clickable.
+
 ### Durable file attachments
 
 For a user-supplied local file, an attachment path is only a temporary input
