@@ -114,6 +114,28 @@ or clean up a grounded item.
    retrieval cues. If the source is thin, say so and assign a lower Value or
    recommend not saving it.
 
+### Durable file attachments
+
+For a user-supplied local file, an attachment path is only a temporary input
+handle—not durable source evidence. When saving to an OS Library page that can
+host files (such as Notion), upload the original file and attach it as a real,
+clickable file block on the material page.
+
+- Give the attachment a clean, human filename derived from the material title
+  and retain its extension. Remove transport prefixes, sequence numbers,
+  UUIDs, upload-directory names, and slug-like separators. For example,
+  `1-why-bootstrap-wins.md` becomes `Why Bootstrap Wins.md`.
+- In the page metadata and `## Source` section, name the attached file; never
+  display an ephemeral or machine-local path such as `/tmp`, `/private`, a
+  remote-attachment directory, or a workspace path as the source link.
+- Keep one visible `Original file` attachment block per material page. Its
+  rendered filename must be the clean filename, not the upload transport name.
+- Verify both the attachment and filename after saving. A raw-text copy may
+  supplement the attachment, but it does not replace it.
+- If the destination cannot accept an uploaded file, state that exact blocker
+  and preserve the supplied raw text only when doing so is appropriate; do not
+  masquerade a local path as a usable link.
+
 ## OS Library Record
 
 When the OS Library is available, create one material page under its selected
@@ -149,7 +171,8 @@ Write this body in the record:
 - [limits, uncertainty, contradictions, or freshness risk]
 
 ## Source
-[canonical source and evidence pointers]
+[canonical URL, or `Original file: [clean attached filename]`, plus evidence
+pointers]
 ```
 
 Preserve the raw source. Never replace it with the distillation, fabricate a
