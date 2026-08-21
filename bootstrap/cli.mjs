@@ -285,6 +285,26 @@ function selectedSkills(context) {
   return context.bundle.skills.skills.filter((skill) => ids.has(skill.id) && skill.path);
 }
 
+async function portableSkillFiles(skill) {
+  const root = dirname(join(REPO_ROOT, skill.path));
+  const files = [];
+  async function visit(directory) {
+    const entries = await readdir(directory, { withFileTypes: true });
+    for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+      const target = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (["testdata", "tests", "__pycache__"].includes(entry.name)) continue;
+        await visit(target);
+        continue;
+      }
+      if (!entry.isFile() || entry.name.endsWith(".test.js") || entry.name.endsWith(".test.mjs") || entry.name.endsWith(".test.ts") || entry.name.endsWith("_test.go")) continue;
+      files.push({ relativePath: relative(root, target), content: await readText(target) });
+    }
+  }
+  await visit(root);
+  return files;
+}
+
 function selectedCommands(context) {
   const ids = new Set(context.packs.flatMap((pack) => pack.commands ?? []));
   return context.bundle.commands.commands.filter((command) => ids.has(command.id) && command.path && command.selectedByDefault);
@@ -400,7 +420,9 @@ async function buildPlan(context) {
     operations.push({ kind: "managed-block", path: join(hostHome, host.instructionFile), block, id: `${host.id}:instructions` });
 
     for (const skill of selectedSkills(context)) {
-      operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, "SKILL.md"), content: await readText(join(REPO_ROOT, skill.path)), id: `${host.id}:skill:${skill.id}` });
+      for (const file of await portableSkillFiles(skill)) {
+        operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, file.relativePath), content: file.content, id: `${host.id}:skill:${skill.id}:${file.relativePath}` });
+      }
     }
     for (const tool of tools) {
       const path = join(hostHome, host.skillDirectory, tool.id);
