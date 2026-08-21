@@ -33,7 +33,6 @@ type report struct {
 
 func main() {
 	repo := flag.String("repo", "", "absolute or relative repository path")
-	initMode := flag.String("init", "", "initialize an empty repo: bun, bun-react, bun-react-tailwind, or bun-react-shadcn")
 	apply := flag.Bool("apply", false, "write only missing baseline files")
 	jsonOutput := flag.Bool("json", false, "write a JSON report to stdout")
 	flag.Parse()
@@ -48,22 +47,18 @@ func main() {
 	if err != nil || !info.IsDir() {
 		fail(fmt.Errorf("--repo must be an existing directory: %s", absRepo))
 	}
-	result, err := planFor(absRepo, *initMode)
+	result, err := plan(absRepo)
 	if err != nil {
 		fail(err)
 	}
 	if *apply {
-		if *initMode != "" {
-			if err := bootstrapBun(absRepo, *initMode); err != nil {
-				fail(err)
-			}
-			result, err = plan(absRepo)
-			if err != nil {
-				fail(err)
-			}
-			result.Changes = append([]change{{Path: ".", Action: "initialize", Reason: "create the requested Bun project shape with Bun's official initializer"}}, result.Changes...)
-		}
 		for _, item := range result.Changes {
+			if item.Action == "initialize-git" {
+				if err := runIn(absRepo, "git", "init", "-b", "main"); err != nil {
+					fail(fmt.Errorf("initialize Git repository: %w", err))
+				}
+				continue
+			}
 			if item.Action != "create" && item.Action != "append" && item.Action != "set-package-manager" {
 				continue
 			}
@@ -100,115 +95,6 @@ func main() {
 	}
 }
 
-func planFor(repo, initMode string) (report, error) {
-	if initMode == "" {
-		return plan(repo)
-	}
-	if !validBunMode(initMode) {
-		return report{}, fmt.Errorf("unsupported --init value %q; use bun, bun-react, bun-react-tailwind, or bun-react-shadcn", initMode)
-	}
-	if err := assertEmptyRepo(repo); err != nil {
-		return report{}, err
-	}
-	scratch, err := os.MkdirTemp("", "production-repo-baseline-")
-	if err != nil {
-		return report{}, err
-	}
-	defer os.RemoveAll(scratch)
-	if err := bootstrapBun(scratch, initMode); err != nil {
-		return report{}, err
-	}
-	result, err := plan(scratch)
-	if err != nil {
-		return result, err
-	}
-	result.Repo = filepath.Base(repo)
-	result.Changes = append([]change{{Path: ".", Action: "initialize", Reason: "create the requested Bun project shape with Bun's official initializer"}}, result.Changes...)
-	return result, nil
-}
-
-func validBunMode(mode string) bool {
-	return mode == "bun" || mode == "bun-react" || mode == "bun-react-tailwind" || mode == "bun-react-shadcn"
-}
-
-func assertEmptyRepo(repo string) error {
-	entries, err := os.ReadDir(repo)
-	if err != nil {
-		return err
-	}
-	for _, entry := range entries {
-		if entry.Name() != ".git" {
-			return fmt.Errorf("--init only operates on an empty repository; found %s", entry.Name())
-		}
-	}
-	return nil
-}
-
-func bootstrapBun(repo, mode string) error {
-	args := []string{"init", "--yes"}
-	switch mode {
-	case "bun-react":
-		args = append(args, "--react")
-	case "bun-react-tailwind":
-		args = append(args, "--react=tailwind")
-	case "bun-react-shadcn":
-		args = append(args, "--react=shadcn")
-	case "bun":
-	default:
-		return fmt.Errorf("unsupported Bun initializer: %s", mode)
-	}
-	if err := runIn(repo, "bun", args...); err != nil {
-		return fmt.Errorf("Bun initializer failed: %w", err)
-	}
-	if err := ensureBunVerificationScripts(repo); err != nil {
-		return err
-	}
-	if err := runIn(repo, "bun", "install", "--lockfile-only"); err != nil {
-		return fmt.Errorf("Bun lockfile generation failed: %w", err)
-	}
-	return nil
-}
-
-func ensureBunVerificationScripts(repo string) error {
-	path := filepath.Join(repo, "package.json")
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return fmt.Errorf("read generated package.json: %w", err)
-	}
-	var manifest map[string]any
-	if err := json.Unmarshal(content, &manifest); err != nil {
-		return fmt.Errorf("parse generated package.json: %w", err)
-	}
-	scripts, ok := manifest["scripts"].(map[string]any)
-	if !ok {
-		scripts = map[string]any{}
-		manifest["scripts"] = scripts
-	}
-	if _, exists := scripts["build"]; !exists {
-		entry := bunEntryPoint(repo)
-		if entry != "" {
-			scripts["build"] = fmt.Sprintf("bun build ./%s --outdir ./dist", entry)
-		}
-	}
-	next, err := json.MarshalIndent(manifest, "", "  ")
-	if err != nil {
-		return fmt.Errorf("encode generated package.json: %w", err)
-	}
-	if err := os.WriteFile(path, append(next, '\n'), 0o644); err != nil {
-		return fmt.Errorf("write generated package.json: %w", err)
-	}
-	return nil
-}
-
-func bunEntryPoint(repo string) string {
-	for _, candidate := range []string{"index.ts", "index.tsx", "src/index.ts", "src/index.tsx"} {
-		if exists(filepath.Join(repo, candidate)) {
-			return candidate
-		}
-	}
-	return ""
-}
-
 func runIn(directory, command string, args ...string) error {
 	run := exec.Command(command, args...)
 	run.Dir = directory
@@ -234,6 +120,7 @@ func plan(repo string) (report, error) {
 			"observability, alerting, and on-call ownership",
 		},
 	}
+	planGit(repo, &result)
 	packageJSON, packageManager, scripts, err := inspectPackageJSON(filepath.Join(repo, "package.json"))
 	if err != nil {
 		return result, err
@@ -281,7 +168,7 @@ func plan(repo string) (report, error) {
 		result.ManualFollowUps = append(result.ManualFollowUps, "No package.json was found. Add a stack-specific deterministic verify command before creating CI.")
 	}
 
-	appendIgnored(repo, &result)
+	appendIgnored(repo, &result, stack)
 	planMissing(repo, &result, ".env.example", "# Copy this file to .env for local development.\n# Keep real secrets outside version control.\n", "create", "document the local secret boundary")
 	planReadme(repo, &result)
 	if stack != "unknown" && lockfile != "" {
@@ -290,13 +177,25 @@ func plan(repo string) (report, error) {
 		} else {
 			planCI(repo, &result, stack, scripts)
 		}
-		planDependabot(repo, &result, stack)
 	}
+	planDependabot(repo, &result, stack)
 	result.ManualFollowUps = append(result.ManualFollowUps,
 		"Enable GitHub Dependabot alerts and automatic security-fix PRs in the repository settings (or use the GitHub CLI with an explicitly named repository).",
 		"Choose whether protected branches require pull requests; this baseline does not impose a merge policy.",
 	)
 	return result, nil
+}
+
+func planGit(repo string, result *report) {
+	if exists(filepath.Join(repo, ".git")) {
+		result.Changes = append(result.Changes, change{Path: ".git", Action: "unchanged", Reason: "existing Git repository preserved"})
+		return
+	}
+	if _, err := exec.LookPath("git"); err != nil {
+		result.ManualFollowUps = append(result.ManualFollowUps, "Git is unavailable. Install Git, then rerun the baseline to initialize this repository with main as its default branch.")
+		return
+	}
+	result.Changes = append(result.Changes, change{Path: ".git", Action: "initialize-git", Reason: "initialize local Git with main as the default branch"})
 }
 
 func inspectPackageJSON(path string) (string, string, []string, error) {
@@ -342,13 +241,16 @@ func commandVersion(name string, args ...string) string {
 	return strings.TrimSpace(string(output))
 }
 
-func appendIgnored(repo string, result *report) {
+func appendIgnored(repo string, result *report, stack string) {
 	path := filepath.Join(repo, ".gitignore")
 	existing, err := os.ReadFile(path)
 	if err != nil && !os.IsNotExist(err) {
 		return
 	}
-	required := []string{"node_modules/", ".env", ".env.*", "!.env.example"}
+	required := []string{".env", ".env.*", "!.env.example"}
+	if stack != "unknown" {
+		required = append([]string{"node_modules/"}, required...)
+	}
 	missing := []string{}
 	for _, line := range required {
 		if !containsLine(string(existing), line) {
@@ -433,11 +335,14 @@ func planDependabot(repo string, result *report, stack string) {
 		result.Changes = append(result.Changes, change{Path: path, Action: "unchanged", Reason: "existing Dependabot policy preserved for review"})
 		return
 	}
-	ecosystem := stack
-	if stack == "pnpm" || stack == "yarn" {
-		ecosystem = "npm"
+	ecosystems := []string{}
+	if stack != "unknown" {
+		ecosystem := stack
+		if stack == "pnpm" || stack == "yarn" {
+			ecosystem = "npm"
+		}
+		ecosystems = append(ecosystems, ecosystem)
 	}
-	ecosystems := []string{ecosystem}
 	if exists(filepath.Join(repo, "Dockerfile")) {
 		ecosystems = append(ecosystems, "docker")
 	}
