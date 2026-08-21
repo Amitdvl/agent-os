@@ -26,6 +26,7 @@
     {"id": "wacrawl", "disposition": "external-with-portable-contract"},
     {"id": "xurl", "disposition": "external-with-portable-contract"},
     {"id": "yt-dlp", "disposition": "external-with-portable-contract"},
+    {"id": "summarize", "disposition": "external-with-portable-contract"},
     {"id": "youtube", "disposition": "external-with-portable-contract"}
   ],
   "commands": [
@@ -42,7 +43,7 @@
     {
       "id": "local-tools",
       "disposition": "external-with-portable-contract",
-      "skills": ["birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"]
+      "skills": ["birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "summarize", "youtube"]
     },
     {
       "id": "commands",
