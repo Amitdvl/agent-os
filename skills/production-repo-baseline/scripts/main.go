@@ -33,6 +33,7 @@ type report struct {
 
 func main() {
 	repo := flag.String("repo", "", "absolute or relative repository path")
+	initMode := flag.String("init", "", "initialize an empty repo: bun, bun-react, bun-react-tailwind, or bun-react-shadcn")
 	apply := flag.Bool("apply", false, "write only missing baseline files")
 	jsonOutput := flag.Bool("json", false, "write a JSON report to stdout")
 	flag.Parse()
@@ -47,11 +48,21 @@ func main() {
 	if err != nil || !info.IsDir() {
 		fail(fmt.Errorf("--repo must be an existing directory: %s", absRepo))
 	}
-	result, err := plan(absRepo)
+	result, err := planFor(absRepo, *initMode)
 	if err != nil {
 		fail(err)
 	}
 	if *apply {
+		if *initMode != "" {
+			if err := bootstrapBun(absRepo, *initMode); err != nil {
+				fail(err)
+			}
+			result, err = plan(absRepo)
+			if err != nil {
+				fail(err)
+			}
+			result.Changes = append([]change{{Path: ".", Action: "initialize", Reason: "create the requested Bun project shape with Bun's official initializer"}}, result.Changes...)
+		}
 		for _, item := range result.Changes {
 			if item.Action != "create" && item.Action != "append" && item.Action != "set-package-manager" {
 				continue
@@ -87,6 +98,125 @@ func main() {
 			fmt.Printf("- %s\n", item)
 		}
 	}
+}
+
+func planFor(repo, initMode string) (report, error) {
+	if initMode == "" {
+		return plan(repo)
+	}
+	if !validBunMode(initMode) {
+		return report{}, fmt.Errorf("unsupported --init value %q; use bun, bun-react, bun-react-tailwind, or bun-react-shadcn", initMode)
+	}
+	if err := assertEmptyRepo(repo); err != nil {
+		return report{}, err
+	}
+	scratch, err := os.MkdirTemp("", "production-repo-baseline-")
+	if err != nil {
+		return report{}, err
+	}
+	defer os.RemoveAll(scratch)
+	if err := bootstrapBun(scratch, initMode); err != nil {
+		return report{}, err
+	}
+	result, err := plan(scratch)
+	if err != nil {
+		return result, err
+	}
+	result.Repo = filepath.Base(repo)
+	result.Changes = append([]change{{Path: ".", Action: "initialize", Reason: "create the requested Bun project shape with Bun's official initializer"}}, result.Changes...)
+	return result, nil
+}
+
+func validBunMode(mode string) bool {
+	return mode == "bun" || mode == "bun-react" || mode == "bun-react-tailwind" || mode == "bun-react-shadcn"
+}
+
+func assertEmptyRepo(repo string) error {
+	entries, err := os.ReadDir(repo)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if entry.Name() != ".git" {
+			return fmt.Errorf("--init only operates on an empty repository; found %s", entry.Name())
+		}
+	}
+	return nil
+}
+
+func bootstrapBun(repo, mode string) error {
+	args := []string{"init", "--yes"}
+	switch mode {
+	case "bun-react":
+		args = append(args, "--react")
+	case "bun-react-tailwind":
+		args = append(args, "--react=tailwind")
+	case "bun-react-shadcn":
+		args = append(args, "--react=shadcn")
+	case "bun":
+	default:
+		return fmt.Errorf("unsupported Bun initializer: %s", mode)
+	}
+	if err := runIn(repo, "bun", args...); err != nil {
+		return fmt.Errorf("Bun initializer failed: %w", err)
+	}
+	if err := ensureBunVerificationScripts(repo); err != nil {
+		return err
+	}
+	if err := runIn(repo, "bun", "install", "--lockfile-only"); err != nil {
+		return fmt.Errorf("Bun lockfile generation failed: %w", err)
+	}
+	return nil
+}
+
+func ensureBunVerificationScripts(repo string) error {
+	path := filepath.Join(repo, "package.json")
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("read generated package.json: %w", err)
+	}
+	var manifest map[string]any
+	if err := json.Unmarshal(content, &manifest); err != nil {
+		return fmt.Errorf("parse generated package.json: %w", err)
+	}
+	scripts, ok := manifest["scripts"].(map[string]any)
+	if !ok {
+		scripts = map[string]any{}
+		manifest["scripts"] = scripts
+	}
+	if _, exists := scripts["build"]; !exists {
+		entry := bunEntryPoint(repo)
+		if entry != "" {
+			scripts["build"] = fmt.Sprintf("bun build ./%s --outdir ./dist", entry)
+		}
+	}
+	next, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encode generated package.json: %w", err)
+	}
+	if err := os.WriteFile(path, append(next, '\n'), 0o644); err != nil {
+		return fmt.Errorf("write generated package.json: %w", err)
+	}
+	return nil
+}
+
+func bunEntryPoint(repo string) string {
+	for _, candidate := range []string{"index.ts", "index.tsx", "src/index.ts", "src/index.tsx"} {
+		if exists(filepath.Join(repo, candidate)) {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func runIn(directory, command string, args ...string) error {
+	run := exec.Command(command, args...)
+	run.Dir = directory
+	output, err := run.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s %s: %w\n%s", command, strings.Join(args, " "), err, strings.TrimSpace(string(output)))
+	}
+	return nil
 }
 
 func fail(err error) {
@@ -331,13 +461,14 @@ func addPackageManager(content, value string) (string, error) {
 	if !strings.HasSuffix(trimmed, "}") {
 		return "", errors.New("package.json must end with a JSON object")
 	}
-	body := strings.TrimSpace(strings.TrimSuffix(trimmed, "}"))
+	prefix := strings.TrimRight(strings.TrimSuffix(trimmed, "}"), " \t\r\n")
+	body := strings.TrimSpace(prefix)
 	comma := ""
 	if body != "{" {
 		comma = ","
 	}
 	encoded, _ := json.Marshal(value)
-	return strings.TrimSuffix(trimmed, "}") + comma + "\n  \"packageManager\": " + string(encoded) + "\n}\n", nil
+	return prefix + comma + "\n  \"packageManager\": " + string(encoded) + "\n}\n", nil
 }
 
 func exists(path string) bool {

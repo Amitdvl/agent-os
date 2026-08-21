@@ -77,6 +77,51 @@ func TestCLIApplysFixtureEndToEnd(t *testing.T) {
 	}
 }
 
+func TestCLIInitializesAnEmptyBunRepository(t *testing.T) {
+	if _, err := exec.LookPath("bun"); err != nil {
+		t.Skip("Bun is required for the Bun initializer fixture")
+	}
+	repo := t.TempDir()
+	command := exec.Command("go", "run", ".", "--repo", repo, "--init", "bun", "--apply", "--json")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("fresh-repo CLI failed: %v\n%s", err, output)
+	}
+	var result report
+	if err := json.Unmarshal(output, &result); err != nil {
+		t.Fatalf("CLI did not emit a JSON report: %v\n%s", err, output)
+	}
+	if result.Stack != "bun" || !strings.HasPrefix(result.PackageManager, "bun@") {
+		t.Fatalf("unexpected fresh-repo result: %+v", result)
+	}
+	for _, path := range []string{"package.json", "bun.lock", "README.md", ".gitignore", ".env.example", ".github/workflows/ci.yml", ".github/dependabot.yml"} {
+		if _, err := os.Stat(filepath.Join(repo, path)); err != nil {
+			t.Fatalf("fresh repo missing %s: %v", path, err)
+		}
+	}
+	build := exec.Command("bun", "run", "build")
+	build.Dir = repo
+	if output, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("fresh project build failed: %v\n%s", err, output)
+	}
+	ci, err := os.ReadFile(filepath.Join(repo, ".github/workflows/ci.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(ci), "bun run test") {
+		t.Fatalf("fresh zero-test project must not create a failing test CI step: %s", ci)
+	}
+}
+
+func TestInitializerRefusesNonEmptyRepository(t *testing.T) {
+	repo := t.TempDir()
+	writeFixture(t, repo, "README.md", "user-owned\n")
+	_, err := planFor(repo, "bun")
+	if err == nil || !strings.Contains(err.Error(), "empty repository") {
+		t.Fatalf("expected empty-repo refusal, got %v", err)
+	}
+}
+
 func TestAddPackageManagerPreservesExistingJSON(t *testing.T) {
 	content, err := addPackageManager("{\n  \"name\": \"fixture\"\n}\n", "bun@1.3.14")
 	if err != nil {
