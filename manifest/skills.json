@@ -6,6 +6,7 @@
     {"id": "cli-for-agents", "path": "skills/cli-for-agents/SKILL.md", "disposition": "portable-core"},
     {"id": "goal-prompt", "path": "skills/goal-prompt/SKILL.md", "disposition": "portable-core"},
     {"id": "orchestration", "path": "skills/orchestration/SKILL.md", "disposition": "portable-core"},
+    {"id": "production-repo-baseline", "path": "skills/production-repo-baseline/SKILL.md", "disposition": "portable-core"},
     {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow"},
     {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core"},
     {"id": "gstack", "path": null, "disposition": "third-party-optional"},

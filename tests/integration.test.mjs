@@ -89,6 +89,10 @@ test("full deployment renders central registry, host symlinks, rules, status and
     const orchestration = await readFile(join(hostHome, "skills", "orchestration", "SKILL.md"), "utf8");
     assert.match(orchestration, /name: orchestration/);
     assert.match(orchestration, /## Completion Gate/);
+    const baseline = await readFile(join(hostHome, "skills", "production-repo-baseline", "SKILL.md"), "utf8");
+    assert.match(baseline, /name: production-repo-baseline/);
+    assert.match(await readFile(join(hostHome, "skills", "production-repo-baseline", "scripts", "main.go"), "utf8"), /preview-first/);
+    assert.match(await readFile(join(hostHome, "skills", "production-repo-baseline", "scripts", "go.mod"), "utf8"), /module production-repo-baseline/);
   }
 
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);

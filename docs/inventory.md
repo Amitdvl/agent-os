@@ -6,6 +6,7 @@ The manifest is the source of truth for the portable inventory:
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secrets.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, and creator packs.
+- `skills/production-repo-baseline/` — a preview-first, repository-only production baseline for GitHub projects: reproducible dependencies, secret hygiene, CI, and Dependabot without product-infrastructure guesses.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 

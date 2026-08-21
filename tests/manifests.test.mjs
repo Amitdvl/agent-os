@@ -60,6 +60,22 @@ test("CLI design guidance is portable and defaults custom CLIs to Go", async () 
   assert.match(content, /Build custom CLIs in Go\./);
 });
 
+test("production repo baseline is a portable core skill with a deterministic helper", async () => {
+  const skills = await json("skills");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const entry = skills.skills.find((item) => item.id === "production-repo-baseline");
+  assert.deepEqual(entry, { id: "production-repo-baseline", path: "skills/production-repo-baseline/SKILL.md", disposition: "portable-core" });
+  assert.ok(packs.packs.find((pack) => pack.id === "core").skills.includes("production-repo-baseline"));
+  assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("production-repo-baseline"));
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  for (const phrase of ["# Production Repo Baseline", "## Scope", "## Workflow", "## Verification", "## Stop Conditions", "Do not invent a deployment target", "Dependabot"]) {
+    assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+  await stat(join(ROOT, "skills", "production-repo-baseline", "scripts", "main.go"));
+  await stat(join(ROOT, "skills", "production-repo-baseline", "scripts", "go.mod"));
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
@@ -68,8 +84,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 86);
-  assert.equal(new Set(installedSkills).size, 86);
+  assert.equal(installedSkills.length, 87);
+  assert.equal(new Set(installedSkills).size, 87);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
