@@ -4,7 +4,7 @@
 |---|---|---|---|
 | Core policy and commands | Safe core setup and recovery-first command contracts | Host app sign-in | Host setup and managed-drift review |
 | Custom CLI design | Go-based, non-interactive CLI contracts with help, pipeline, retry, and safety conventions | Project-specific framework choice | Project implementation and release review |
-| Production repo baseline | GitHub-default project founding from a short stack brief, then pinned package tooling, lockfile-aware CI, and Dependabot | Chosen project shape and existing verification scripts | Deployment, data, auth, observability, and merge-policy choices |
+| Production repo baseline | Git initialization, safe repository defaults, and Dependabot; later adds pinned package tooling and lockfile-aware CI when a stack exists | Chosen product stack and existing verification scripts | Product scaffolding, deployment, data, auth, observability, GitHub publishing, and merge-policy choices |
 | Task orchestration | Lead-owned acceptance, bounded role assignments, independent verification | Available model/agent selection | Review of any destructive or external action |
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |

@@ -69,7 +69,7 @@ test("production repo baseline is a portable core skill with a deterministic hel
   assert.ok(packs.packs.find((pack) => pack.id === "core").skills.includes("production-repo-baseline"));
   assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("production-repo-baseline"));
   const content = await readFile(join(ROOT, entry.path), "utf8");
-  for (const phrase of ["# Production Repo Baseline", "project-founder skill", "## Scope", "## Workflow", "--init bun", "official initializer", "## Verification", "## Stop Conditions", "Do not invent a deployment target", "Dependabot"]) {
+  for (const phrase of ["# Production Repo Baseline", "second things", "## Scope", "## Workflow", "initialize Git with `main`", "no fake application CI", "## Verification", "## Stop Conditions", "Do **not** scaffold Bun", "Dependabot"]) {
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
   await stat(join(ROOT, "skills", "production-repo-baseline", "scripts", "main.go"));
