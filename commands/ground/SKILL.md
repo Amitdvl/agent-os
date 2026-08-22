@@ -48,10 +48,36 @@ playlist, feed, or thread collection without an explicit follow-up request.
 
 ## Operating Principle
 
-Optimize for future retrieval and application, not exhaustive summarization.
-Classify by the question or decision the material helps answer; retain the
-source format only as supporting metadata. Do not turn weak material into an
+Optimize for future retrieval and application through fundamental principles,
+not exhaustive summary or a tour of the source's examples. Explain the causal
+mechanism, decision rule, and meaningful boundary that make the source useful;
+retain the source format only as supporting metadata. Classify by the question
+or decision the material helps answer. Do not turn weak material into an
 authoritative-looking record.
+
+## Principle-first explanations
+
+Every grounded record should let a future reader understand the source's core
+logic without first replaying its anecdotes, scenes, or case studies.
+
+- State the thesis as a fundamental principle or causal mechanism, not a
+  description of the source's most memorable example.
+- Explain the decision rule: what to notice, choose, test, or avoid once the
+  principle is understood.
+- Name the boundary: the condition where the principle weakens, does not
+  transfer, or could be misused.
+- Treat examples as evidence, not as the explanation's structure. Keep only
+  the smallest source-specific example or data point that clarifies a
+  mechanism, tradeoff, or boundary; label it as source evidence when it is not
+  independently validated.
+- Keep direct evidence distinct from interpretation. When transferring a
+  principle to a new context, say that it is an application or hypothesis—not
+  proof that the source validates the new context.
+
+The value card and takeaways should normally flow from principle → decision
+rule → boundary → minimal supporting evidence. A thin source may support only
+a tentative principle; say so rather than inflating anecdotes into a general
+law.
 
 ## The V.A.L.U.E. Formula
 
@@ -108,11 +134,13 @@ or clean up a grounded item.
      Notion Agent; otherwise say exactly what needs sharing.
    - Local files: read only the user-supplied file and extract text or inspect
      metadata with the appropriate local capability.
-2. Separate direct evidence from interpretation. Cite timestamps, page/section
-   references, or short excerpts when they materially support a claim.
-3. Extract only the durable thesis, claims, tactics, examples, caveats, and
-   retrieval cues. If the source is thin, say so and assign a lower Value or
-   recommend not saving it.
+2. Separate direct evidence from interpretation. Derive the fundamental
+   principle, causal mechanism, decision rule, and boundary before selecting
+   any example; cite timestamps, page/section references, or short excerpts
+   only when they materially support that explanation.
+3. Extract only the durable thesis, mechanism, decision rules, caveats, and
+   retrieval cues. Use examples as evidence sparingly. If the source is thin,
+   say so and assign a lower Value or recommend not saving it.
 
 ### Durable web links
 
@@ -239,15 +267,20 @@ Write this body in the record:
 
 ```markdown
 ## Value card
-**Thesis:** [one sentence]
+**Thesis:** [one-sentence fundamental principle or causal mechanism]
 **Use when:** [retrieval cue]
-**Why it matters:** [one or two sentences]
+**Why it matters:** [mechanism, tradeoff, or implication—not a recap of examples]
 
 ## Grounded takeaways
-- [3–7 atomic claims or tactics]
+- **Principle:** [the durable mechanism or model]
+- **Decision rule:** [what to do, test, or avoid]
+- **Boundary:** [where it does not transfer or may mislead]
+- **Evidence:** [only the source-specific example or data point needed to
+  support, qualify, or make the principle memorable]
 
 ## Application
-- [the smallest concrete action, decision rule, or playbook]
+- [the smallest concrete action, decision rule, or playbook; label any
+  cross-context transfer as an application or hypothesis]
 
 ## Caveats
 - [limits, uncertainty, contradictions, or freshness risk]
