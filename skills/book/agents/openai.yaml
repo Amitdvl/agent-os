@@ -1,0 +1,7 @@
+interface:
+  display_name: "Book"
+  short_description: "Research, write, and publish nonfiction EPUBs."
+  default_prompt: "Use $book to create a deeply researched short nonfiction book from my subject."
+
+policy:
+  allow_implicit_invocation: false

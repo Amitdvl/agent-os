@@ -3,6 +3,7 @@
   "sources": [
     {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
+    {"id": "epubcheck-brew", "kind": "homebrew", "locator": "epubcheck", "pin": "5.3.0-audited", "automation": "disabled", "review_notes": "Normal validation is read-only; durable reports and expanded-archive saves require explicit destinations."},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
     {"id": "notcrawl-brew", "kind": "homebrew", "locator": "openclaw/tap/notcrawl", "pin": "0.5.1-audited", "automation": "disabled"},
     {"id": "notebridge-manual", "kind": "manual", "locator": "NoteBridge local CLI", "pin": "1.0.0", "automation": "disabled", "review_notes": "Apple body edits are whole-document replacements: preserve retrieved raw rich content, set the existing title explicitly, and verify the read-back."},
@@ -10,6 +11,7 @@
     {"id": "obsidian-manual", "kind": "manual", "locator": "obsidian CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "opencap-manual", "kind": "manual", "locator": "OpenCap", "pin": "0.1.4-audited", "automation": "disabled"},
     {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.6", "automation": "disabled"},
+    {"id": "pandoc-brew", "kind": "homebrew", "locator": "pandoc", "pin": "3.10.2-audited", "automation": "disabled", "review_notes": "Conversions require exact inputs and explicit outputs; untrusted filters, templates, and external engines are prohibited."},
     {"id": "peekaboo-audited", "kind": "homebrew", "locator": "peekaboo", "pin": "3.7.1-audited", "automation": "disabled"},
     {"id": "rdt-cli-git", "kind": "git", "locator": "https://github.com/public-clis/rdt-cli.git", "pin": "5e4fb3720d5c174e976cd425ccc3b879d52cac66", "automation": "disabled"},
     {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled", "review_notes": "New reminders default to high (urgent) priority unless the user specifies another priority."},

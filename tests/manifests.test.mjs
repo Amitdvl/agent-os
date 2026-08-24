@@ -76,16 +76,65 @@ test("production repo baseline is a portable core skill with a deterministic hel
   await stat(join(ROOT, "skills", "production-repo-baseline", "scripts", "go.mod"));
 });
 
+test("book is an explicit-only portable core skill with installed-copy tests", async () => {
+  const skills = await json("skills");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const entry = skills.skills.find((item) => item.id === "book");
+  assert.deepEqual(entry, {
+    id: "book",
+    path: "skills/book/SKILL.md",
+    disposition: "portable-core",
+    includeTests: true,
+  });
+  assert.ok(packs.packs.find((pack) => pack.id === "core").skills.includes("book"));
+  assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("book"));
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  assert.match(content, /name: book/);
+  assert.match(content, /Use only when explicitly invoked with \$book/);
+  assert.match(content, /one compact conception for explicit approval/);
+  assert.match(content, /zero EPUBCheck errors/);
+  await stat(join(ROOT, "skills", "book", "tests", "fixtures", "sample-manuscript.md"));
+  await stat(join(ROOT, "skills", "book", "scripts", "build_epub.py"));
+});
+
+test("Pandoc and EPUBCheck are credential-free creator tools with reviewed Homebrew sources", async () => {
+  const tools = await json("tools");
+  const sources = await json("sources");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const sourceMap = new Map(sources.sources.map((item) => [item.id, item]));
+  const creator = packs.packs.find((pack) => pack.id === "creator");
+  const portableTools = dispositions.skillGroups.find((group) => group.id === "local-tools").skills;
+
+  for (const [id, sourceId, pin] of [["pandoc", "pandoc-brew", "3.10.2-audited"], ["epubcheck", "epubcheck-brew", "5.3.0-audited"]]) {
+    const tool = tools.tools.find((item) => item.id === id);
+    assert.equal(tool.source, sourceId);
+    assert.deepEqual(tool.auth, ["none"]);
+    assert.ok(creator.tools.includes(id));
+    assert.ok(portableTools.includes(id));
+    assert.deepEqual(sourceMap.get(sourceId), {
+      id: sourceId,
+      kind: "homebrew",
+      locator: id,
+      pin,
+      automation: "disabled",
+      review_notes: sourceMap.get(sourceId).review_notes,
+    });
+    assert.ok(sourceMap.get(sourceId).review_notes);
+  }
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
   const commands = await json("commands");
-  assert.equal(dispositions.localTools.length, 20);
+  assert.equal(dispositions.localTools.length, 22);
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 87);
-  assert.equal(new Set(installedSkills).size, 87);
+  assert.equal(installedSkills.length, 90);
+  assert.equal(new Set(installedSkills).size, 90);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
