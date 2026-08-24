@@ -7,7 +7,7 @@
       "tools": [],
       "commands": ["add", "commands", "ground", "teach", "trashness", "trunk-finish"],
       "optionalCommands": [],
-      "skills": ["agent-os", "agent-secrets", "goal-prompt", "orchestration", "production-repo-baseline", "tool-routing"]
+      "skills": ["agent-os", "agent-secrets", "book", "goal-prompt", "orchestration", "production-repo-baseline", "tool-routing"]
     },
     {
       "id": "local-productivity",
@@ -36,7 +36,7 @@
     {
       "id": "creator",
       "description": "Recording, playback, and public-media production helpers.",
-      "tools": ["opencap", "spogo", "yt-dlp"],
+      "tools": ["opencap", "spogo", "yt-dlp", "pandoc", "epubcheck"],
       "commands": [],
       "optionalCommands": [],
       "skills": []

@@ -1,0 +1,90 @@
+/* Restrained, reflowable EPUB 3 styling. Reading-system preferences win. */
+
+body {
+  line-height: 1.5;
+  margin: 0 5%;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+h1 {
+  margin-block: 2.5em 1.25em;
+}
+
+h2 {
+  margin-block: 2em 0.8em;
+}
+
+h3 {
+  margin-block: 1.5em 0.6em;
+}
+
+p {
+  margin-block: 0 0.8em;
+}
+
+.titlepage,
+section[epub|type~="titlepage"] {
+  margin-block-start: 18%;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.15em;
+  font-style: italic;
+  margin-block-start: 1em;
+}
+
+blockquote {
+  margin: 1.2em 8%;
+}
+
+.epigraph {
+  font-size: 0.95em;
+  margin: 2em 12%;
+}
+
+.scene-break {
+  letter-spacing: 0.35em;
+  margin-block: 1.5em;
+  text-align: center;
+}
+
+aside[epub|type~="footnote"],
+li[epub|type~="footnote"] {
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+a[epub|type~="noteref"] {
+  text-decoration: none;
+  vertical-align: super;
+  font-size: 0.8em;
+}
+
+.footnote-back,
+a[role="doc-backlink"] {
+  text-decoration: none;
+}
+
+.bibliography,
+#bibliography-and-further-reading {
+  font-size: 0.95em;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

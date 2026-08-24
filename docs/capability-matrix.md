@@ -5,6 +5,8 @@
 | Core policy and commands | Safe core setup and recovery-first command contracts | Host app sign-in | Host setup and managed-drift review |
 | Custom CLI design | Go-based, non-interactive CLI contracts with help, pipeline, retry, and safety conventions | Project-specific framework choice | Project implementation and release review |
 | Production repo baseline | Git initialization, safe repository defaults, and Dependabot; later adds pinned package tooling and lockfile-aware CI when a stack exists | Chosen product stack and existing verification scripts | Product scaffolding, deployment, data, auth, observability, GitHub publishing, and merge-policy choices |
+| Document and EPUB production | Exact-input, explicit-output Pandoc conversion followed by EPUBCheck conformance validation | User-selected source files, metadata, media, and output destination | Review of overwrite intent, custom filters/engines, and publication-specific quality checks |
+| Nonfiction book workflow | Explicit-only research, one editorial approval gate, centralized drafting/revision, collision-safe EPUB build, and installed-copy tests | Subject commission, approved conception, research evidence, and final destination | Editorial approval and any destination filesystem permission |
 | Task orchestration | Lead-owned acceptance, bounded role assignments, independent verification | Available model/agent selection | Review of any destructive or external action |
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |
@@ -14,4 +16,4 @@
 | Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
 | External writes | Exact-intent, target, content, and verify-after-write rules | Requested target/content/action | User authorization |
 
-All 20 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.
+All 22 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.

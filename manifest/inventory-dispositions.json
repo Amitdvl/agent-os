@@ -10,6 +10,7 @@
   "localTools": [
     {"id": "birdclaw", "disposition": "external-with-portable-contract"},
     {"id": "discrawl", "disposition": "external-with-portable-contract"},
+    {"id": "epubcheck", "disposition": "external-with-portable-contract"},
     {"id": "instagram-cli", "disposition": "external-with-portable-contract"},
     {"id": "notcrawl", "disposition": "external-with-portable-contract"},
     {"id": "notebridge", "disposition": "external-with-portable-contract"},
@@ -17,6 +18,7 @@
     {"id": "obsidian", "disposition": "external-with-portable-contract"},
     {"id": "opencap", "disposition": "external-with-portable-contract"},
     {"id": "opencli", "disposition": "external-with-portable-contract"},
+    {"id": "pandoc", "disposition": "external-with-portable-contract"},
     {"id": "peekaboo", "disposition": "external-with-portable-contract"},
     {"id": "rdt-cli", "disposition": "external-with-portable-contract"},
     {"id": "remindctl", "disposition": "external-with-portable-contract"},
@@ -43,7 +45,7 @@
     {
       "id": "local-tools",
       "disposition": "external-with-portable-contract",
-      "skills": ["birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "summarize", "youtube"]
+      "skills": ["birdclaw", "discrawl", "epubcheck", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "pandoc", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "summarize", "youtube"]
     },
     {
       "id": "commands",
@@ -63,7 +65,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["cli-for-agents", "orchestration", "production-repo-baseline"]
+      "skills": ["book", "cli-for-agents", "orchestration", "production-repo-baseline"]
     },
     {
       "id": "real-directories",

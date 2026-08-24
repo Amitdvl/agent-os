@@ -2,7 +2,7 @@
 
 The repository provides a portable, preview-first workflow. It has no live deployment dependency: testing uses isolated temporary homes only.
 
-Current coverage includes manifest validation, core-only safe setup, six default core commands, full two-host deployment, central registry rendering, 20 tool templates, host symlink plans, generated allow rules, install dry-runs, fixture-only SOPS/age vault initialization/validation, a separate Codex command-cutover/rollback transaction, status/doctor distinctions, drift/conflict refusal, safe uninstall, and a fixture-backed production-repo baseline helper that safely foundations an empty directory without fabricating application CI.
+Current coverage includes manifest validation, core-only safe setup, six default core commands, full two-host deployment, an explicit-only book skill whose complete fixture-backed test suite installs to both hosts, central registry rendering, 22 tool templates, guarded Pandoc conversion and EPUBCheck validation contracts, host symlink plans, generated allow rules, install dry-runs, fixture-only SOPS/age vault initialization/validation, a separate Codex command-cutover/rollback transaction, status/doctor distinctions, drift/conflict refusal, safe uninstall, and a fixture-backed production-repo baseline helper that safely foundations an empty directory without fabricating application CI.
 
 Run these checks before a release:
 

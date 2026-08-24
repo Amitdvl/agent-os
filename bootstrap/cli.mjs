@@ -35,6 +35,7 @@ const CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the can
 const TOOL_CONTRACTS = {
   birdclaw: { root: "<user-home>/.birdclaw", preflight: ["birdclaw --help"], reads: ["birdclaw sync", "birdclaw search --json --max 20"], writes: ["Explicit tweet, reply, DM, mute, or block command only after exact user intent"], limits: "Archive freshness and available history depend on the user's own account sync.", fix: "Complete the tool's supported login locally; never inspect its cookie or database files." },
   discrawl: { root: "<tool-owned Discord archive>", preflight: ["discrawl --help"], reads: ["discrawl sync --full", "discrawl search <query>"], writes: ["Supported discrawl send only with an exact channel and message"], limits: "A full archive sync is required before answering from Discord data.", fix: "Use the tool's documented account setup; do not expose a bot token." },
+  epubcheck: { root: "<no persistent data; user-selected EPUB and optional report destination>", preflight: ["epubcheck --version", "epubcheck --help"], reads: ["epubcheck <user-supplied.epub>", "epubcheck <user-supplied.epub> --json -"], writes: ["Write --out, --json, or --xmp reports only to an explicit destination", "Use --save only for an explicitly requested expanded-archive rebuild"], limits: "Conformance validation does not establish editorial quality, accessibility completeness, or rendering fidelity.", fix: "Verify the Homebrew installation and managed Java runtime; preserve nonzero validation status and named diagnostics." },
   "instagram-cli": { root: "<user-home>/.instagram-cli", preflight: ["instagram-cli --version", "instagram-cli auth whoami"], reads: ["instagram-cli inbox --output json --limit 20"], writes: ["instagram-cli send/reply only with exact thread and content"], limits: "There is intentionally no Instagram website or browser-automation fallback.", fix: "The user must run instagram-cli auth login locally when the session is absent or expired." },
   notcrawl: { root: "<tool-owned Notion archive>", preflight: ["notcrawl status --json"], reads: ["notcrawl sync --source desktop", "notcrawl search <query>"], writes: ["notcrawl publish --push only with an exact remote target and push intent"], limits: "Sync/export/share can change a local archive; publishing is never implicit.", fix: "Configure an independently created vault record or supported desktop/API access." },
   notebridge: { root: "<Wispr Flow local database and NoteBridge state>", preflight: ["notebridge --version", "notebridge --format json doctor"], reads: ["notebridge --format json notes list --source wispr --limit 20 --offset 0", "notebridge --format json notes list --source apple --limit 20 --offset 0"], writes: ["Apple changes only for exact stable apple: IDs with --apply --yes", "For Apple body edits, preserve retrieved raw_content as HTML, pass the existing title explicitly, and verify the title, original-content prefix, and requested change after the write", "One-way Wispr-to-Apple mirror only after reviewing the exact account/folder dry run"], limits: "No network client or remote sync; export requires an explicit destination and --force is intentional overwrite authority.", fix: "Confirm Notes is installed and macOS automation permission is granted; verify the local Wispr schema with doctor." },
@@ -42,6 +43,7 @@ const TOOL_CONTRACTS = {
   obsidian: { root: "<configured user-owned Obsidian vault>", preflight: ["obsidian --help"], reads: ["obsidian search <query>", "obsidian read <note>"], writes: ["Specific create/edit/append only after an explicit note target"], limits: "The vault is read-only by default and its contents are never migrated by Agent OS.", fix: "Set the non-secret vault path in Agent OS config after the user chooses one." },
   opencap: { root: "<tool-owned OpenCap state>", preflight: ["opencap record status"], reads: ["opencap record status"], writes: ["opencap record start/stop/share/edit only for the exact requested window or display"], limits: "Screen Recording and optional account access are human checkpoints.", fix: "Grant the narrow macOS permission in System Settings and complete the supported login manually." },
   opencli: { root: "<tool-owned browser bridge state>", preflight: ["opencli doctor", "opencli profile list"], reads: ["opencli doctor", "opencli twitter bookmark-folders -f json", "opencli twitter bookmark-folder <folder-id> --limit 1000 -f json", "opencli twitter bookmarks --limit 1000 -f json (only when the authenticated folder index fails; label results corpus-wide)"], writes: ["Browser/UI mutation only with exact target and action"], limits: "Cookies, browser profiles, extension permissions, and traces are never inspected or copied. Do not invent a bookmark-folder ID when X returns a folder-index error.", fix: "Install/enable the supported bridge and select a user-owned browser profile manually." },
+  pandoc: { root: "<user-home>/.local/share/pandoc", preflight: ["pandoc --version", "pandoc --help"], reads: ["pandoc --list-input-formats", "pandoc --list-output-formats", "pandoc --print-default-template=epub3"], writes: ["Convert exact user-supplied inputs only to an explicit output path", "Use --extract-media only with an explicit destination"], limits: "Format conversion does not guarantee visual fidelity; EPUB output still requires EPUBCheck validation.", fix: "Inspect supported formats and bounded resource paths; never install or run an unreviewed filter, template, or external engine." },
   peekaboo: { root: "<macOS accessibility and screen state>", preflight: ["peekaboo --help"], reads: ["peekaboo list windows"], writes: ["UI automation only with a clear target and task authority"], limits: "Read-only inspection is preferred; Accessibility/Screen Recording stay user-controlled.", fix: "Grant only the required macOS privacy permission in System Settings." },
   "rdt-cli": { root: "<tool-owned browser-session state>", preflight: ["rdt --help"], reads: ["rdt search <query> --json --max 20"], writes: ["Comment, vote, save, subscribe, or account changes only with exact target/action"], limits: "Browser credentials are opaque and must never be inspected.", fix: "Connect the user's own supported browser session manually." },
   remindctl: { root: "<Apple Reminders database>", preflight: ["remindctl --help"], reads: ["remindctl list"], writes: ["Create/update/complete/delete only with exact list, reminder, date, and action", "Create new reminders with high (urgent) priority unless the user explicitly requests another priority"], limits: "Results can lag native state and access requires macOS permission.", fix: "Grant Reminders access in System Settings, then verify in the native app." },
@@ -58,6 +60,7 @@ const TOOL_CONTRACTS = {
 const TOOL_DETAILS = {
   birdclaw: "Check archive db stats; use cached whois/search/links and exact date ranges. Sync again after a requested remote write.",
   discrawl: "Run a full sync before archive answers and after supported writes; prefer concise summaries over raw private messages.",
+  epubcheck: "Validate the exact final EPUB after its last generation change. Console output and --json - are reads; durable reports and --save are explicit writes. Never downgrade diagnostics merely to force a pass.",
   "instagram-cli": "Use fresh bounded inbox JSON and returned thread IDs. Mark-seen/download are writes. Never use the Instagram website or browser automation.",
   notcrawl: "Use status/doctor before selecting a sync source. Exports mutate local output; publish --push needs exact remote intent and never writes back to Notion.",
   notebridge: "Use JSON-first bounded reads. Wispr is local read-only; never expose note content unless requested. Apple mutations are dry-run by default and need stable IDs plus --apply --yes. Treat body edits as whole-document replacements: retrieve raw_content, preserve it as HTML, pass the existing title explicitly, and read back the title, original-content prefix, and requested change. If preservation cannot be verified, stop instead of writing. Mirrors are one-way, conflict-aware, and never delete Notes.",
@@ -65,6 +68,7 @@ const TOOL_DETAILS = {
   obsidian: "Configured vault paths are user-owned. Search/read/backlinks are reads; create, append, rename, move, and delete are exact-target writes.",
   opencap: "Check status first; prefer named windows. Event-log milestones, and only stop/share/edit/delete requested recordings.",
   opencli: "Run doctor/profile list; browser commands operate on a selected logged-in profile and extensions are manual checkpoints. For a named X bookmark folder, list folders, match the requested name, then fetch that folder. If the authenticated folder index returns X's bookmarkFoldersSlice 404, mine `opencli twitter bookmarks --limit 1000 -f json` instead and explicitly label the result corpus-wide rather than folder-attributed; never inspect cookies, storage, or traces to bypass the failure.",
+  pandoc: "Use exact user-supplied inputs and an explicit output path. Check before overwrite, keep resource paths bounded, never run untrusted filters or engines, and validate EPUB output with EPUBCheck.",
   peekaboo: "Run permissions and inspect apps/windows first. UI clicks, typing, menus, clipboard, and dialogs need clear authority.",
   "rdt-cli": "Keep requests bounded and sequential; short indexes require a fresh listing. Exports use task-local paths and interactions require exact target/text.",
   remindctl: "Use JSON and read back writes. Set newly created reminders to high (urgent) priority unless the user explicitly requests another priority. Native Reminders UI is freshest for Today/current/subtasks; never use it for calendar events.",
@@ -168,6 +172,10 @@ async function validateBundle(bundle) {
     for (const tool of [...(pack.tools ?? []), ...(pack.optionalTools ?? [])]) if (!tools.has(tool)) errors.push(`pack ${pack.id} references missing tool ${tool}`);
     for (const command of [...(pack.commands ?? []), ...(pack.optionalCommands ?? [])]) if (!commands.has(command)) errors.push(`pack ${pack.id} references missing command ${command}`);
     for (const skill of pack.skills ?? []) if (!skills.has(skill)) errors.push(`pack ${pack.id} references missing skill ${skill}`);
+  }
+
+  for (const skill of collections.skills) {
+    if (skill.includeTests !== undefined && typeof skill.includeTests !== "boolean") errors.push(`skill ${skill.id} includeTests must be boolean`);
   }
 
   for (const tool of collections.tools) {
@@ -288,16 +296,18 @@ function selectedSkills(context) {
 async function portableSkillFiles(skill) {
   const root = dirname(join(REPO_ROOT, skill.path));
   const files = [];
+  const includeTests = skill.includeTests === true;
   async function visit(directory) {
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
       const target = join(directory, entry.name);
       if (entry.isDirectory()) {
-        if (["testdata", "tests", "__pycache__"].includes(entry.name)) continue;
+        if (entry.name === "__pycache__" || (!includeTests && ["testdata", "tests"].includes(entry.name))) continue;
         await visit(target);
         continue;
       }
-      if (!entry.isFile() || entry.name.endsWith(".test.js") || entry.name.endsWith(".test.mjs") || entry.name.endsWith(".test.ts") || entry.name.endsWith("_test.go")) continue;
+      if (!entry.isFile() || entry.name.endsWith(".pyc")) continue;
+      if (!includeTests && (entry.name.endsWith(".test.js") || entry.name.endsWith(".test.mjs") || entry.name.endsWith(".test.ts") || entry.name.endsWith("_test.go"))) continue;
       files.push({ relativePath: relative(root, target), content: await readText(target) });
     }
   }

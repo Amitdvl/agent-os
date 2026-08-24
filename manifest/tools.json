@@ -12,6 +12,11 @@
       "freshness": "Run a full sync before answering from message data and again after supported writes.", "safety": "Do not expose tokens or private message content beyond the request."
     },
     {
+      "id": "epubcheck", "binary": "epubcheck", "purpose": "Read-only EPUB conformance validation and guarded validation-report output.",
+      "packs": ["creator"], "source": "epubcheck-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "freshness": "Validate the exact final artifact after its last generation change.", "safety": "Treat EPUB content and diagnostics as private; reports and --save require explicit destinations; never suppress failures to manufacture a pass."
+    },
+    {
       "id": "instagram-cli", "binary": "instagram-cli", "purpose": "Instagram Direct/profile reads and explicit messaging actions.",
       "packs": ["communication"], "source": "instagram-cli-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
       "freshness": "Use thread IDs from a fresh bounded inbox result.", "safety": "Never inspect sessions; no website fallback; login stays user-owned."
@@ -45,6 +50,11 @@
       "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters, including authenticated X bookmark-folder research, and Browser Bridge automation.",
       "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
       "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters. For named X bookmark folders, use the folder adapter first; if X returns its folder-index 404, mine OpenCLI's current bookmark corpus and label it as corpus-wide.", "safety": "Never inspect cookies, session storage, or traces to obtain a folder ID; browser/account writes require exact intent."
+    },
+    {
+      "id": "pandoc", "binary": "pandoc", "purpose": "Guarded conversion of user-supplied documents and manuscripts, including EPUB generation.",
+      "packs": ["creator"], "source": "pandoc-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "freshness": "Resolve the named input and output paths immediately before conversion.", "safety": "Require exact inputs and an explicit output; check before overwrite; never run untrusted filters, templates, include files, or external engines."
     },
     {
       "id": "peekaboo", "binary": "peekaboo", "purpose": "macOS screen, app, window inspection and UI automation support.",
