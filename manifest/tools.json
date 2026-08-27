@@ -72,6 +72,11 @@
       "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action; new reminders default to high (urgent) priority unless the user specifies otherwise."
     },
     {
+      "id": "silicon", "binary": "silicon", "purpose": "Private local rendering of exact bounded code snippets into explicit PNG images.",
+      "packs": ["creator"], "source": "silicon-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "freshness": "Resolve and inspect the exact requested snippet, line range, and new output path immediately before rendering.", "safety": "Extract ranges before rendering, isolate config/cache, stop on suspected secrets, avoid clipboard/custom assets/overwrites by default, and validate the PNG itself because errors can exit zero."
+    },
+    {
       "id": "spogo", "binary": "spogo", "purpose": "Spotify search, playback, queue, library, playlists, and listening data.",
       "packs": ["creator"], "source": "spogo-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
       "freshness": "Check auth status before authenticated work.", "safety": "Never inspect cookies; playback and account/player changes are user-visible writes."
