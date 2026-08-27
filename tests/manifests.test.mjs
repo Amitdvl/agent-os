@@ -98,16 +98,17 @@ test("book is an explicit-only portable core skill with installed-copy tests", a
   await stat(join(ROOT, "skills", "book", "scripts", "build_epub.py"));
 });
 
-test("Pandoc and EPUBCheck are credential-free creator tools with reviewed Homebrew sources", async () => {
+test("Pandoc, EPUBCheck, and Silicon are credential-free creator tools with reviewed Homebrew sources", async () => {
   const tools = await json("tools");
   const sources = await json("sources");
   const packs = await json("packs");
   const dispositions = await json("inventory-dispositions");
+  const secrets = await json("secrets");
   const sourceMap = new Map(sources.sources.map((item) => [item.id, item]));
   const creator = packs.packs.find((pack) => pack.id === "creator");
   const portableTools = dispositions.skillGroups.find((group) => group.id === "local-tools").skills;
 
-  for (const [id, sourceId, pin] of [["pandoc", "pandoc-brew", "3.10.2-audited"], ["epubcheck", "epubcheck-brew", "5.3.0-audited"]]) {
+  for (const [id, sourceId, pin] of [["pandoc", "pandoc-brew", "3.10.2-audited"], ["epubcheck", "epubcheck-brew", "5.3.0-audited"], ["silicon", "silicon-brew", "0.5.3-audited"]]) {
     const tool = tools.tools.find((item) => item.id === id);
     assert.equal(tool.source, sourceId);
     assert.deepEqual(tool.auth, ["none"]);
@@ -123,18 +124,19 @@ test("Pandoc and EPUBCheck are credential-free creator tools with reviewed Homeb
     });
     assert.ok(sourceMap.get(sourceId).review_notes);
   }
+  assert.equal(secrets.requirements.some((item) => item.tool === "silicon"), false);
 });
 
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
   const commands = await json("commands");
-  assert.equal(dispositions.localTools.length, 22);
+  assert.equal(dispositions.localTools.length, 23);
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 90);
-  assert.equal(new Set(installedSkills).size, 90);
+  assert.equal(installedSkills.length, 91);
+  assert.equal(new Set(installedSkills).size, 91);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);

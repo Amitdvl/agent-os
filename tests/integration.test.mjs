@@ -53,7 +53,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(setup.conflicts, 0);
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");
-  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 22);
+  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 23);
   const launcher = join(home, ".local", "bin", "agent-os");
   assert.ok((await lstat(launcher)).isSymbolicLink());
   assert.equal(await realpath(launcher), join(ROOT, "bin", "agent-os"));
@@ -66,7 +66,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
-    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", epubcheck: "--json -", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", pandoc: "--list-output-formats", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
+    birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", epubcheck: "--json -", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", pandoc: "--list-output-formats", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", silicon: "errors may still exit zero", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
   };
   for (const [id, phrase] of Object.entries(toolRequirements)) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
@@ -79,9 +79,12 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.match(noteBridgeContract, /retrieve raw_content/i);
   assert.match(noteBridgeContract, /existing title explicitly/i);
   assert.match(noteBridgeContract, /original-content prefix/i);
+  const siliconContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "silicon", "SKILL.md"), "utf8");
+  for (const pattern of [/SILICON_CONFIG_PATH/, /SILICON_CACHE_PATH/, /--highlight-lines does not crop/i, /new, non-symlink/i, /reject an existing output/i, /rendering is separate from any external send/i]) assert.match(siliconContract, pattern);
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["birdclaw"\]/);
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["epubcheck"\]/);
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["pandoc"\]/);
+  assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["silicon"\]/);
   assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
   for (const id of ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]) {
     assert.match(await readFile(join(home, ".codex", "skills", id, "SKILL.md"), "utf8"), new RegExp(`name: ${id}`));

@@ -35,8 +35,8 @@
     },
     {
       "id": "creator",
-      "description": "Recording, playback, and public-media production helpers.",
-      "tools": ["opencap", "spogo", "yt-dlp", "pandoc", "epubcheck"],
+      "description": "Recording, playback, code-image, document, and public-media production helpers.",
+      "tools": ["opencap", "spogo", "yt-dlp", "pandoc", "epubcheck", "silicon"],
       "commands": [],
       "optionalCommands": [],
       "skills": []

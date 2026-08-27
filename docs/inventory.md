@@ -2,7 +2,7 @@
 
 The manifest is the source of truth for the portable inventory:
 
-- `manifest/tools.json` — 22 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
+- `manifest/tools.json` — 23 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secrets.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, and creator packs.
@@ -25,11 +25,14 @@ The research pack's OpenCLI contract treats named X bookmark folders as an authe
 
 The research pack includes Summarize: a Homebrew CLI that extracts user-supplied URLs or files and can route a concise model summary through an existing coding CLI. Its portable contract treats provider configuration and `~/.summarize` as private, keeps direct provider keys in the user's independent vault, and requires explicit scope for slide files or cache deletion.
 
-The creator pack includes Pandoc and EPUBCheck for a guarded document-production
-pipeline. Pandoc converts only exact user-supplied inputs to explicit outputs,
-never trusts filters or external engines implicitly, and sends generated EPUBs
-through EPUBCheck. EPUBCheck validation is read-only by default; durable reports
-and expanded-archive rebuilds require explicit destinations.
+The creator pack includes Silicon for private local code-image production and
+Pandoc plus EPUBCheck for a guarded document-production pipeline. Silicon
+renders only exact bounded snippets to new explicit PNG destinations, isolates
+ambient config/cache, and validates the artifact because upstream runtime errors
+can still exit zero. Pandoc converts only exact user-supplied inputs to explicit
+outputs, never trusts filters or external engines implicitly, and sends generated
+EPUBs through EPUBCheck. EPUBCheck validation is read-only by default; durable
+reports and expanded-archive rebuilds require explicit destinations.
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
 
