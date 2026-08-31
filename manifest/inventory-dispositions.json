@@ -24,6 +24,7 @@
     {"id": "remindctl", "disposition": "external-with-portable-contract"},
     {"id": "silicon", "disposition": "external-with-portable-contract"},
     {"id": "spogo", "disposition": "external-with-portable-contract"},
+    {"id": "telgo", "disposition": "external-with-portable-contract"},
     {"id": "twitter-cli", "disposition": "external-with-portable-contract"},
     {"id": "wacli", "disposition": "external-with-portable-contract"},
     {"id": "wacrawl", "disposition": "external-with-portable-contract"},
@@ -46,7 +47,7 @@
     {
       "id": "local-tools",
       "disposition": "external-with-portable-contract",
-      "skills": ["birdclaw", "discrawl", "epubcheck", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "pandoc", "peekaboo", "rdt-cli", "remindctl", "silicon", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "summarize", "youtube"]
+      "skills": ["birdclaw", "discrawl", "epubcheck", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "pandoc", "peekaboo", "rdt-cli", "remindctl", "silicon", "spogo", "telgo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "summarize", "youtube"]
     },
     {
       "id": "commands",

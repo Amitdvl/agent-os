@@ -15,6 +15,7 @@
 | Service login | Explicit auth boundary in every contract | OAuth/account consent/browser profile | Login/extension approval |
 | macOS privacy | Permission diagnosis and read-first fallback | Accessibility, Screen Recording, Reminders | System Settings approval |
 | Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
+| Telegram channel digests | Read-only bounded channel history through pinned Telgo; provider summaries require explicit disclosure authority | Telegram app credentials, local personal-account session, and optional Anthropic key | Interactive authentication and approval to send selected content to Anthropic |
 | External writes | Exact-intent, target, content, and verify-after-write rules | Requested target/content/action | User authorization |
 
-All 23 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.
+All 24 selected tool identities are rendered from `manifest/tools.json`; the full per-tool contracts live in the managed local-tools folders.

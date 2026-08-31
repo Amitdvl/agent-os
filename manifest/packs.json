@@ -28,7 +28,7 @@
     {
       "id": "communication",
       "description": "Guarded messaging, social account actions, and phone workflows.",
-      "tools": ["wacli", "wacrawl", "discrawl", "twitter-cli", "xurl", "instagram-cli"],
+      "tools": ["wacli", "wacrawl", "discrawl", "twitter-cli", "xurl", "instagram-cli", "telgo"],
       "commands": [],
       "optionalCommands": [],
       "skills": []

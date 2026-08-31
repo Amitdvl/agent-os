@@ -17,6 +17,7 @@
     {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled", "review_notes": "New reminders default to high (urgent) priority unless the user specifies another priority."},
     {"id": "silicon-brew", "kind": "homebrew", "locator": "silicon", "pin": "0.5.3-audited", "automation": "disabled", "review_notes": "Local code-image rendering requires exact bounded input, isolated config/cache, a new explicit PNG destination, secret review, and artifact validation because runtime errors can still exit zero."},
     {"id": "spogo-brew", "kind": "homebrew", "locator": "steipete/tap/spogo", "pin": "0.10.0-audited", "automation": "disabled"},
+    {"id": "telgo-git", "kind": "git", "locator": "https://github.com/Amitdvl/telgo.git", "pin": "a228a0c9cd9aa1278e50a15bfae1f71f8a361a16", "automation": "disabled", "review_notes": "Build the exact reviewed Go commit. The CLI is Telegram read-only, but setup/auth write local credential-equivalent state and summarize sends selected channel messages to Anthropic. Credentials and sessions remain in the user's independent vault and local data root."},
     {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},
     {"id": "wacrawl-audited", "kind": "homebrew", "locator": "wacrawl", "pin": "0.3.1-audited", "automation": "disabled"},
