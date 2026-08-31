@@ -127,16 +127,40 @@ test("Pandoc, EPUBCheck, and Silicon are credential-free creator tools with revi
   assert.equal(secrets.requirements.some((item) => item.tool === "silicon"), false);
 });
 
+test("Telgo is a pinned read-only Telegram channel tool with explicit provider disclosure", async () => {
+  const tools = await json("tools");
+  const sources = await json("sources");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const secrets = await json("secrets");
+  const tool = tools.tools.find((item) => item.id === "telgo");
+  const source = sources.sources.find((item) => item.id === "telgo-git");
+  const communication = packs.packs.find((pack) => pack.id === "communication");
+  const requirement = secrets.requirements.find((item) => item.tool === "telgo");
+  const portableTools = dispositions.skillGroups.find((group) => group.id === "local-tools").skills;
+
+  assert.equal(tool.source, "telgo-git");
+  assert.deepEqual(tool.auth, ["agent-vault", "human-login"]);
+  assert.match(tool.safety, /Anthropic/);
+  assert.ok(communication.tools.includes("telgo"));
+  assert.ok(portableTools.includes("telgo"));
+  assert.equal(source.locator, "https://github.com/Amitdvl/telgo.git");
+  assert.equal(source.pin, "a228a0c9cd9aa1278e50a15bfae1f71f8a361a16");
+  assert.match(source.review_notes, /read-only/i);
+  assert.deepEqual(requirement.names, ["TELEGRAM_APP_ID", "TELEGRAM_APP_HASH", "ANTHROPIC_API_KEY", "TELEGRAM_SESSION"]);
+  assert.equal(requirement.class, "agent-vault-and-human-login");
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
   const commands = await json("commands");
-  assert.equal(dispositions.localTools.length, 23);
+  assert.equal(dispositions.localTools.length, 24);
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 91);
-  assert.equal(new Set(installedSkills).size, 91);
+  assert.equal(installedSkills.length, 92);
+  assert.equal(new Set(installedSkills).size, 92);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);

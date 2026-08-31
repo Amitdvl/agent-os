@@ -82,6 +82,11 @@
       "freshness": "Check auth status before authenticated work.", "safety": "Never inspect cookies; playback and account/player changes are user-visible writes."
     },
     {
+      "id": "telgo", "binary": "telgo", "purpose": "Read-only Telegram channel listing, bounded history reads, and explicitly authorized Anthropic summaries.",
+      "packs": ["communication"], "source": "telgo-git", "disposition": "external", "platforms": ["darwin"], "auth": ["agent-vault", "human-login"],
+      "freshness": "Use a fresh channel listing when target resolution matters and keep history reads between 1 and 200 messages.", "safety": "Prefer exact @usernames; setup and auth are user-owned; summaries disclose selected Telegram content to Anthropic and require explicit intent."
+    },
+    {
       "id": "twitter-cli", "binary": "twitter", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions.",
       "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
       "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes."
