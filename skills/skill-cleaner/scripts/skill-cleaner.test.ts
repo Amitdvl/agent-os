@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { resolve } from "node:path";
 import test from "node:test";
 
 import {
@@ -77,7 +78,7 @@ test("resolves relative skill reads from function-call workdirs", () => {
       cmd: "cat skills/demo/SKILL.md",
       workdir: "/tmp/repo",
     })),
-    ["/tmp/repo/skills/demo/SKILL.md"],
+    [resolve("/tmp/repo", "skills/demo/SKILL.md")],
   );
 });
 

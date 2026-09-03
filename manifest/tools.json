@@ -33,7 +33,7 @@
     },
     {
       "id": "obsidian", "binary": "obsidian", "purpose": "Obsidian vault search, links, reads, and explicit note edits.",
-      "packs": ["local-productivity"], "source": "obsidian-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "packs": ["local-productivity"], "source": "obsidian-manual", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["none"],
       "freshness": "Use the configured vault as the source of truth.", "safety": "Treat the vault read-only unless a specific edit is requested."
     },
     {
@@ -43,7 +43,7 @@
     },
     {
       "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters, including authenticated X bookmark-folder research, and Browser Bridge automation.",
-      "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
       "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters. For named X bookmark folders, use the folder adapter first; if X returns its folder-index 404, mine OpenCLI's current bookmark corpus and label it as corpus-wide.", "safety": "Never inspect cookies, session storage, or traces to obtain a folder ID; browser/account writes require exact intent."
     },
     {
@@ -53,7 +53,7 @@
     },
     {
       "id": "rdt-cli", "binary": "rdt", "purpose": "Reddit browsing, search, exports, account reads, and explicit interactions.",
-      "packs": ["research", "communication"], "source": "rdt-cli-git", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "packs": ["research", "communication"], "source": "rdt-cli-git", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
       "freshness": "Use bounded sequential requests and structured output.", "safety": "Never inspect browser cookies; interactions require exact target/action."
     },
     {
@@ -68,32 +68,32 @@
     },
     {
       "id": "twitter-cli", "binary": "twitter", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions.",
-      "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
+      "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
       "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes."
     },
     {
       "id": "wacli", "binary": "wacli", "purpose": "WhatsApp linked-device live reads and writes.",
-      "packs": ["communication"], "source": "wacli-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "packs": ["communication"], "source": "wacli-audited", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
       "freshness": "Use current linked-device state for live tasks.", "safety": "Sends and account/group mutations require exact target and content/action."
     },
     {
       "id": "wacrawl", "binary": "wacrawl", "purpose": "Read-only WhatsApp Desktop archive sync/search.",
-      "packs": ["communication"], "source": "wacrawl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["local-archive"],
+      "packs": ["communication"], "source": "wacrawl-audited", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["local-archive"],
       "freshness": "Sync before answers from archive data unless the user opts out.", "safety": "Never mutate WhatsApp or expose raw archives/private message text unnecessarily."
     },
     {
       "id": "xurl", "binary": "xurl", "purpose": "Authenticated X API transport and guarded live actions.",
-      "packs": ["research", "communication"], "source": "xurl-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
+      "packs": ["research", "communication"], "source": "xurl-npm", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
       "freshness": "Check auth status before live API work.", "safety": "Never inspect credential storage or use verbose auth; no inline secrets."
     },
     {
       "id": "yt-dlp", "binary": "yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads.",
-      "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["none"],
+      "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["none"],
       "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
     },
     {
       "id": "youtube", "binary": "youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session.",
-      "packs": ["research"], "source": "youtube-wrapper-agent-os", "disposition": "external-local", "platforms": ["darwin"], "auth": ["browser-session"],
+      "packs": ["research"], "source": "youtube-wrapper-agent-os", "disposition": "external-local", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
       "freshness": "Run OpenCLI doctor immediately before browser-backed saves and inspect the submitted YouTube URL with yt-dlp when metadata is needed.", "safety": "Never inspect cookies or session files; Watch Later saves require the exact URL, explicit user intent, and --yes; report success only after the selected state is verified."
     }
   ]

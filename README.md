@@ -1,6 +1,6 @@
 # Agent OS
 
-Agent OS is my opinionated portable workflow for Codex and Claude Code. It supports the full workflow on macOS and the safe core on Windows. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.
+Agent OS is my opinionated portable workflow for Codex and Claude Code. It supports the full workflow on macOS and every documented Windows-compatible capability on Windows. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.
 
 
 ## The easy path: ask Codex
@@ -8,14 +8,15 @@ Agent OS is my opinionated portable workflow for Codex and Claude Code. It suppo
 You do not need to understand local tools, registries, vaults, or shell commands.
 
 1. Install Codex (or Claude Code) and sign in with your own account.
-2. Clone this private repository, or give Codex its repository URL and ask it to clone it into a normal user-owned folder. On Windows, use the safe-core commands in the quickstart rather than the macOS-only optional packs.
+2. Clone this repository, or give Codex its repository URL and ask it to clone it into a normal user-owned folder. On Windows, setup deploys the documented Windows-compatible subset and reports excluded macOS-only tools.
 3. Open the cloned repository in Codex and paste this:
 
 ```text
-I want you to onboard this Mac into Agent OS from the repository currently open.
+I want you to onboard this computer into Agent OS from the repository currently open.
 I am nontechnical. First inspect the repository and prerequisites, then explain
 the setup plan in plain English. Set up the safe core, verify it, and then set
-up the default Agent OS capability packs and their shared tool instructions.
+up every Agent OS capability pack that is compatible with this operating system
+and their shared tool instructions. Report platform-excluded tools clearly.
 Use preview mode before each change and verify every completed step. Install a
 local tool only through Agent OS's reviewed install flow and only after I have
 explicitly confirmed that named tool. Create only my own independent vault

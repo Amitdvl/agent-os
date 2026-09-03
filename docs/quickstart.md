@@ -38,8 +38,11 @@ launcher, so the installed `/commands` and `/add` contracts can invoke
 overwrite.
 
 On Windows, the managed launcher is `%USERPROFILE%\.local\bin\agent-os.cmd`.
-Windows support is deliberately limited to the safe `core` pack. The optional
-packs and their tools remain macOS-only and the CLI rejects them on Windows.
+Windows setup deploys every compatible tool contract and reports every excluded
+tool in its JSON plan and status. The Windows-compatible subset is Obsidian,
+OpenCLI, rdt-cli, twitter-cli, wacli, wacrawl, xurl, yt-dlp, and the local
+YouTube wrapper. Apple-specific tools and tools without a documented Windows
+runtime remain excluded; live command cutover is also macOS-only.
 
 ## Add optional capabilities later
 
@@ -49,6 +52,19 @@ Preview a full tool deployment (managed registry, templates, symlinks, and Codex
 ./bin/setup --packs core,local-productivity,research,communication,creator
 ./bin/setup --packs core,local-productivity --apply
 ```
+
+On Windows PowerShell, preview and apply the full platform-compatible suite:
+
+```powershell
+node .\bootstrap\cli.mjs setup --json
+node .\bootstrap\cli.mjs setup --apply --json
+node .\bootstrap\cli.mjs status --json
+```
+
+Setup deploys contracts and host links only. It does not install, log into, or
+read private state from external tools. Use the reviewed install plan for one
+named compatible tool at a time; tools with release-only or manual Windows
+installs remain a human checkpoint.
 
 Preview installation of a pinned, supported tool source:
 
@@ -65,6 +81,8 @@ Only after independently reviewing the source, license, and command may a user i
 This never logs in, grants access, installs browser extensions, or mutates remote accounts. A `manual-unresolved` source remains a human checkpoint.
 
 ## Optional owner-machine command cutover
+
+This workflow is macOS-only.
 
 The separate Codex-only cutover is for an owner machine that already has the
 three legacy command links. It is not part of `setup`, does not adopt tool

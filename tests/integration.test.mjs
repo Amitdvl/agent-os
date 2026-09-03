@@ -3,12 +3,17 @@ import { spawnSync } from "node:child_process";
 import { access, chmod, lstat, mkdir, readFile, readlink, realpath, rm, rmdir, stat, symlink, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { platform } from "node:os";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CLI = join(ROOT, "bootstrap", "cli.mjs");
 const SANDBOX = join(ROOT, ".sandbox", `integration-${process.pid}`);
+const WINDOWS = platform() === "win32";
+const PLATFORM_TOOL_IDS = WINDOWS
+  ? ["obsidian", "opencli", "rdt-cli", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"]
+  : ["birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"];
 
 test.after(async () => {
   await rm(SANDBOX, { recursive: true, force: true });
@@ -53,34 +58,44 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(setup.conflicts, 0);
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");
-  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, 19);
-  const launcher = join(home, ".local", "bin", "agent-os");
-  assert.ok((await lstat(launcher)).isSymbolicLink());
-  assert.equal(await realpath(launcher), join(ROOT, "bin", "agent-os"));
-  const launcherSmoke = spawnSync(launcher, ["validate"], { cwd: root, encoding: "utf8", env: process.env });
-  assert.equal(launcherSmoke.status, 0, `symlinked launcher failed:\nstdout: ${launcherSmoke.stdout}\nstderr: ${launcherSmoke.stderr}`);
+  assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, PLATFORM_TOOL_IDS.length);
+  const launcher = join(home, ".local", "bin", WINDOWS ? "agent-os.cmd" : "agent-os");
+  if (WINDOWS) assert.match(await readFile(launcher, "utf8"), /bootstrap\\cli\.mjs/);
+  else {
+    assert.ok((await lstat(launcher)).isSymbolicLink());
+    assert.equal(await realpath(launcher), join(ROOT, "bin", "agent-os"));
+  }
+  const launcherSmoke = WINDOWS
+    ? spawnSync("cmd.exe", ["/d", "/s", "/c", launcher, "validate"], { cwd: root, encoding: "utf8", env: process.env })
+    : spawnSync(launcher, ["validate"], { cwd: root, encoding: "utf8", env: process.env });
+  assert.equal(launcherSmoke.status, 0, `launcher failed:\nstdout: ${launcherSmoke.stdout}\nstderr: ${launcherSmoke.stderr}`);
   assert.equal(JSON.parse(launcherSmoke.stdout).ok, true);
-  const codexLink = join(home, ".codex", "skills", "birdclaw");
-  const claudeLink = join(home, ".claude", "skills", "birdclaw");
+  const primaryTool = WINDOWS ? "opencli" : "birdclaw";
+  const codexLink = join(home, ".codex", "skills", primaryTool);
+  const claudeLink = join(home, ".claude", "skills", primaryTool);
   assert.ok((await lstat(codexLink)).isSymbolicLink());
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
     birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli status", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
   };
-  for (const [id, phrase] of Object.entries(toolRequirements)) {
+  for (const [id, phrase] of Object.entries(toolRequirements).filter(([id]) => PLATFORM_TOOL_IDS.includes(id))) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
     for (const heading of ["## Setup and configuration", "## Tool-specific workflow", "## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
   }
-  const remindctlContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "remindctl", "SKILL.md"), "utf8");
-  assert.match(remindctlContract, /newly created reminders to high \(urgent\) priority/i);
-  const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
-  assert.match(noteBridgeContract, /retrieve raw_content/i);
-  assert.match(noteBridgeContract, /existing title explicitly/i);
-  assert.match(noteBridgeContract, /original-content prefix/i);
-  assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["birdclaw"\]/);
-  assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
+  if (PLATFORM_TOOL_IDS.includes("remindctl")) {
+    const remindctlContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "remindctl", "SKILL.md"), "utf8");
+    assert.match(remindctlContract, /newly created reminders to high \(urgent\) priority/i);
+  }
+  if (PLATFORM_TOOL_IDS.includes("notebridge")) {
+    const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
+    assert.match(noteBridgeContract, /retrieve raw_content/i);
+    assert.match(noteBridgeContract, /existing title explicitly/i);
+    assert.match(noteBridgeContract, /original-content prefix/i);
+  }
+  assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), new RegExp(`prefix_rule\\(pattern=\\["${WINDOWS ? "opencli" : "birdclaw"}"\\]`));
+  if (!WINDOWS) assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
   for (const id of ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]) {
     assert.match(await readFile(join(home, ".codex", "skills", id, "SKILL.md"), "utf8"), new RegExp(`name: ${id}`));
     assert.match(await readFile(join(home, ".claude", "commands", `${id}.md`), "utf8"), new RegExp(`name: ${id}`));
@@ -94,21 +109,22 @@ test("full deployment renders central registry, host symlinks, rules, status and
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(status.installed, true);
   assert.deepEqual(status.drift, []);
-  assert.equal(status.tools.find((item) => item.id === "notion").cli, "absent");
-  assert.equal(status.tools.find((item) => item.id === "notion").vault, "missing-requirement");
-  assert.equal(status.tools.find((item) => item.id === "remindctl").permission, "missing-macos-permission");
+  const statusTool = WINDOWS ? "opencli" : "notion";
+  assert.equal(status.tools.find((item) => item.id === statusTool).cli, "absent");
+  assert.equal(status.tools.find((item) => item.id === statusTool).vault, WINDOWS ? "not-required-or-present" : "missing-requirement");
+  if (!WINDOWS) assert.equal(status.tools.find((item) => item.id === "remindctl").permission, "missing-macos-permission");
   assert.equal(status.tools.find((item) => item.id === "wacli").auth, "unauthenticated-human-checkpoint");
   const doctor = JSON.parse(run(["doctor", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(doctor.ok, true);
   assert.match(doctor.nextActions[1], /install/);
   const catalogue = JSON.parse(run(["status", "--home", home, "--catalog", "--json"], 0, noTools).stdout);
   assert.equal(catalogue.workflows.length, 5);
-  assert.ok(catalogue.hostSkills.codex.includes("birdclaw"));
+  assert.ok(catalogue.hostSkills.codex.includes(WINDOWS ? "opencli" : "birdclaw"));
   assert.deepEqual(catalogue.automations, []);
   assert.deepEqual(catalogue.plugins, []);
   assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator"]);
   assert.deepEqual(catalogue.classifiedCatalogue.map((item) => item.group).filter((item, index, all) => index === all.indexOf(item)), ["personal-slash-commands", "workflows", "local-tools", "standalone-skills"]);
-  assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === "birdclaw").source, "managed local-tools registry");
+  assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === (WINDOWS ? "opencli" : "birdclaw")).source, "managed local-tools registry");
 
   const beforeUpdate = await readFile(join(home, ".agent-os", "state.json"), "utf8");
   const update = JSON.parse(run(["update", "--home", home, "--safe", "--json"], 0, noTools).stdout);
@@ -130,11 +146,12 @@ test("install mode is separately invoked and remains a dry-run without reviewed 
   const plan = JSON.parse(run(["install", "--home", join(root, "user"), "--tools", "yt-dlp", "--json"]).stdout);
   assert.equal(plan.apply, false);
   assert.equal(plan.installs[0].id, "yt-dlp");
-  assert.match(plan.installs[0].command, /^brew install yt-dlp$/);
+  if (WINDOWS) assert.equal(plan.installs[0].status, "manual-required");
+  else assert.match(plan.installs[0].command, /^brew install yt-dlp$/);
   run(["install", "--home", join(root, "user"), "--tools", "yt-dlp", "--safe", "--apply", "--reviewed-install", "--json"], 1);
 });
 
-test("vault setup and validation use fixture binaries only and leave tmp clean", async (context) => {
+test("vault setup and validation use fixture binaries only and leave tmp clean", { skip: WINDOWS }, async (context) => {
   const root = join(SANDBOX, "vault");
   context.after(() => rm(root, { recursive: true, force: true }));
   const fakeBin = join(root, "bin");
@@ -171,7 +188,7 @@ test("setup refuses an existing unowned agent-os launcher", async (context) => {
   const root = join(SANDBOX, "launcher-conflict");
   context.after(() => rm(root, { recursive: true, force: true }));
   const home = join(root, "user");
-  const launcher = join(home, ".local", "bin", "agent-os");
+  const launcher = join(home, ".local", "bin", WINDOWS ? "agent-os.cmd" : "agent-os");
   await mkdir(dirname(launcher), { recursive: true });
   await writeFile(launcher, "user-owned launcher\n", "utf8");
   const result = run(["setup", "--home", home, "--safe", "--apply", "--json"], 1);
@@ -185,7 +202,7 @@ test("update and uninstall refuse a drifted managed symlink", async (context) =>
   const home = join(root, "user");
   const noTools = { PATH: join(root, "empty-bin") };
   run(["setup", "--home", home, "--packs", "core,research", "--apply", "--json"], 0, noTools);
-  const link = join(home, ".codex", "skills", "birdclaw");
+  const link = join(home, ".codex", "skills", WINDOWS ? "opencli" : "birdclaw");
   await rm(link, { force: true });
   await writeFile(link, "user replacement\n", "utf8");
   const update = run(["update", "--home", home, "--apply", "--json"], 1, noTools);
@@ -217,7 +234,7 @@ async function createCutoverFixture(root) {
   return { home, codex, skills, legacy, originalGuidance };
 }
 
-test("live cutover is preview-first, exact, idempotent, and rollback restores the original Codex state", async (context) => {
+test("live cutover is preview-first, exact, idempotent, and rollback restores the original Codex state", { skip: WINDOWS }, async (context) => {
   const root = join(SANDBOX, "live-cutover");
   context.after(() => rm(root, { recursive: true, force: true }));
   const fixture = await createCutoverFixture(root);
@@ -270,7 +287,7 @@ test("live cutover is preview-first, exact, idempotent, and rollback restores th
   assert.equal(JSON.parse(run(["live-rollback", "--home", fixture.home, "--apply", "--json"]).stdout).mode, "not-applied");
 });
 
-test("live cutover and rollback refuse conflicting or drifted Codex command state", async (context) => {
+test("live cutover and rollback refuse conflicting or drifted Codex command state", { skip: WINDOWS }, async (context) => {
   const conflictRoot = join(SANDBOX, "live-cutover-conflict");
   const driftRoot = join(SANDBOX, "live-cutover-drift");
   context.after(async () => {
@@ -300,7 +317,7 @@ test("live cutover and rollback refuse conflicting or drifted Codex command stat
   assert.equal(await realpath(join(drift.skills, "add")), join(drift.legacy, "commands", "add"));
 });
 
-test("live rollback recovers a recorded pending cutover and rejects unknown pending drift", async (context) => {
+test("live rollback recovers a recorded pending cutover and rejects unknown pending drift", { skip: WINDOWS }, async (context) => {
   const recoverRoot = join(SANDBOX, "live-cutover-pending-recover");
   const driftRoot = join(SANDBOX, "live-cutover-pending-drift");
   context.after(async () => {
@@ -336,7 +353,7 @@ test("live rollback recovers a recorded pending cutover and rejects unknown pend
   assert.equal(await readFile(join(drift.skills, "commands"), "utf8"), "unknown drift\n");
 });
 
-test("a replaced guidance sentence without cutover state is never silently adopted", async (context) => {
+test("a replaced guidance sentence without cutover state is never silently adopted", { skip: WINDOWS }, async (context) => {
   const root = join(SANDBOX, "live-cutover-guidance-conflict");
   context.after(() => rm(root, { recursive: true, force: true }));
   const fixture = await createCutoverFixture(root);
@@ -347,5 +364,9 @@ test("a replaced guidance sentence without cutover state is never silently adopt
 });
 
 test("entrypoint scripts are executable", async () => {
+  if (WINDOWS) {
+    assert.equal(await exists(join(ROOT, "bin", "agent-os.cmd")), true);
+    return;
+  }
   for (const name of ["agent-os", "setup", "install", "vault", "status", "doctor", "update", "safe-uninstall", "live-cutover", "live-rollback", "twin-audit"]) assert.ok((await stat(join(ROOT, "bin", name))).mode & 0o100, `${name} is not executable`);
 });
