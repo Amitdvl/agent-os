@@ -4,11 +4,13 @@ Agent OS is preview-first. It can set up the portable core without installing so
 
 ## Before starting
 
-- macOS, Git, and Node.js 20+
+- macOS or Windows, Git, and Node.js 20+
 - a clone of this repository in a user-owned folder
 - Codex and/or Claude Code installed and signed in through their normal user flows
 
 ## The safe first run
+
+On macOS or a POSIX shell:
 
 ```sh
 ./bin/agent-os validate
@@ -18,12 +20,26 @@ Agent OS is preview-first. It can set up the portable core without installing so
 ./bin/doctor --json
 ```
 
+On Windows PowerShell, invoke the Node entry point directly:
+
+```powershell
+node .\bootstrap\cli.mjs validate
+node .\bootstrap\cli.mjs setup --safe
+node .\bootstrap\cli.mjs setup --safe --apply
+node .\bootstrap\cli.mjs status --json
+node .\bootstrap\cli.mjs doctor --json
+```
+
 `--safe` is real: it selects only the `core` pack and refuses installation, SOPS/age execution, and vault decryption. It creates only Agent OS policy, first-party skills, and commands. The first command is always a no-write preview; `--apply` is separately required.
 
 Core setup also manages `~/.local/bin/agent-os` as a symlink to this checkout's
 launcher, so the installed `/commands` and `/add` contracts can invoke
 `agent-os`. An existing unowned launcher is a conflict rather than a file to
 overwrite.
+
+On Windows, the managed launcher is `%USERPROFILE%\.local\bin\agent-os.cmd`.
+Windows support is deliberately limited to the safe `core` pack. The optional
+packs and their tools remain macOS-only and the CLI rejects them on Windows.
 
 ## Add optional capabilities later
 

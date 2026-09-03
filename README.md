@@ -1,6 +1,6 @@
 # Agent OS
 
-Agent OS is my macOS-only opinionated portable workflow for Codex and Claude Code. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.
+Agent OS is my opinionated portable workflow for Codex and Claude Code. It supports the full workflow on macOS and the safe core on Windows. It packages policy, commands, skills, capability manifests, and a guarded installer without packaging credentials, sessions, archives, identity, or machine-specific state.
 
 
 ## The easy path: ask Codex
@@ -8,7 +8,7 @@ Agent OS is my macOS-only opinionated portable workflow for Codex and Claude Cod
 You do not need to understand local tools, registries, vaults, or shell commands.
 
 1. Install Codex (or Claude Code) and sign in with your own account.
-2. Clone this private repository, or give Codex its repository URL and ask it to clone it into a normal user-owned folder.
+2. Clone this private repository, or give Codex its repository URL and ask it to clone it into a normal user-owned folder. On Windows, use the safe-core commands in the quickstart rather than the macOS-only optional packs.
 3. Open the cloned repository in Codex and paste this:
 
 ```text

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "platforms": ["darwin"],
+  "platforms": ["darwin", "win32"],
   "architectures": ["arm64", "x64"],
   "runtime": {
     "name": "node",

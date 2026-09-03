@@ -289,11 +289,15 @@ function selectedCommands(context) {
 }
 
 function launcherPath(context) {
-  return join(context.userHome, ".local", "bin", "agent-os");
+  return join(context.userHome, ".local", "bin", platform() === "win32" ? "agent-os.cmd" : "agent-os");
 }
 
 function canonicalLauncherTarget() {
-  return join(REPO_ROOT, "bin", "agent-os");
+  return join(REPO_ROOT, "bin", platform() === "win32" ? "agent-os.cmd" : "agent-os");
+}
+
+function renderWindowsLauncher() {
+  return `@echo off\r\nnode "${join(REPO_ROOT, "bootstrap", "cli.mjs")}" %*\r\nexit /b %errorlevel%\r\n`;
 }
 
 async function renderInstructionBlock(context) {
@@ -391,7 +395,8 @@ async function buildPlan(context) {
   const sourceMap = byId(context.bundle.sources.sources);
   operations.push({ kind: "file", path: join(context.localToolsRoot, "registry.json"), content: renderRegistry(tools), id: "local-tools:registry" });
   const launcher = launcherPath(context);
-  operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), id: "agent-os:launcher" });
+  if (platform() === "win32") operations.push({ kind: "file", path: launcher, content: renderWindowsLauncher(), id: "agent-os:launcher" });
+  else operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), id: "agent-os:launcher" });
   for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
@@ -443,7 +448,7 @@ async function atomicWrite(target, content) {
 }
 
 function backupTarget(stateDir, target, timestamp) {
-  const safe = resolve(target).replace(/^[/\\]+/, "").replaceAll("..", "__");
+  const safe = resolve(target).replace(/^[/\\]+/, "").replaceAll("..", "__").replaceAll(":", "_");
   return join(stateDir, "backups", timestamp, safe);
 }
 
@@ -453,6 +458,15 @@ async function applyPlan(context, plan) {
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const managed = [];
 
+  // Stage every required backup before changing any managed destination. This
+  // keeps a failed setup from leaving an untracked partial installation.
+  for (const operation of plan) {
+    if (operation.current != null) {
+      const backup = backupTarget(context.stateDir, operation.path, timestamp);
+      await atomicWrite(backup, operation.current);
+    }
+  }
+
   for (const operation of plan) {
     if (operation.status === "unchanged") {
       const previous = managedRecord(context.previousState, operation.path);
@@ -461,10 +475,6 @@ async function applyPlan(context, plan) {
       else if (operation.kind === "symlink") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, linkTarget: operation.linkTarget });
       else managed.push({ id: operation.id, kind: operation.kind, path: operation.path, hash: hash(operation.content) });
       continue;
-    }
-    if (operation.current != null) {
-      const backup = backupTarget(context.stateDir, operation.path, timestamp);
-      await atomicWrite(backup, operation.current);
     }
     if (operation.kind === "symlink") {
       await mkdir(dirname(operation.path), { recursive: true });
@@ -503,7 +513,7 @@ async function applyPlan(context, plan) {
 }
 
 async function binaryAvailable(binary) {
-  const pathEntries = (process.env.PATH ?? "").split(":").filter(Boolean);
+  const pathEntries = (process.env.PATH ?? "").split(process.platform === "win32" ? ";" : ":").filter(Boolean);
   for (const entry of pathEntries) {
     const candidate = join(entry, binary);
     try {
@@ -906,12 +916,16 @@ async function doctorReport(context) {
     { id: "managed-state", ok: status.drift.length === 0, detail: status.installed ? `${status.drift.length} drift item(s)` : "not installed; repository is still valid" },
     { id: "live-cutover", ok: status.liveCutover.status !== "drift" && status.liveCutover.status !== "unknown-state", detail: status.liveCutover.status },
   ];
+  const windows = platform() === "win32";
   return {
     ok: coreChecks.every((item) => item.ok),
     coreChecks,
     warnings: validation.warnings,
     optionalTools: status.tools,
-    nextActions: [
+    nextActions: windows ? [
+      status.installed ? "Run agent-os status --json to confirm the safe core remains healthy." : "Run agent-os setup --safe to review the Windows safe-core plan.",
+      "Windows support is limited to the safe core; optional packs, tool installation, vault setup, and live cutover remain macOS-only.",
+    ] : [
       status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup --safe to review the core-only plan.",
       "Use agent-os install --tools <id> for a reviewed installation plan; it is preview-only unless explicitly confirmed.",
       "Use agent-os vault init for an independent SOPS + age vault preview, then complete logins and macOS permissions manually.",
@@ -1119,6 +1133,13 @@ async function main() {
 
   const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
+  if (platform() === "win32" && ["install", "vault", "live-cutover", "live-rollback"].includes(command)) {
+    throw new Error(`${command} is not supported on Windows; Windows support is limited to the safe core.`);
+  }
+  const unsupportedTools = selectedTools(context).filter((tool) => tool.platforms && !tool.platforms.includes(platform()));
+  if (["setup", "update"].includes(command) && unsupportedTools.length) {
+    throw new Error(`selected pack contains tools unsupported on ${platform()}: ${unsupportedTools.map((tool) => tool.id).join(", ")}. Use --safe on Windows; optional packs remain macOS-only.`);
+  }
 
   if (command === "install") {
     const plan = { apply: Boolean(options.apply), reviewedInstall: Boolean(options["reviewed-install"]), safe: Boolean(options.safe), installs: installPlan(context) };
