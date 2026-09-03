@@ -273,9 +273,17 @@ async function resolveContext(bundle, options, preferState = false) {
   return { bundle, options, userHome, stateDir, statePath, previousState, profile, packs, hosts, codexHome, claudeHome, localToolsRoot, vaultDir, config };
 }
 
-function selectedTools(context) {
+function selectedToolCandidates(context) {
   const ids = new Set(context.packs.flatMap((pack) => pack.tools ?? []));
   return context.bundle.tools.tools.filter((tool) => ids.has(tool.id));
+}
+
+function selectedTools(context) {
+  return selectedToolCandidates(context).filter((tool) => !tool.platforms || tool.platforms.includes(platform()));
+}
+
+function platformExcludedTools(context) {
+  return selectedToolCandidates(context).filter((tool) => tool.platforms && !tool.platforms.includes(platform()));
 }
 
 function selectedSkills(context) {
@@ -437,6 +445,7 @@ function planSummary(context, plan) {
     operations: plan.map((item) => ({ id: item.id, path: displayPath(context, item.path), status: item.status, reason: item.reason ?? null })),
     conflicts: plan.filter((item) => item.status === "conflict").length,
     externalTools: selectedTools(context).map((tool) => ({ id: tool.id, binary: tool.binary, auth: tool.auth })),
+    platformExcludedTools: platformExcludedTools(context).map((tool) => ({ id: tool.id, platforms: tool.platforms })),
   };
 }
 
@@ -515,12 +524,15 @@ async function applyPlan(context, plan) {
 async function binaryAvailable(binary) {
   const pathEntries = (process.env.PATH ?? "").split(process.platform === "win32" ? ";" : ":").filter(Boolean);
   for (const entry of pathEntries) {
-    const candidate = join(entry, binary);
-    try {
-      const info = await stat(candidate);
-      if (info.isFile()) return candidate;
-    } catch {
-      // Continue without reading tool-owned state.
+    const names = process.platform === "win32" ? [binary, ...((process.env.PATHEXT ?? ".COM;.EXE;.BAT;.CMD").split(";").map((extension) => `${binary}${extension.toLowerCase()}`))] : [binary];
+    for (const name of names) {
+      const candidate = join(entry, name);
+      try {
+        const info = await stat(candidate);
+        if (info.isFile()) return candidate;
+      } catch {
+        // Continue without reading tool-owned state.
+      }
     }
   }
   return null;
@@ -882,6 +894,7 @@ async function statusReport(context, catalogue = false) {
     vault: { path: displayPath(context, context.vaultDir), config: await exists(join(context.vaultDir, ".sops.yaml")) ? "present" : "absent", tmpClean },
     liveCutover,
     tools,
+    platformExcludedTools: platformExcludedTools(context).map((tool) => ({ id: tool.id, platforms: tool.platforms })),
   };
   if (catalogue) {
     report.commands = context.bundle.commands.commands.map(({ id, disposition, selectedByDefault, purpose }) => ({ id, disposition, selectedByDefault, purpose }));
@@ -916,20 +929,16 @@ async function doctorReport(context) {
     { id: "managed-state", ok: status.drift.length === 0, detail: status.installed ? `${status.drift.length} drift item(s)` : "not installed; repository is still valid" },
     { id: "live-cutover", ok: status.liveCutover.status !== "drift" && status.liveCutover.status !== "unknown-state", detail: status.liveCutover.status },
   ];
-  const windows = platform() === "win32";
   return {
     ok: coreChecks.every((item) => item.ok),
     coreChecks,
     warnings: validation.warnings,
     optionalTools: status.tools,
-    nextActions: windows ? [
-      status.installed ? "Run agent-os status --json to confirm the safe core remains healthy." : "Run agent-os setup --safe to review the Windows safe-core plan.",
-      "Windows support is limited to the safe core; optional packs, tool installation, vault setup, and live cutover remain macOS-only.",
-    ] : [
-      status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup --safe to review the core-only plan.",
+    nextActions: [
+      status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup to review the platform-compatible deployment plan.",
       "Use agent-os install --tools <id> for a reviewed installation plan; it is preview-only unless explicitly confirmed.",
-      "Use agent-os vault init for an independent SOPS + age vault preview, then complete logins and macOS permissions manually.",
-      "Use agent-os live-cutover --legacy-root <legacy-root> to preview the separate Codex command cutover.",
+      platformExcludedTools(context).length ? `Skipped on ${platform()}: ${platformExcludedTools(context).map((tool) => tool.id).join(", ")}.` : "All selected tools are compatible with this platform.",
+      platform() === "win32" ? "Live cutover remains macOS-only." : "Use agent-os live-cutover --legacy-root <legacy-root> to preview the separate Codex command cutover.",
     ],
   };
 }
@@ -941,12 +950,14 @@ function requestedTools(context) {
   return ids.map((id) => {
     const tool = toolMap.get(id);
     if (!tool) throw new Error(`unknown tool: ${id}`);
+    if (tool.platforms && !tool.platforms.includes(platform())) throw new Error(`${id} is not supported on ${platform()}`);
     return tool;
   });
 }
 
 function installCommand(source) {
   if (source.pin === "manual-unresolved") return null;
+  if (platform() === "win32" && source.kind === "homebrew") return null;
   if (source.kind === "homebrew") return { command: "brew", args: ["install", source.locator] };
   if (source.kind === "npm") return { command: "npm", args: ["install", "--global", `${source.locator}@${source.pin}`] };
   if (source.kind === "python-package") return { command: "uv", args: ["tool", "install", `${source.locator}==${source.pin.replace(/-audited$/, "")}`] };
@@ -1133,12 +1144,8 @@ async function main() {
 
   const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
-  if (platform() === "win32" && ["install", "vault", "live-cutover", "live-rollback"].includes(command)) {
-    throw new Error(`${command} is not supported on Windows; Windows support is limited to the safe core.`);
-  }
-  const unsupportedTools = selectedTools(context).filter((tool) => tool.platforms && !tool.platforms.includes(platform()));
-  if (["setup", "update"].includes(command) && unsupportedTools.length) {
-    throw new Error(`selected pack contains tools unsupported on ${platform()}: ${unsupportedTools.map((tool) => tool.id).join(", ")}. Use --safe on Windows; optional packs remain macOS-only.`);
+  if (platform() === "win32" && ["live-cutover", "live-rollback"].includes(command)) {
+    throw new Error(`${command} is not supported on Windows.`);
   }
 
   if (command === "install") {

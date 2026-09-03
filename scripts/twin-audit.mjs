@@ -16,7 +16,20 @@ function option(name, { required = true } = {}) {
   return resolve(process.argv[index + 1]);
 }
 
+function valueOption(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return null;
+  if (!process.argv[index + 1]) throw new Error(`${name} requires a value`);
+  return process.argv[index + 1];
+}
+
 function registryToolIds(text) {
+  try {
+    const registry = JSON.parse(text);
+    if (Array.isArray(registry.tools)) return registry.tools.map((tool) => tool.id).filter(Boolean).sort();
+  } catch {
+    // Legacy YAML registries are handled below.
+  }
   const tools = text.split(/^tools:\s*$/m)[1] ?? "";
   return [...tools.matchAll(/^  ([a-z0-9][a-z0-9-]*):\s*$/gmi)].map((match) => match[1]).sort();
 }
@@ -104,6 +117,7 @@ async function main() {
   const liveOrchestration = option("--live-orchestration");
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
+  const targetPlatform = valueOption("--platform");
   const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
@@ -116,7 +130,7 @@ async function main() {
     auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
   ]);
   const liveTools = registryToolIds(registryText);
-  const portableTools = JSON.parse(toolsManifest).tools.map((tool) => tool.id).sort();
+  const portableTools = JSON.parse(toolsManifest).tools.filter((tool) => !targetPlatform || !tool.platforms || tool.platforms.includes(targetPlatform)).map((tool) => tool.id).sort();
   const exclusions = JSON.parse(inventory).twin?.excludedLiveTools ?? [];
   const exclusionIds = exclusions.map((item) => item.id).sort();
   const missingTools = difference(liveTools, [...portableTools, ...exclusionIds]);
@@ -130,7 +144,7 @@ async function main() {
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
   const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
   const missingPortableGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedPortableGoal.includes(phrase));
-  const instructionPresent = instructions.includes("## Agent OS Twin Synchronization");
+  const instructionPresent = /^#+\s+(?:Agent OS )?Twin Synchronization\s*$/mi.test(instructions);
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
@@ -158,6 +172,7 @@ async function main() {
   if (missingPortableWorkflowSummaryPhrases.length) failures.push(`portable core policy is missing conditional workflow-summary phrases: ${missingPortableWorkflowSummaryPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,
+    platform: targetPlatform,
     liveTools,
     portableTools,
     exclusions,

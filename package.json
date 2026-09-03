@@ -8,7 +8,7 @@
   },
   "scripts": {
     "validate": "node bootstrap/cli.mjs validate",
-    "test": "node --experimental-strip-types --test skills/skill-cleaner/scripts/skill-cleaner.test.ts tests/*.test.mjs && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s templates/hooks/ctx7-guard/tests -p 'test_*.py'",
+    "test": "node --experimental-strip-types --test skills/skill-cleaner/scripts/skill-cleaner.test.ts tests/*.test.mjs && node scripts/run-python-tests.mjs",
     "test:integration": "node --test tests/integration.test.mjs"
   },
   "engines": {

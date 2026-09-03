@@ -1,15 +1,16 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { platform, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BLOCK_NO_VERIFY = join(ROOT, "templates", "hooks", "block-no-verify", "block_no_verify.sh");
+const WINDOWS = platform() === "win32";
 
-test("portable no-verify hook denies only verification bypasses", async () => {
+test("portable no-verify hook denies only verification bypasses", { skip: WINDOWS }, async () => {
   const denied = spawnSync("bash", [BLOCK_NO_VERIFY], { input: JSON.stringify({ tool_input: { command: "git commit --no-verify -m test" } }), encoding: "utf8" });
   assert.equal(denied.status, 0, denied.stderr);
   assert.equal(JSON.parse(denied.stdout).permissionDecision, "deny");
@@ -19,7 +20,7 @@ test("portable no-verify hook denies only verification bypasses", async () => {
   assert.deepEqual(JSON.parse(allowed.stdout), {});
 });
 
-test("watcher keeps explicit prompt and dry-run safeguards while manager reports portable state", async (context) => {
+test("watcher keeps explicit prompt and dry-run safeguards while manager reports portable state", { skip: WINDOWS }, async (context) => {
   const watcher = await readFile(join(ROOT, "templates", "hooks", "commit-push-watcher", "codex_commit_push_watcher.py"), "utf8");
   const manager = join(ROOT, "templates", "hooks", "commit-push-watcher", "manage_commit_push_hook.sh");
   assert.equal(watcher.includes("/Users/"), false);

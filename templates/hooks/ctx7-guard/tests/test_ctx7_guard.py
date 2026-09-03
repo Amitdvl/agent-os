@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -17,7 +18,7 @@ def run_hook(payload: dict, state_path: Path, config_path: Path | None = None) -
     if config_path is not None:
         env["CTX7_GUARD_CONFIG_PATH"] = str(config_path)
     result = subprocess.run(
-        ["python3", str(SCRIPT_PATH)],
+        [sys.executable, str(SCRIPT_PATH)],
         input=json.dumps(payload),
         text=True,
         capture_output=True,
