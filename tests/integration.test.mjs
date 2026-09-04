@@ -55,6 +55,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   const noTools = { PATH: join(root, "empty-bin") };
 
   const setup = JSON.parse(run(["setup", "--home", home, "--apply", "--json"], 0, noTools).stdout);
+  if (WINDOWS) assert.equal(setup.profile, "windows-suite");
   assert.equal(setup.conflicts, 0);
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");

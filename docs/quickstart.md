@@ -44,6 +44,10 @@ OpenCLI, rdt-cli, twitter-cli, wacli, wacrawl, xurl, yt-dlp, and the local
 YouTube wrapper. Apple-specific tools and tools without a documented Windows
 runtime remain excluded; live command cutover is also macOS-only.
 
+Windows selects the `windows-suite` profile by default. Pass
+`--profile windows-suite` explicitly when you want that intent visible in a
+script or a setup record.
+
 ## Add optional capabilities later
 
 Preview a full tool deployment (managed registry, templates, symlinks, and Codex binary allow rules):

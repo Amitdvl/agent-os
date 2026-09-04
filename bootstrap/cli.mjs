@@ -240,7 +240,7 @@ async function resolveContext(bundle, options, preferState = false) {
     throw error;
   });
 
-  const profileId = options.profile ?? (preferState ? previousState?.profile : null) ?? bundle.profiles.defaultProfile;
+  const profileId = options.profile ?? (preferState ? previousState?.profile : null) ?? (platform() === "win32" ? "windows-suite" : bundle.profiles.defaultProfile);
   const profile = bundle.profiles.profiles.find((item) => item.id === profileId);
   if (!profile) throw new Error(`unknown profile: ${profileId}`);
 
