@@ -39,6 +39,13 @@ test("default profile is opinionated and selects every capability pack", async (
   assert.equal(profile.externalWrites, "exact-intent");
 });
 
+test("Windows Suite selects every pack while platform filtering owns its exclusions", async () => {
+  const profiles = JSON.parse(await readFile(join(ROOT, "manifest", "profiles.json"), "utf8"));
+  const windows = profiles.profiles.find((profile) => profile.id === "windows-suite");
+  assert.ok(windows);
+  assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
+});
+
 test("core installs all six portable commands by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
