@@ -47,3 +47,7 @@ the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
 These are source contracts only: schedules, LaunchAgents, hook state, logs,
 session data, Trashness protected-name lists, and project-specific configuration
 are never deployed or copied automatically.
+
+## Consequential reasoning checks
+
+`skills/fallacy-check/SKILL.md` is a first-party core skill, authored from a reasoning-review requirement and informed by the linked fallacy taxonomy. Core policy routes conversational checks through its high-confidence, material-consequence threshold. It has no executable, credentials, data store, or background process. Behavioral examples distinguish actionable errors from preferences, exploration, and acknowledged tradeoffs.

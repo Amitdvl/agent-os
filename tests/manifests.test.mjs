@@ -171,8 +171,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 92);
-  assert.equal(new Set(installedSkills).size, 92);
+  assert.equal(installedSkills.length, 93);
+  assert.equal(new Set(installedSkills).size, 93);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -259,4 +259,16 @@ test("twin inventory documents the only intentional live-tool exclusions", async
   assert.equal(dispositions.twin.mode, "one-way-portable-contract");
   assert.deepEqual(dispositions.twin.excludedLiveTools.map((item) => item.id).sort(), ["agent-inbox", "vox"]);
   for (const item of dispositions.twin.excludedLiveTools) assert.ok(item.reason);
+});
+
+test("fallacy-check ships as a discoverable core skill without a tool dependency", async () => {
+  const skills = await json("skills");
+  const packs = await json("packs");
+  const inventory = await json("inventory-dispositions");
+  const tools = await json("tools");
+  assert.equal(skills.skills.find(s => s.id === "fallacy-check").path, "skills/fallacy-check/SKILL.md");
+  assert.ok(packs.packs.find(p => p.id === "core").skills.includes("fallacy-check"));
+  assert.ok(inventory.skillGroups.find(g => g.id === "agent-os-core-skills").skills.includes("fallacy-check"));
+  assert.ok(!tools.tools.some(t => t.id === "fallacy-check"));
+  await stat(join(ROOT, "skills/fallacy-check/SKILL.md"));
 });
