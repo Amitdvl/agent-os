@@ -8,6 +8,7 @@ The manifest is the source of truth for the portable inventory:
 - `manifest/packs.json` — core, local productivity, research, communication, and creator packs.
 - `skills/book/` — an explicit-only, research-first nonfiction book workflow with one editorial gate, deterministic workspace/QA helpers, and validated EPUB delivery. Its manifest opts its fixture-backed test suite into host installation so the deployed copy can be verified with the real Pandoc/EPUBCheck toolchain.
 - `skills/production-repo-baseline/` — a preview-first foundation for new GitHub projects: initialize local Git, safe defaults, and Dependabot without scaffolding product code; later adds reproducible dependencies and CI when the chosen stack exists.
+- `skills/ai-software-design/` — a lightweight contract for non-trivial AI-assisted implementation: establish a shared design concept and vocabulary, preserve intentional module boundaries, then work in small validated slices.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
