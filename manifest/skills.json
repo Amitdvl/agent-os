@@ -1,7 +1,6 @@
 {
   "version": 1,
   "skills": [
-    {"id": "ai-software-design", "path": "skills/ai-software-design/SKILL.md", "disposition": "portable-core"},
     {"id": "agent-os", "path": "skills/agent-os/SKILL.md", "disposition": "portable-core"},
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includeTests": true},
