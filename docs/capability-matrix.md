@@ -12,7 +12,7 @@
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |
 | SOPS + age vault | Encrypted requirement placeholders and no-output crypto validation | New key/recipient and user-entered values | Key generation and secret entry |
-| Service login | Explicit auth boundary in every contract | OAuth/account consent/browser profile | Login/extension approval |
+| Service login | Explicit auth boundary in every contract; an owner may configure standing approval for OpenCLI Browser Bridge site-access prompts | OAuth/account consent/browser profile | Login/extension approval unless locally pre-approved by the owner |
 | macOS privacy | Permission diagnosis and read-first fallback | Accessibility, Screen Recording, Reminders | System Settings approval |
 | Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
 | Telegram channel digests | Read-only bounded channel history through pinned Telgo; provider summaries require explicit disclosure authority | Telegram app credentials, local personal-account session, and optional Anthropic key | Interactive authentication and approval to send selected content to Anthropic |

@@ -39,6 +39,15 @@ test("default profile is opinionated and selects every capability pack", async (
   assert.equal(profile.externalWrites, "exact-intent");
 });
 
+test("OpenCLI standing prompt approval remains narrowly scoped", async () => {
+  const policy = await readFile(join(ROOT, "policies", "external-actions.md"), "utf8");
+  const matrix = await readFile(join(ROOT, "docs", "capability-matrix.md"), "utf8");
+  assert.match(policy, /standing approval for OpenCLI Browser Bridge site-access and extension prompts/);
+  assert.match(policy, /in-scope task whose target and action are clear/);
+  assert.match(policy, /never broadens authority for unrelated mutations, sending, purchases, account changes, or private-data disclosure/);
+  assert.match(matrix, /Login\/extension approval unless locally pre-approved by the owner/);
+});
+
 test("core installs all six portable commands by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
