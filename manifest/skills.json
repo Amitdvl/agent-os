@@ -5,6 +5,7 @@
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includeTests": true},
     {"id": "cli-for-agents", "path": "skills/cli-for-agents/SKILL.md", "disposition": "portable-core"},
+    {"id": "fallacy-check", "path": "skills/fallacy-check/SKILL.md", "disposition": "portable-core"},
     {"id": "goal-prompt", "path": "skills/goal-prompt/SKILL.md", "disposition": "portable-core"},
     {"id": "orchestration", "path": "skills/orchestration/SKILL.md", "disposition": "portable-core"},
     {"id": "production-repo-baseline", "path": "skills/production-repo-baseline/SKILL.md", "disposition": "portable-core"},
