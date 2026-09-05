@@ -151,6 +151,18 @@ test("Telgo is a pinned read-only Telegram channel tool with explicit provider d
   assert.equal(requirement.class, "agent-vault-and-human-login");
 });
 
+test("Summarize preserves successful model-backed CLI output verbatim", async () => {
+  const tools = await json("tools");
+  const sources = await json("sources");
+  const tool = tools.tools.find((item) => item.id === "summarize");
+  const source = sources.sources.find((item) => item.id === "summarize-brew");
+  const renderer = await readFile(join(ROOT, "bootstrap", "cli.mjs"), "utf8");
+  assert.match(tool.purpose, /verbatim/i);
+  assert.match(tool.safety, /stdout verbatim/i);
+  assert.match(source.review_notes, /raw CLI stdout/i);
+  assert.match(renderer, /relay successful model-backed stdout verbatim/i);
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");

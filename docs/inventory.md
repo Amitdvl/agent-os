@@ -23,7 +23,7 @@ The local-productivity pack includes NoteBridge for local Wispr Flow and Apple N
 
 The research pack's OpenCLI contract treats named X bookmark folders as an authenticated adapter workflow: list folders, match the name, then read the folder. If X's folder index returns its known `bookmarkFoldersSlice` 404, it falls back to the current OpenCLI bookmark corpus and marks the outcome as corpus-wide rather than folder-attributed. It never derives folder IDs from cookies, browser storage, or traces.
 
-The research pack includes Summarize: a Homebrew CLI that extracts user-supplied URLs or files and can route a concise model summary through an existing coding CLI. Its portable contract treats provider configuration and `~/.summarize` as private, keeps direct provider keys in the user's independent vault, and requires explicit scope for slide files or cache deletion.
+The research pack includes Summarize: a Homebrew CLI that extracts user-supplied URLs or files and can route a model summary through an existing coding CLI. Its portable contract relays successful model-backed CLI stdout verbatim—without a second agent-written recap—treats provider configuration and `~/.summarize` as private, keeps direct provider keys in the user's independent vault, and requires explicit scope for slide files or cache deletion.
 
 The communication pack includes Telgo for read-only Telegram channel listing and bounded history reads. Its portable contract pins the reviewed Go source, prefers exact channel usernames, limits agent reads to 1–200 messages, keeps app credentials and personal-account sessions outside Agent OS, and requires explicit user intent before selected channel content is sent to Anthropic for summarization.
 
