@@ -112,9 +112,9 @@
       "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
     },
     {
-      "id": "summarize", "binary": "summarize", "purpose": "Multi-modal content extraction and model-backed summaries for URLs, files, YouTube, podcasts, and media.",
+      "id": "summarize", "binary": "summarize", "purpose": "Multi-modal content extraction and verbatim model-backed summaries for URLs, files, YouTube, podcasts, and media.",
       "packs": ["research"], "source": "summarize-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["existing-coding-cli", "agent-vault"],
-      "freshness": "Fetch only the user-named source; prefer published transcripts and do not run background or bulk processing.", "safety": "Never inspect configuration, API keys, cookies, browser sessions, or provider credentials. Model-backed summaries require user-scoped content; slides and cache deletion are explicit local-write actions."
+      "freshness": "Fetch only the user-named source; prefer published transcripts and do not run background or bulk processing.", "safety": "Never inspect configuration, API keys, cookies, browser sessions, or provider credentials. Model-backed summaries require user-scoped content; return successful CLI stdout verbatim rather than rewriting it. Slides and cache deletion are explicit local-write actions."
     },
     {
       "id": "youtube", "binary": "youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session.",
