@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI Software Design"
-  short_description: "Plan AI-assisted changes around clear concepts and fast feedback"
-  default_prompt: "Use $ai-software-design to plan and implement this change."
