@@ -110,5 +110,8 @@
     {"id": "archive-freshness", "disposition": "portable-core"},
     {"id": "local-cli-routing", "disposition": "portable-core"},
     {"id": "new-tool-onboarding", "disposition": "portable-core-command"}
+  ],
+  "configurationTemplates": [
+    {"id": "codex-full-access-context", "path": "templates/codex-full-access-context.toml", "disposition": "owner-opt-in-not-auto-installed", "documentation": "docs/codex-context-management.md", "verifiedClientVersion": "0.153.4", "excluded": "Live config, private backups, account details, machine paths, and runtime state remain local."}
   ]
 }
