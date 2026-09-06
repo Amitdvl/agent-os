@@ -13,7 +13,7 @@ The manifest is the source of truth for the portable inventory:
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
 
-The `remindctl` contract creates new reminders with an urgent alarm at their due date/time by default. It keeps priority as `none` unless the user explicitly specifies another priority; urgent is an alarm setting, not a priority.
+The `remindctl` contract creates timed reminders with an EventKit alarm at their due date/time by default and keeps priority as `none` unless specified. The CLI cannot set Apple's native Urgent toggle; an alarm is a separate notification and must not be described as native Urgent.
 
 The portable core policy also makes reusable-workflow reporting conditional:
 completion summaries name local-tool, Agent OS, command, skill, automation, hook,

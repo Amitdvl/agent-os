@@ -84,7 +84,8 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
   }
   const remindctlContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "remindctl", "SKILL.md"), "utf8");
-  assert.match(remindctlContract, /urgent.*alarm.*not.*priority/i);
+  assert.match(remindctlContract, /native urgent.*not exposed|cannot set.*native urgent/i);
+  assert.match(remindctlContract, /separate.*eventkit alarm|alarm.*separate/i);
   assert.match(remindctlContract, /priority.*none/i);
   const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
   assert.match(noteBridgeContract, /retrieve raw_content/i);

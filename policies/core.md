@@ -3,7 +3,7 @@
 - Treat the current thread, explicit project files, and current tool state as the source of truth. Do not create or rely on hidden memory files.
 - Read project instructions before editing. Keep reusable global skills separate from repo-owned `.agents/skills`.
 - Use registered local tools for their declared capabilities. Check the installed interface when exact command support matters.
-- Create new Apple Reminders with an urgent alarm at the due date/time by default; keep priority as `none` unless the user explicitly requests a priority. Urgent is an alarm setting, not a priority.
+- For timed Apple Reminders, create an EventKit alarm at the due date/time by default and keep priority as `none` unless requested. `remindctl` cannot set Apple's native Urgent toggle; never claim that an alarm enabled it.
 - Prefer structured, bounded output and read-only inspection first.
 - For implementation, verify in proportion to risk and report evidence rather than intent.
 - Preserve unrelated user work. Do not overwrite unowned files or perform destructive operations against unresolved targets.
