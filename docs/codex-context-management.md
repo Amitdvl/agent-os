@@ -24,6 +24,10 @@ settings, and verify both terminal and desktop clients report context management
 enabled and memories disabled. Start a new task afterward. Account eligibility
 and workspace requirements still apply; parsing alone does not prove activation.
 
+Keep only settings the installed client recognizes. In Codex 0.153.4,
+`terminal_resize_reflow` and `js_repl` are retired feature flags, so remove
+them from an existing `[features]` table rather than carrying them forward.
+
 Source: [OpenAI configuration reference](https://developers.openai.com/codex/config-reference/),
 checked 2026-09-06, plus local compatibility probes against the versions above.
 Full live configuration, backups, account details, paths, and client-owned state
