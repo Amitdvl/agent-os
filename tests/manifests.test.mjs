@@ -107,6 +107,24 @@ test("book is an explicit-only portable core skill with installed-copy tests", a
   await stat(join(ROOT, "skills", "book", "scripts", "build_epub.py"));
 });
 
+test("OpenAI aesthetic images is a portable core visual-direction skill", async () => {
+  const skills = await json("skills");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const entry = skills.skills.find((item) => item.id === "openai-aesthetic-images");
+  assert.deepEqual(entry, {
+    id: "openai-aesthetic-images",
+    path: "skills/openai-aesthetic-images/SKILL.md",
+    disposition: "portable-core",
+  });
+  assert.ok(packs.packs.find((pack) => pack.id === "core").skills.includes("openai-aesthetic-images"));
+  assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("openai-aesthetic-images"));
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  assert.match(content, /name: openai-aesthetic-images/);
+  assert.match(content, /lighting and composition system/);
+  assert.match(content, /No visible texture, no grain/);
+});
+
 test("Pandoc, EPUBCheck, and Silicon are credential-free creator tools with reviewed Homebrew sources", async () => {
   const tools = await json("tools");
   const sources = await json("sources");
@@ -180,8 +198,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 93);
-  assert.equal(new Set(installedSkills).size, 93);
+  assert.equal(installedSkills.length, 94);
+  assert.equal(new Set(installedSkills).size, 94);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
