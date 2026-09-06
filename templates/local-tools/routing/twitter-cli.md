@@ -1,0 +1,3 @@
+# twitter-cli routing requirements
+
+- twitter-cli: use `twitter` for live Twitter/X timelines, bookmarks, search, tweet details, profiles, follows/followers, and explicit account actions when a live browser-cookie-backed CLI is a better fit than the local Birdclaw archive. Prefer `--yaml` or `--json` and bounded `--max` values for agent reads. For writes such as posts, replies, quotes, deletes, likes, retweets, bookmarks, follows, or unfollows, act only when the user's request includes the exact target and content/action. Do not expose Twitter/X cookies, `TWITTER_AUTH_TOKEN`, `TWITTER_CT0`, browser keychain values, OAuth tokens, API keys, or local credential stores.

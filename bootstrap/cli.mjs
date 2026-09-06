@@ -339,6 +339,8 @@ async function renderInstructionBlock(context) {
     const policy = policyMap.get(policyId);
     sections.push((await readText(join(REPO_ROOT, policy.path))).trim());
   }
+  const routes = selectedTools(context);
+  if (routes.length) sections.push(`## Local Tool Routes\n\nRegistry: ${join(context.localToolsRoot, "registry.json")}. Before operating a routed tool, read its SKILL.md and any declared routing.md under ${join(context.localToolsRoot, "tools", "<id>")}. Load only the tools needed for the task; resolve missing required references before operating. Preserve managed skill symlinks.\n\n${routes.map((tool) => `- ${tool.id} (${tool.binary}): ${tool.purpose}`).join("\n")}`);
   const identity = context.config.identity ?? {};
   if (identity.addressAs || identity.occasionalPraise) {
     sections.push(["# Local Identity", identity.addressAs ? `- Address the user as: ${identity.addressAs}` : null, identity.occasionalPraise ? `- Occasional praise preference: ${identity.occasionalPraise}` : null].filter(Boolean).join("\n"));
@@ -428,7 +430,12 @@ async function buildPlan(context) {
   operations.push({ kind: "file", path: join(context.localToolsRoot, "registry.json"), content: renderRegistry(tools), id: "local-tools:registry" });
   const launcher = launcherPath(context);
   operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), id: "agent-os:launcher" });
-  for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
+  for (const tool of tools) {
+    const recipe = await readText(join(REPO_ROOT, "templates", "local-tools", "routing", `${tool.id}.md`), null);
+    const content = renderToolSkill(tool, sourceMap.get(tool.source)) + (recipe === null ? "" : "\n## Required routing reference\n\nBefore using this tool, read [routing.md](routing.md) for additional routing, preflight, privacy, and verification requirements.\n");
+    operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content, id: `local-tools:tool:${tool.id}` });
+    if (recipe !== null) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "routing.md"), content: recipe, id: `local-tools:routing:${tool.id}` });
+  }
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
     operations.push({ kind: "managed-block", path: join(hostHome, host.instructionFile), block, id: `${host.id}:instructions` });

@@ -1,0 +1,3 @@
+# Birdclaw routing requirements
+
+- Birdclaw: use `birdclaw` for local Twitter/X archive, timeline, mentions, DM, likes/bookmarks, profile, search, media-cache, and reply-flow inspection or automation. Treat `~/.birdclaw` as the local data root. For fresh Twitter/X state, run the relevant `birdclaw` sync/import command automatically unless the user requests no refresh or is only asking about installation/configuration status. Prefer JSON output where available. For writes such as tweets, replies, DMs, blocks, mutes, or remote sync mutations, act only when the user's request includes the exact target and content/action. Do not expose Twitter/X cookies, OAuth tokens, API keys, or local database secrets in command output, docs, commits, issues, PRs, or final answers.

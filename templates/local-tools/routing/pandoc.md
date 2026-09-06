@@ -1,0 +1,3 @@
+# Pandoc routing requirements
+
+- Pandoc: use `pandoc` for explicit conversion of user-supplied documents and manuscripts, including EPUB generation. Run `command -v pandoc`, `pandoc --version`, and `pandoc --help` before relying on it in a new task. Every conversion requires exact input files and an explicit output path; check before overwriting. Treat sources, metadata, citations, templates, media, and the user data directory as private. Never run untrusted filters, Lua filters, PDF engines, templates, or include files, and do not fetch remote resources or place credentials in arguments without clear task authority. Validate generated EPUBs with `epubcheck` before reporting them ready.

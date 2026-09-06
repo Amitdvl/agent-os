@@ -61,6 +61,16 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(launcherSmoke.status, 0, `symlinked launcher failed:\nstdout: ${launcherSmoke.stdout}\nstderr: ${launcherSmoke.stderr}`);
   assert.equal(JSON.parse(launcherSmoke.stdout).ok, true);
   const codexLink = join(home, ".codex", "skills", "birdclaw");
+  const routingInstructions = await readFile(codexInstructions, "utf8");
+  assert.ok(routingInstructions.includes(join(home, ".agent-os", "local-tools", "registry.json")));
+  assert.match(routingInstructions, /read its SKILL.md and any declared routing.md/);
+  assert.match(routingInstructions, /Preserve the command's real exit status/);
+  const routingIds = ["birdclaw", "epubcheck", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "pandoc", "peekaboo", "rdt-cli", "remindctl", "silicon", "spogo", "telgo", "twitter-cli", "wacli", "wacrawl", "yt-dlp", "summarize", "youtube"];
+  for (const id of routingIds) {
+    const folder = join(home, ".agent-os", "local-tools", "tools", id);
+    assert.match(await readFile(join(folder, "SKILL.md"), "utf8"), /Before using this tool, read \[routing.md\]/);
+    assert.equal(await readFile(join(folder, "routing.md"), "utf8"), await readFile(join(ROOT, "templates", "local-tools", "routing", `${id}.md`), "utf8"));
+  }
   const claudeLink = join(home, ".claude", "skills", "birdclaw");
   assert.ok((await lstat(codexLink)).isSymbolicLink());
   assert.ok((await lstat(claudeLink)).isSymbolicLink());

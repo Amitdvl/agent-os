@@ -113,5 +113,14 @@
   ],
   "configurationTemplates": [
     {"id": "codex-full-access-context", "path": "templates/codex-full-access-context.toml", "disposition": "owner-opt-in-not-auto-installed", "documentation": "docs/codex-context-management.md", "verifiedClientVersion": "0.153.4", "excluded": "Live config, private backups, account details, machine paths, and runtime state remain local."}
-  ]
+  ],
+  "contextEfficiency": {
+    "routingRecipes": "templates/local-tools/routing",
+    "source": "Global per-tool routing requirements, preserved on demand with machine paths replaced by configuration placeholders",
+    "deployment": "Managed tool folders via bootstrap/cli.mjs; configured localToolsRoot",
+    "outputPolicy": "policies/core.md",
+    "documentation": "docs/context-efficiency.md",
+    "localOnly": ["agent-inbox", "vox"],
+    "localOnlyReason": "Existing excluded owner-specific tools retain their recipes locally; private configuration and backups are never mirrored."
+  }
 }
