@@ -85,7 +85,8 @@
   "automationTemplates": [
     {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
     {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"},
-    {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
+    {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"},
+    {"id": "frontier-of-useful", "path": "templates/automations/frontier-of-useful/prompt.md", "disposition": "portable-prompt-manual-heartbeat", "excluded": "Live schedule, host paths, task identifier and run history remain local; create through the supported Codex App automation tool."}
   ],
   "referenceOnly": [
     {"id": "config-project-record", "disposition": "project-specific-reference-only"}

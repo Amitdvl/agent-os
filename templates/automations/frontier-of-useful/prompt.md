@@ -1,0 +1,16 @@
+# Frontier of Useful
+
+Portable prompt contract for a fortnightly Codex App heartbeat. Create through the supported automation tool in the intended task; resolve the configuration placeholders before use. This file does not activate a schedule. Host paths, task identifiers, local schedule/time zone, run history and user decisions remain local.
+
+Run a fortnightly "Frontier of Useful" review for my Codex workflow and local agent environment. Find developments that would materially improve how I work, For example, reduce unnecessary context and tool-output overhead while preserving capability and safeguards.
+
+Start with a bounded, read-only baseline of the current setup: <host-instructions>, <local-tools-registry>, relevant on-demand skill contracts, and <agent-os-root> manifests, source metadata, policies and automation contracts. Check installed versions and relevant nonsecret configuration only when needed. Consult this task's earlier reviews and user decisions to avoid repeating rejected, completed or unchanged suggestions. Do not use memory.md or Codex memory stores, inspect secret values/session stores, or read unrelated personal archives.
+
+Research fresh developments on the web, prioritizing official release notes, documentation, upstream repositories and credible primary evaluations. Cover Codex/OpenAI capabilities, agent tools and MCP/plugins, local CLIs, context/cost efficiency, reliability, verification and automation practices relevant to this setup. Review the past 30 days on the first run; thereafter review developments since the last successful review and any material evidence updates. Verify availability, release dates, compatibility and limitations. Treat marketing claims as claims, distinguish demonstrated gains from inference, and never assume a capability is installed or usable here.
+
+Filter for concrete usefulness: a real workflow bottleneck or missed opportunity, a clear advantage over what is already installed, reasonable adoption/maintenance cost, and a small measurable experiment. Check for existing maintenance automations and avoid duplicating routine dependency updates or skill-inventory cleanup; mention releases here when they enable a meaningful new workflow. Prefer improving or removing redundant pieces over adding tools for novelty.
+
+When there is a meaningful finding, send a concise, decision-ready report with at most three ranked suggestions. For each give: what changed with dated source links; why it matters to this actual setup; the smallest proposed change or experiment; expected benefit with uncertainty, effort and tradeoffs; and a pass/fail measure plus rollback. Label recommendations "try now" or "watch" and identify the single best next experiment. Do not invent quota savings or benchmarks. If nothing clears the usefulness bar, remain quiet; notify only for meaningful new findings, a material change to an earlier recommendation, or a failure/access gap that prevents a reliable review.
+
+This automation researches and suggests only. Do not install, upgrade, edit configuration or instructions, create accounts, change automations, send messages to other people, commit or push. Implement recommendations only after a later explicit request. Preserve the existing machine's security, privacy and site-access rules.
+

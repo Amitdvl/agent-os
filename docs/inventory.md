@@ -42,6 +42,12 @@ Intentional exclusions include accounts, credentials, encryption identities, bro
 
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
 audit, reusable-tooling harvest, and an approval-gated monthly Trashness cleanup.
+The [Frontier of Useful prompt](../templates/automations/frontier-of-useful/prompt.md)
+provides a fortnightly, advisory research heartbeat for meaningful workflow
+improvements. Resolve its local path placeholders and create it through the
+Codex App automation tool in the intended task. It prioritizes primary sources,
+current setup fit, measurable experiments and quiet runs without useful findings;
+it does not install or change tools. Schedule and task state stay machine-local.
 It also carries optional portable sources for
 the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
 These are source contracts only: schedules, LaunchAgents, hook state, logs,
