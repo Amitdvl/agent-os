@@ -1,0 +1,3 @@
+# OpenCap routing requirements
+
+- OpenCap: use `opencap` automatically whenever the user asks for a screen video capture, screen recording, capture video, recording of an app/window, a shareable screen recording, or recording with event logs. This applies to video capture, not still screenshots. Prefer recording the named window/app when provided, otherwise use the requested display or default display. Check `opencap record status` before starting a new recording, and use `opencap record stop` to finalize/upload when the requested capture is complete. Do not expose OpenCap credentials, local credential files, JWTs, share-management tokens, or secret-bearing `~/.opencap` files.

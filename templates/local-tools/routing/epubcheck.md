@@ -1,0 +1,3 @@
+# EPUBCheck routing requirements
+
+- EPUBCheck: use `epubcheck` as the conformance gate for a user-named EPUB or expanded EPUB directory. Run `command -v epubcheck`, `epubcheck --version`, and `epubcheck --help` before relying on it in a new task. Normal validation is read-only; `--out`, `--json <file>`, `--xmp`, `--listChecks <file>`, and `--save` write files and require an explicit destination or rebuild request. Preserve the exit status, never report a nonzero validation as passing, and do not downgrade messages merely to force success. Treat book content, metadata, identifiers, and reports as private.

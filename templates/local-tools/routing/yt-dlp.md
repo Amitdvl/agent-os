@@ -1,0 +1,3 @@
+# yt-dlp routing requirements
+
+- yt-dlp: use `yt-dlp` to inspect public media metadata, formats, or subtitles, and for explicitly requested, authorized downloads. Treat any downloaded media, subtitles, metadata, or archive as a local write: require the exact source, bounded scope, and destination. Default to a single URL and `--no-playlist`; never use browser cookies, login options, proxies, geo-bypasses, impersonation, or other access-control workarounds. For YouTube, remain within the daily three-hour allowance and do not create background or bulk downloading. The Agent Vault inventory record is `<agent-vault>/tools/yt-dlp.sops.yaml`; no credentials are configured.

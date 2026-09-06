@@ -1,0 +1,3 @@
+# WhatsApp routing requirements
+
+- WhatsApp: use `wacrawl` for read-only WhatsApp Desktop archive search, inspection, message history, unread chat triage, media metadata, and local backup checks. Before answering from WhatsApp Desktop archive data, run `wacrawl sync` automatically unless the user requests no sync or is only asking about installation/configuration/status. Treat the sync as the freshness boundary, then query the local `wacrawl` archive. Use `wacli` for linked-device/live account checks, WhatsApp Web protocol state, automation, sending, reactions, presence, archive/pin/mute/mark-read, group/channel mutations, or account/device checks.
