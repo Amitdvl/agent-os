@@ -69,7 +69,7 @@
     {
       "id": "remindctl", "binary": "remindctl", "purpose": "Apple Reminders reads and explicit create/update/complete/delete actions.",
       "packs": ["local-productivity"], "source": "remindctl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
-      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action; new reminders default to high (urgent) priority unless the user specifies otherwise."
+      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action; urgent means an alarm, not priority. New reminders with a due date/time default to an alarm at that same time, while priority remains none unless the user specifies otherwise."
     },
     {
       "id": "silicon", "binary": "silicon", "purpose": "Private local rendering of exact bounded code snippets into explicit PNG images.",
