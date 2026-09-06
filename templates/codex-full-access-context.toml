@@ -1,0 +1,13 @@
+# Optional settings to merge into an existing config, never replace it wholesale.
+# Verify every client accepts the context flag before applying; tested on 0.153.4.
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+web_search = "live"
+
+[features]
+context_management.experimental_mode = true
+memories = false
+
+[memories]
+generate_memories = false
+use_memories = false
