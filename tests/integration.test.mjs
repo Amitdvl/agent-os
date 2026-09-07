@@ -106,6 +106,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(await readFile(join(home, ".claude", "commands", `${id}.md`), "utf8"), new RegExp(`name: ${id}`));
   }
   for (const hostHome of [join(home, ".codex"), join(home, ".claude")]) {
+    assert.equal(
+      await readFile(join(hostHome, "skills", "outcome-loop", "SKILL.md"), "utf8"),
+      await readFile(join(ROOT, "skills", "outcome-loop", "SKILL.md"), "utf8"),
+      "outcome-loop must be installed intact for each host",
+    );
     const orchestration = await readFile(join(hostHome, "skills", "orchestration", "SKILL.md"), "utf8");
     assert.match(orchestration, /name: orchestration/);
     assert.match(orchestration, /## Completion Gate/);
