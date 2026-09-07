@@ -23,7 +23,7 @@ The image should feel:
 - deliberate
 - asymmetrical
 - premium
-- calm rather than decorative
+- coherent, whether calm or energetic
 
 Color is subordinate to composition.
 
@@ -40,7 +40,7 @@ Use:
 - broad diffused illumination rather than crisp geometry
 - subtle depth created by overlapping fields of light
 - restrained temperature contrast
-- one or two localized accent regions
+- localized accents or broad intermingling fields, according to the composition
 - color masses that seem to continue beyond the frame
 - pale transitional zones between strong warm and cool areas
 
@@ -60,7 +60,7 @@ Optional localized warm accent:
 - orange
 - pale gold
 
-The warm accent should occupy a deliberate region of the composition rather than tinting the entire image.
+For a quiet-field composition, keep warm accents localized. A warm freeform composition can distribute orange, magenta, pale pink and yellow across the frame; a cool base is optional.
 
 ## Lighting and Composition System
 
@@ -85,7 +85,7 @@ A common starting point:
 - **10–25%** pale or luminous transitional field
 - **5–15%** localized accent bloom
 
-These are compositional proportions, not hard color percentages.
+These are optional proportions for the quiet-field pattern, not requirements for every composition. Do not impose them on freeform references.
 
 ## Avoid
 
@@ -133,9 +133,24 @@ A strong glow originates outside the visible canvas, so only its soft spill is v
 
 Reserve a broad pale or low-contrast region that acts as visual breathing room between more chromatic fields.
 
+### Diffused Freeform Gradient
+
+Use this mode for organic, energetic color movement with smooth broad blends. **Freeform gradient** is established design terminology; **diffused freeform gradient** is a descriptive label for this treatment, not a formal art movement or an official OpenAI style name. Gradient mesh is a related construction technique, not proof of how an image was made. See [Adobe's freeform gradient documentation](https://helpx.adobe.com/illustrator/desktop/paint-and-fill/create-and-edit-gradients/create-and-apply-freeform-gradients.html).
+
+The defining relationship is **organic large-scale color movement with fine detail removed**. Unequal, elongated fields intermingle across the image. Pale transitions connect them, while saturation remains alive in the stronger regions. A hue may recur in more than one place. Balance emerges from differing area, intensity and diffusion, without a rigid diagonal split or one-color-per-corner layout.
+
+Keep these controls separate:
+
+- **Composition:** where the broad color masses sit and how they connect.
+- **Diffusion:** how softly their transitions blend and how much fine texture disappears.
+- **Stretch:** how far existing fields extend; gently elongate them without relocating their centers or creating stripes.
+- **Saturation:** how vivid the colors remain. More blur does not mean less saturation.
+
+For this mode, preserve interesting irregular movement while smoothing grain, watercolor mottling and small cloudy patches. Do not replace the movement with a flat linear gradient, and do not introduce extra patches to express freedom. Negative space may be pale light threaded between fields rather than one large empty area.
+
 ## Prompt Recipe
 
-When generating, start from this structure:
+For the quiet-field mode, start from this structure:
 
 > Minimal abstract background built from extremely soft volumetric light fields rather than explicit shapes. Large low-frequency areas of [dominant palette] blend through broad airbrushed illumination with generous negative space. A localized [accent palette] glow occupies one deliberate region of the frame and remains spatially contained. Pale luminous transitions separate warm and cool fields. Subtle depth, restrained contrast, asymmetrical composition, colors extending beyond the frame. No visible texture, no grain, no sharp edges, no obvious ribbons, waves, fabric folds, objects, or text. Clean, premium, spacious, luminous.
 
@@ -149,6 +164,14 @@ Then adapt:
 - aspect ratio
 
 Do **not** merely substitute colors into a fixed gradient template.
+
+### Freeform Generation Recipe
+
+> A diffused freeform gradient wallpaper in [palette]. Broad irregular, gently elongated color fields intermingle with asymmetrical balance and luminous pale transitions. Organic movement at a large scale, silky smooth diffusion at a small scale. Preserve vivid color, subtle depth and breathing room. No rigid corner assignments, simple diagonal split, visible grain, watercolor texture, outlined blobs, ribbons, objects or text.
+
+### Faithful Blur and Stretch Edit Recipe
+
+> Keep this exact composition, palette, brightness, saturation and relative color placements. Blur the fine texture into silky smooth gradients and gently stretch the existing color fields into broader transitions. Preserve the underlying organic movement and recognizable relationships between the fields. No rearrangement, new patches, desaturation or replacement with a simple linear gradient.
 
 ## Reference Interpretation
 
@@ -168,18 +191,27 @@ Do not reproduce incidental architecture, screens, people, furniture, perspectiv
 
 The reference should be interpreted as evidence about the underlying lighting system, not copied as a set of visible shapes.
 
+When a user selects a specific generated image as closest, use that image as the edit source. Preserve its color layout unless rearrangement is requested. An attached wallpaper is the actual composition reference, not merely palette inspiration.
+
 ## Iteration Rules
+
+### If asked to blur, stretch, or compose it a bit
+
+- Treat blur and stretch as bounded edits, not invitations to redesign.
+- Preserve the selected reference's broad color relationships and intensity.
+- Remove fine texture before reducing the number of broad fields.
+- For stretching without a specified direction, gently broaden existing transitions; avoid extreme geometric distortion.
+- For a small composition adjustment, make one restrained change to balance or field extent. Do not simultaneously change palette, saturation and texture.
+- “Less structure” permits irregular spacing and intermingling; it does not request painterly noise or scattered patches.
+- “Compose it a bit” does not mean dial back energy or return to the quiet-field template.
 
 ### If the result is too noisy
 
-- reduce the number of gradient centers
-- enlarge each color field
-- soften transitions
-- remove texture
-- reduce local contrast
-- increase quiet negative space
+- first remove fine texture and soften transitions while preserving the broad composition
+- enlarge each color field if its extent is too small
+- only reduce gradient centers, local contrast or increase negative space if the broad composition itself is overcrowded
 
-### If the warm color feels like it is everywhere
+### If warm spill is unwanted in a quiet-field composition
 
 - confine it to one corner, edge, or bloom
 - restore the dominant quiet field
@@ -235,10 +267,21 @@ This skill should be loaded for requests such as:
 Before accepting a generated image, verify:
 
 - The composition reads as light, not as stacked shapes.
-- One dominant field owns most of the canvas.
-- Accent colors have a clear spatial home.
+- The chosen composition has readable balance: a dominant quiet field OR coherent intermingling freeform fields.
+- Color placement feels intentional without requiring every hue to occupy a separate corner.
 - Negative space is intentional.
 - The image has almost no visible texture.
-- Warm and cool regions are separated by soft transitions.
+- Color regions meet through soft transitions; warm-only palettes are valid.
 - No color is present merely because it belongs to the palette.
 - The result remains elegant when mentally desaturated; if the composition only works because of vivid color, the lighting structure is too weak.
+
+## Behavioral Acceptance Checks
+
+- A selected organic reference plus “blur it a bit, stretch the colors” produces a faithful softening with broader transitions; original color relationships and vividness survive.
+- “Less structured” retains smooth illumination and introduces no watercolor detail.
+- “Compose it a bit” adjusts balance without substituting a corner gradient or desaturating the image.
+- A warm-only freeform request is not forced into lavender plus a small warm accent.
+- A quiet background request can still use the original quiet-field pattern.
+- Naming distinguishes the established freeform-gradient term from the descriptive diffused treatment.
+
+Judge these visually against the selected reference; textual checks alone cannot establish image quality.
