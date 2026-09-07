@@ -67,7 +67,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["fallacy-check", "book", "cli-for-agents", "openai-aesthetic-images", "orchestration", "production-repo-baseline"]
+      "skills": ["fallacy-check", "book", "cli-for-agents", "openai-aesthetic-images", "outcome-loop", "orchestration", "production-repo-baseline"]
     },
     {
       "id": "real-directories",

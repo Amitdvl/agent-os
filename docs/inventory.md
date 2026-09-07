@@ -58,3 +58,19 @@ are never deployed or copied automatically.
 ## Consequential reasoning checks
 
 `skills/fallacy-check/SKILL.md` is a first-party core skill, authored from a reasoning-review requirement and informed by the linked fallacy taxonomy. Core policy routes conversational checks through its high-confidence, material-consequence threshold. It has no executable, credentials, data store, or background process. Behavioral examples distinguish actionable errors from preferences, exploration, and acknowledged tradeoffs.
+
+## Outcome loops
+
+[`outcome-loop`](../skills/outcome-loop/SKILL.md) is a first-party core skill for
+turning a business objective into an operated feedback loop and a verified Notion
+report. Invoke `$outcome-loop` with the operation and desired outcome. It uses
+existing domain skills and tools; installation creates no runtime or schedule.
+Notion access and the report destination belong to each consuming environment;
+without access, the agent retains a local report and marks publication incomplete.
+
+The contract was authored from an outcome-ownership requirement and reviewed
+against the [fallacy taxonomy](https://en.wikipedia.org/wiki/List_of_fallacies),
+particularly proxy substitution, selective evidence, causal inference, and sunk
+costs. It carries no copied article text, private operations, or account state.
+Behavioral regression cases live in `tests/outcome-loop-cases.md`; installation
+coverage verifies the skill reaches both supported hosts intact.
