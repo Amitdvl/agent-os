@@ -13,3 +13,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Private outcome-loop project destinations
+skills/outcome-loop/references/projects.local.md

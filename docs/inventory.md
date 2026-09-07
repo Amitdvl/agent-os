@@ -62,7 +62,7 @@ are never deployed or copied automatically.
 ## Outcome loops
 
 [`outcome-loop`](../skills/outcome-loop/SKILL.md) is a first-party core skill for
-turning a business objective into an operated feedback loop and a verified Notion
+turning a requested objective into an operated feedback loop and a verified Notion
 report. Invoke `$outcome-loop` with the operation and desired outcome. It uses
 existing domain skills and tools; installation creates no runtime or schedule.
 Notion access and the report destination belong to each consuming environment;
@@ -74,3 +74,12 @@ particularly proxy substitution, selective evidence, causal inference, and sunk
 costs. It carries no copied article text, private operations, or account state.
 Behavioral regression cases live in `tests/outcome-loop-cases.md`; installation
 coverage verifies the skill reaches both supported hosts intact.
+
+Outcome-loop also compares evidenced cost of delay with displaced work and the
+value of waiting when timing affects the outcome. Consuming installations may
+keep explicitly established destinations in
+`skills/outcome-loop/references/projects.local.md`. The skill checks this optional
+local file only for matching objectives; current user instructions win. The file
+is excluded from portable inventory and Git because project URLs and private
+context belong to the consuming environment. Source: the requirement to remember
+an explicitly created loop project without exporting private operation details.

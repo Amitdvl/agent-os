@@ -89,6 +89,7 @@
     {"id": "frontier-of-useful", "path": "templates/automations/frontier-of-useful/prompt.md", "disposition": "portable-prompt-manual-heartbeat", "excluded": "Live schedule, host paths, task identifier and run history remain local; create through the supported Codex App automation tool."}
   ],
   "referenceOnly": [
+    {"id": "outcome-loop-project-references", "localReference": "skills/outcome-loop/references/projects.local.md", "disposition": "private-machine-state", "reason": "Explicit local project destinations and private objective context; only the generic lookup contract is portable."},
     {"id": "config-project-record", "disposition": "project-specific-reference-only"}
   ],
   "rules": [
