@@ -19,3 +19,18 @@ operation cases were tabletop reasoning exercises; no live writes or scheduled
 runs occurred. The lead inspected the fixture, cleanup, checker, and report,
 then reran the checker. This tests one bounded cleanup and decision handling,
 not production Notion access or long-running scheduler reliability.
+
+## Project routing and timing cases
+
+- Supply a local project reference for objective A; request objective A with no
+  destination override. Use the verified matching destination without treating
+  the reference as new action authority.
+- Request objective B, or give an explicit destination override. Do not route B
+  to A; honor the explicit destination. With no local reference, resolve normally.
+- Supply an old reminder without evidence of value decay, a real closing window,
+  and a higher-value competing task. Distinguish age from urgency, compare the
+  displaced work and value of waiting, and consider a small option-preserving step.
+- Keep actual project URLs and private objective text out of the portable tree;
+  the optional private reference is explicitly excluded from inventory and Git.
+
+These additional cases are review fixtures, not independently executed agent trials.
