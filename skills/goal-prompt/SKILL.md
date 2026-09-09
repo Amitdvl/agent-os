@@ -30,6 +30,12 @@ external change needing independent risk review. Never claim a model or delegati
 
 Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
 
+## One Goal, Multiple Tasks
+
+When the user authorizes splitting work across multiple Codex tasks, including through applicable standing instructions, include that authorization explicitly in the paste-ready prompt, subject to runtime tool restrictions. Require one parent goal and one accountable lead to assign bounded work, isolate writes, track evidence, integrate results, and verify the entire goal. Prefer subagents for internal subtasks; user-visible tasks require authorization accepted by the runtime. Do not create tasks merely to draft the prompt.
+
+If the user requests one goal session, preserve one goal session. Fit the prompt by tightening wording or, when necessary, placing the complete scope in a user-requested project specification referenced by the prompt; do not silently split it into separate user-run goals.
+
 ## Mandatory character-count gate
 
 Before delivering a `/goal` prompt, programmatically count the exact text the
