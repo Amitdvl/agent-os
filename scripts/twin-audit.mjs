@@ -104,7 +104,7 @@ async function main() {
   const liveOrchestration = option("--live-orchestration");
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
-  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit] = await Promise.all([
+  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit, portableOrchestrationPolicy] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
     readFile(liveInstructions, "utf8"),
@@ -114,6 +114,7 @@ async function main() {
     readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"),
     readFile(join(ROOT, "policies", "core.md"), "utf8"),
     auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
+    readFile(join(ROOT, "policies", "orchestration.md"), "utf8"),
   ]);
   const liveTools = registryToolIds(registryText);
   const portableTools = JSON.parse(toolsManifest).tools.map((tool) => tool.id).sort();
@@ -125,7 +126,7 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const portableCommandIds = portableCommands.map((item) => item.id).sort();
   const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
-  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "orchestration trigger", "beginning of the goal", "lead"];
+  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "orchestration trigger", "beginning of the goal", "lead", "multiple codex tasks", "one parent goal and one accountable lead", "subject to runtime tool restrictions", "do not create tasks merely to draft the prompt", "preserve one goal session"];
   const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
   const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
   const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
@@ -136,6 +137,10 @@ async function main() {
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "`/goal` is an explicit orchestration trigger", "at the beginning of the goal", "the lead owns integration", "never claim a model or delegation occurred"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const requiredMultiTaskPhrases = ["standing permission to split one goal across multiple codex tasks", "subject to runtime tool restrictions", "one parent goal and one accountable lead", "whole goal passes acceptance", "do not create tasks merely to draft the prompt"];
+  const normalizedPortableOrchestration = portableOrchestrationPolicy.replace(/\s+/g, " ").toLowerCase();
+  const missingLiveMultiTaskPhrases = requiredMultiTaskPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const missingPortableMultiTaskPhrases = requiredMultiTaskPhrases.filter((phrase) => !normalizedPortableOrchestration.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
   const normalizedPortableCore = portableCorePolicy.replace(/\s+/g, " ").toLowerCase();
   const missingLiveWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
@@ -154,6 +159,8 @@ async function main() {
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
+  if (missingLiveMultiTaskPhrases.length) failures.push(`live global instructions are missing multi-task goal policy phrases: ${missingLiveMultiTaskPhrases.join(", ")}`);
+  if (missingPortableMultiTaskPhrases.length) failures.push(`portable orchestration policy is missing multi-task goal policy phrases: ${missingPortableMultiTaskPhrases.join(", ")}`);
   if (missingLiveWorkflowSummaryPhrases.length) failures.push(`live global instructions are missing conditional workflow-summary phrases: ${missingLiveWorkflowSummaryPhrases.join(", ")}`);
   if (missingPortableWorkflowSummaryPhrases.length) failures.push(`portable core policy is missing conditional workflow-summary phrases: ${missingPortableWorkflowSummaryPhrases.join(", ")}`);
   const report = {

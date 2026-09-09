@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: Coordinate genuinely multi-track or high-risk work through a lead agent and bounded specialist subagents. Use automatically only when the task has multiple independently valuable workstreams or a sensitive/irreversible change needs independent risk review. Do not use merely because work spans files, is lengthy, uses /goal, or could theoretically be split.
+description: Coordinate every /goal through an accountable lead and bounded workers or reviewers. Outside /goal, activate for independently valuable workstreams or sensitive external changes needing independent risk review, not merely file count or length. Support authorized multi-task execution under one parent goal.
 ---
 
 # Orchestration
@@ -49,6 +49,9 @@ Use role names that match the task: researcher (read-only evidence), executor (i
 
 ## Coordination Rules
 
+- Honor explicit permission, including applicable standing instructions, to split one goal across multiple Codex tasks, subject to runtime tool restrictions. Prefer subagents for internal subtasks; create user-visible tasks only when the runtime permits that authorization. If a runtime requires a task-specific request, include that permission in the proposed goal prompt instead of treating this skill as an override.
+- Keep one parent goal and one accountable lead. Record each task's bounded scope, identifier, dependencies, acceptance checks, and returned evidence in the goal's progress artifact. Track tasks through completion or a genuine blocker and integrate their results; dispatch is not delivery.
+- Multiple tasks do not mean multiple user-run goal sessions or expanded scope. The lead owns completion of the entire goal, not merely the first milestone. Drafting a prompt does not authorize creating tasks or starting implementation.
 - Do not let multiple workers edit the same files or mutable machine state concurrently. Sequence them or use isolated worktrees when parallel changes are necessary.
 - Keep workers task-local. Do not leak the expected conclusion into an independent review assignment.
 - Stop or redirect a worker when evidence changes the plan. Do not force the original plan through.

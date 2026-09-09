@@ -104,7 +104,7 @@
     {"id": "local-automations", "disposition": "strict-portable"},
     {"id": "memory-disabled", "disposition": "strict-portable"},
     {"id": "focus-protection", "disposition": "strict-portable"},
-    {"id": "task-orchestration", "disposition": "portable-core"},
+    {"id": "task-orchestration", "disposition": "portable-core", "note": "Every /goal uses lead-owned orchestration; authorized multi-task execution retains one parent goal, bounded roles, runtime restrictions, and whole-goal acceptance. Sources: policies/orchestration.md, skills/orchestration/SKILL.md, skills/goal-prompt/SKILL.md."},
     {"id": "repo-skill-ownership", "disposition": "portable-core"},
     {"id": "local-work-autonomy", "disposition": "strict-portable"},
     {"id": "agent-vault", "disposition": "portable-core-contract"},
