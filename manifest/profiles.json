@@ -23,6 +23,35 @@
       "memory": "disabled",
       "externalWrites": "exact-intent",
       "defaultHosts": ["codex", "claude-code"]
+    },
+    {
+      "id": "apple-suite",
+      "displayName": "Apple Suite",
+      "description": "The complete Agent OS workflow for macOS, including Apple Notes, Reminders, UI inspection, and App Store Connect.",
+      "packs": [
+        "core",
+        "local-productivity",
+        "research",
+        "communication",
+        "creator"
+      ],
+      "policies": [
+        "core",
+        "external-actions",
+        "secrets",
+        "freshness",
+        "focus",
+        "orchestration",
+        "twin-sync",
+        "strict-portable"
+      ],
+      "identityMode": "local-config",
+      "memory": "disabled",
+      "externalWrites": "exact-intent",
+      "defaultHosts": [
+        "codex",
+        "claude-code"
+      ]
     }
   ]
 }
