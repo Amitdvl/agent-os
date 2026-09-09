@@ -7,9 +7,54 @@ description: Use when the user asks for an OpenAI aesthetic, OpenAI-style backgr
 
 ## Overview
 
-Treat the OpenAI aesthetic as a **lighting and composition system, not a gradient palette**.
+Treat the OpenAI aesthetic as an **art-direction and composition system, not a gradient palette**.
 
-The goal is not to scatter familiar colors across a canvas. The goal is to create a spacious, luminous composition where large fields of light, temperature contrast, negative space, and localized color blooms produce a restrained premium feel.
+The goal is not to scatter familiar colors across a canvas. The goal is to make an image with a clear editorial premise: a deliberately cropped visual event, an intentional quiet surface, and lighting that gives the composition atmosphere and depth.
+
+Before writing a prompt, choose the image family. Do not let the word “OpenAI” silently collapse every request into a smooth abstract wallpaper:
+
+- **Editorial hero / embed image:** a single ownable visual idea, often with a decisive object, environment, graphic construct, or a white content plane nested inside an atmospheric field.
+- **Abstract background / wallpaper:** a non-representational light composition where the image itself is meant to stay quiet.
+- **Product/story image:** photography, illustration, UI, collage, or a graphic system whose medium is chosen to express the subject—not simply to decorate it.
+
+The first family is the default for blog hero, card, embed, social-share, and launch-image requests. The second is appropriate only when the user explicitly asks for a background, wallpaper, or deliberately non-representational treatment.
+
+### Why Generic Results Happen
+
+A palette-only brief produces generic results because it has no visual thesis, no figure/ground relationship, and no editorial crop. “Orange, premium, soft” is a mood board—not a composition.
+
+For every non-wallpaper image, name all four before generating:
+
+1. **Visual thesis:** what single surprising or legible idea does the image make visible?
+2. **Anchor:** what element, plane, scene, or constructed gesture carries that idea?
+3. **Frame pressure:** what is cropped hard, held off-frame, enlarged, or left deliberately empty?
+4. **Atmosphere:** how do light, color, depth, and material make the anchor feel inevitable?
+
+If these cannot be answered, ask for or make one restrained, on-theme editorial choice. Never compensate by adding more colors, blobs, ribbons, or texture.
+
+## Editorial Release Image System
+
+Observed OpenAI release and link-preview treatments are not a single house illustration style. Their common strength is **confident editorial framing**: a sparse page or card can sit against a massive soft field; an image can be an unusually specific poster, photograph, tool surface, or constructed visual metaphor. The unifying rule is that the frame feels authored.
+
+Use the following structure when the image is a hero, embed, social card, or banner with a message:
+
+- Establish one dominant anchor or content plane before choosing accent colors.
+- Give the anchor a clear relationship to the edges: crop it, let it enter from outside the frame, or isolate it inside generous empty space. Avoid centering a small object in a colored fog.
+- Build a foreground/background relationship. A white, off-white, translucent, or dark plane may interrupt the atmosphere; it should feel like a compositional decision, not a UI mockup pasted onto a wallpaper.
+- Let the supporting field have uneven pressure—one area can be dense, another nearly absent. Do not smooth the entire frame into equal visual weight.
+- Preserve a precise safe region for required overlay text, avatars, controls, or crops. Treat this as part of the composition, not leftover empty canvas.
+
+### Editorial Composition Primitives
+
+Pick one or two—not all of them:
+
+- A large pale content plane or window embedded in colored atmosphere.
+- One materially distinctive, oversized object or fragment, partially off-frame.
+- A graphic, typographic, diagrammatic, or UI-like system with a strong grid and a real informational premise.
+- A cinematic photographic moment with a specific viewpoint and a restrained but uncanny detail.
+- A single geometric or sculptural gesture whose contour is essential to the idea.
+
+The primitive is not an excuse to add arbitrary “AI shapes.” It must make the requested subject more specific. If the user asks for an empty banner, a quiet plane plus atmospheric framing can supply structure without inventing a theme.
 
 ## Core Principle
 
