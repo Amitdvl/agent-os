@@ -121,7 +121,8 @@ test("OpenAI aesthetic images is a portable core visual-direction skill", async 
   assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("openai-aesthetic-images"));
   const content = await readFile(join(ROOT, entry.path), "utf8");
   assert.match(content, /name: openai-aesthetic-images/);
-  assert.match(content, /lighting and composition system/);
+  assert.match(content, /art-direction and composition system/);
+  assert.match(content, /The first family is the default for blog hero, card, embed, social-share, and launch-image requests/);
   assert.match(content, /No visible texture, no grain/);
 });
 
