@@ -23,6 +23,13 @@
       "purpose": "Turn supplied sources with study, retention, or reuse intent into separate concise, source-linked OS Library material pages using V.A.L.U.E.; semantic intent activates it, so /ground, “Ground these,” and “Save this to OS” are examples rather than required phrases. Explain the why first through the shortest supported condition → mechanism → outcome chain, then state the decision rule and boundary; retain only minimal examples as evidence and calibrate causal language to the source’s confidence. Label cross-context transfers as applications or hypotheses. Render web sources as titled rich-text hyperlinks rather than bare URLs; upload local sources as clickable file attachments whose displayed names are clean human filenames, with one prominent source link above concise value content instead of transient paths or redundant raw dumps. Completion requires an expected-source manifest, destination read-back, exact label/href and target-resolution checks, a multi-source bijection, a whole-page slop scan, and a passing executable link validator."
     },
     {
+      "id": "pamphlet",
+      "path": "skills/pamphlet/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Ask per-commission learning objective, prior knowledge, and one or multiple pamphlets; research and deliver 300–1,000-word knowledge sprints as verified PDF and Markdown."
+    },
+    {
       "id": "trashness",
       "path": "commands/trashness/SKILL.md",
       "disposition": "portable-core",

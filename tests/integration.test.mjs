@@ -101,7 +101,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["silicon"\]/);
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), /prefix_rule\(pattern=\["telgo"\]/);
   assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
-  for (const id of ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]) {
+  for (const id of ["add", "commands", "ground", "pamphlet", "teach", "trashness", "trunk-finish"]) {
     assert.match(await readFile(join(home, ".codex", "skills", id, "SKILL.md"), "utf8"), new RegExp(`name: ${id}`));
     assert.match(await readFile(join(home, ".claude", "commands", `${id}.md`), "utf8"), new RegExp(`name: ${id}`));
   }
