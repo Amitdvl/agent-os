@@ -68,12 +68,12 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["fallacy-check", "book", "cli-for-agents", "openai-aesthetic-images", "outcome-loop", "orchestration", "production-repo-baseline"]
+      "skills": ["fallacy-check", "book", "cli-for-agents", "imagegen", "openai-aesthetic-images", "outcome-loop", "orchestration", "production-repo-baseline"]
     },
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
     }
   ],
   "hooks": [
@@ -91,7 +91,9 @@
   ],
   "referenceOnly": [
     {"id": "outcome-loop-project-references", "localReference": "skills/outcome-loop/references/projects.local.md", "disposition": "private-machine-state", "reason": "Explicit local project destinations and private objective context; only the generic lookup contract is portable."},
-    {"id": "config-project-record", "disposition": "project-specific-reference-only"}
+    {"id": "config-project-record", "disposition": "project-specific-reference-only"},
+    {"id": "imagegen-source-lexicon", "disposition": "private-source-reference-only"},
+    {"id": "imagegen-png-icon", "disposition": "host-binary-asset-excluded-from-text-package"}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},

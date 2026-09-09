@@ -11,6 +11,7 @@ The manifest is the source of truth for the portable inventory:
 - `skills/production-repo-baseline/` — a preview-first foundation for new GitHub projects: initialize local Git, safe defaults, and Dependabot without scaffolding product code; later adds reproducible dependencies and CI when the chosen stack exists.
 - `skills/orchestration/` and `policies/orchestration.md` — lead/worker workflow for every `/goal` and independently valuable or sensitive non-goal work. Authorized multi-task execution retains one parent goal, one accountable lead, isolated writes, tracked evidence, and whole-goal acceptance; runtime tool restrictions still apply. The goal-prompt contract carries permission explicitly without dispatching tasks during drafting.
 - `skills/openai-aesthetic-images/` — a composition-first visual direction skill for clean abstract light fields, including quiet-field and diffused freeform compositions, faithful blur/stretch edits, terminology provenance, and visual acceptance checks.
+- `skills/imagegen/` — the Apache-2.0-based OpenAI Image API execution skill plus a portable conversational art-direction contract, focused visual-language references, and the bundled CLI. It asks only high-value plain-language questions, tracks edit invariants and reference roles, and keeps API keys as an external user-supplied requirement.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
@@ -39,6 +40,8 @@ EPUBs through EPUBCheck. EPUBCheck validation is read-only by default; durable
 reports and expanded-archive rebuilds require explicit destinations.
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
+
+The Imagegen skill was distilled from an owner-supplied private reference into a generic portable contract. The private source file and its machine path are not copied. The portable package retains the text SVG icon but excludes the host PNG because current skill deployment is text-only; both portable UI icon fields use the SVG.
 
 ## Portable workflow templates
 

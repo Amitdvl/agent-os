@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
@@ -22,6 +22,7 @@ async function writeFixture(root, { extraSkill = false } = {}) {
   const commandRoot = join(root, "skills");
   const goal = join(root, "goal-prompt.md");
   const orchestration = join(root, "orchestration.md");
+  const imagegen = join(root, "imagegen");
   const instructions = join(root, "AGENTS.md");
   await writeFile(registry, `version: 1\ntools:\n${[...tools, "agent-inbox", "vox"].sort().map((id) => `  ${id}:`).join("\n")}\n`);
   for (const command of commands) {
@@ -36,12 +37,16 @@ async function writeFixture(root, { extraSkill = false } = {}) {
   }
   await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\n`/goal` is an orchestration trigger at the beginning of the goal.\nThe lead owns integration.\nMultiple Codex tasks: one parent goal and one accountable lead, subject to runtime tool restrictions. Do not create tasks merely to draft the prompt. Preserve one goal session.\n");
   await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
+  await cp(join(ROOT, "skills", "imagegen"), imagegen, { recursive: true });
+  const imagegenMetadata = await readFile(join(imagegen, "agents", "openai.yaml"), "utf8");
+  await writeFile(join(imagegen, "agents", "openai.yaml"), imagegenMetadata.replace('icon_large: "./assets/imagegen-small.svg"', 'icon_large: "./assets/imagegen.png"'));
+  await writeFile(join(imagegen, "assets", "imagegen.png"), "excluded host-only binary fixture\n");
   await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. `/goal` is an explicit orchestration trigger. At the beginning of the goal. The lead owns integration. Never claim a model or delegation occurred.\nStanding permission to split one goal across multiple Codex tasks, subject to runtime tool restrictions. Keep one parent goal and one accountable lead until the whole goal passes acceptance. Do not create tasks merely to draft the prompt.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
-  return { registry, commandRoot, goal, orchestration, instructions, commands };
+  return { registry, commandRoot, goal, orchestration, imagegen, instructions, commands };
 }
 
 function auditArgs(fixture) {
-  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions];
+  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-imagegen", fixture.imagegen, "--live-instructions", fixture.instructions];
 }
 
 test("twin audit accepts seven mirrored commands and ignores unrelated host skills", async (context) => {
@@ -98,6 +103,17 @@ test("twin audit detects live orchestration skill drift", async (context) => {
   const fixture = await writeFixture(root);
   await writeFile(fixture.orchestration, "mismatched orchestration skill\n");
   assert.match(run(auditArgs(fixture), 1).stdout, /live orchestration skill content mismatch/);
+});
+
+test("twin audit detects live imagegen package drift", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(join(fixture.imagegen, "references", "conversation-and-state.md"), "mismatched imagegen reference\n");
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /live imagegen package content mismatch/);
+  assert.equal(report.imagegen.status, "package-mismatch");
+  assert.deepEqual(report.imagegen.mismatchedFiles, ["references/conversation-and-state.md"]);
 });
 
 test("twin audit detects a missing conditional workflow summary rule", async (context) => {
