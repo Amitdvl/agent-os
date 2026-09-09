@@ -129,6 +129,18 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(await readFile(join(bookRoot, "tests", "fixtures", "sample-manuscript.md"), "utf8"), /A Small Test Book/);
     assert.equal(await exists(join(bookRoot, "scripts", "__pycache__")), false);
     assert.equal(await exists(join(bookRoot, "tests", "__pycache__")), false);
+
+    const imagegenRoot = join(hostHome, "skills", "imagegen");
+    assert.equal(
+      await readFile(join(imagegenRoot, "SKILL.md"), "utf8"),
+      await readFile(join(ROOT, "skills", "imagegen", "SKILL.md"), "utf8"),
+      "imagegen contract must install intact for each host",
+    );
+    assert.match(await readFile(join(imagegenRoot, "references", "conversation-and-state.md"), "utf8"), /one compact round/i);
+    assert.match(await readFile(join(imagegenRoot, "references", "editing-and-references.md"), "utf8"), /Reference leakage/);
+    assert.match(await readFile(join(imagegenRoot, "scripts", "image_gen.py"), "utf8"), /gpt-image-1\.5/);
+    assert.match(await readFile(join(imagegenRoot, "agents", "openai.yaml"), "utf8"), /allow_implicit_invocation: true/);
+    assert.equal(await exists(join(imagegenRoot, "assets", "imagegen.png")), false);
   }
 
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);

@@ -190,6 +190,44 @@ test("Summarize preserves successful model-backed CLI output verbatim", async ()
   assert.match(renderer, /relay successful model-backed stdout verbatim/i);
 });
 
+test("imagegen is a complete portable core art-direction skill", async () => {
+  const skills = await json("skills");
+  const packs = await json("packs");
+  const dispositions = await json("inventory-dispositions");
+  const entry = skills.skills.find((item) => item.id === "imagegen");
+  assert.deepEqual(entry, { id: "imagegen", path: "skills/imagegen/SKILL.md", disposition: "portable-core" });
+  assert.ok(packs.packs.find((pack) => pack.id === "core").skills.includes("imagegen"));
+  assert.ok(dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills").skills.includes("imagegen"));
+  assert.equal(dispositions.skillGroups.find((group) => group.id === "real-directories").skills.includes("imagegen"), false);
+  assert.equal(dispositions.referenceOnly.find((item) => item.id === "imagegen-source-lexicon").disposition, "private-source-reference-only");
+  assert.equal(dispositions.referenceOnly.find((item) => item.id === "imagegen-png-icon").disposition, "host-binary-asset-excluded-from-text-package");
+
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  for (const phrase of ["one compact round of 1–3 semantic questions total", "surprise me", "just generate it", "visual state", "Immutable / locked", "reference-image roles and precedence", "Never claim an output passed a visual check without inspecting the artifact", "Do not start art-direction intake for education"]) {
+    assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `imagegen missing ${phrase}`);
+  }
+
+  for (const path of [
+    "LICENSE.txt",
+    "agents/openai.yaml",
+    "assets/imagegen-small.svg",
+    "scripts/image_gen.py",
+    "references/conversation-and-state.md",
+    "references/photography-direction.md",
+    "references/design-illustration-typography.md",
+    "references/editing-and-references.md",
+    "references/diagnosis-and-iteration.md",
+    "references/prompting.md",
+    "references/sample-prompts.md",
+    "references/cli.md",
+    "references/image-api.md",
+    "references/codex-network.md",
+  ]) await stat(join(ROOT, "skills", "imagegen", path));
+
+  assert.match(await readFile(join(ROOT, "skills", "imagegen", "LICENSE.txt"), "utf8"), /Apache License/);
+  assert.match(await readFile(join(ROOT, "skills", "imagegen", "agents", "openai.yaml"), "utf8"), /allow_implicit_invocation: true/);
+});
+
 test("every audited tool and skill has a machine-readable disposition", async () => {
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");

@@ -9,6 +9,7 @@
     {"id": "fallacy-check", "path": "skills/fallacy-check/SKILL.md", "disposition": "portable-core"},
     {"id": "goal-prompt", "path": "skills/goal-prompt/SKILL.md", "disposition": "portable-core"},
     {"id": "outcome-loop", "path": "skills/outcome-loop/SKILL.md", "disposition": "portable-core"},
+    {"id": "imagegen", "path": "skills/imagegen/SKILL.md", "disposition": "portable-core"},
     {"id": "orchestration", "path": "skills/orchestration/SKILL.md", "disposition": "portable-core"},
     {"id": "openai-aesthetic-images", "path": "skills/openai-aesthetic-images/SKILL.md", "disposition": "portable-core"},
     {"id": "production-repo-baseline", "path": "skills/production-repo-baseline/SKILL.md", "disposition": "portable-core"},

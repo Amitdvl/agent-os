@@ -97,14 +97,69 @@ async function auditSkill(livePath, portablePath) {
   };
 }
 
+async function filesUnder(root) {
+  const files = [];
+  async function visit(directory) {
+    for (const entry of (await readdir(directory, { withFileTypes: true })).sort((left, right) => left.name.localeCompare(right.name))) {
+      const target = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== "__pycache__") await visit(target);
+        continue;
+      }
+      if (entry.isFile() && !entry.name.endsWith(".pyc")) files.push(relative(root, target));
+    }
+  }
+  await visit(root);
+  return files;
+}
+
+function normalizeImagegenLiveFile(path, content) {
+  if (path === "agents/openai.yaml") return content.replace('icon_large: "./assets/imagegen.png"', 'icon_large: "./assets/imagegen-small.svg"');
+  return content;
+}
+
+async function auditImagegenPackage(liveRoot, portableRoot) {
+  const excludedLivePaths = ["assets/imagegen.png"];
+  const excluded = new Set(excludedLivePaths);
+  const [resolvedPath, allLiveFiles, portableFiles] = await Promise.all([
+    realpath(liveRoot),
+    filesUnder(liveRoot),
+    filesUnder(portableRoot),
+  ]);
+  const liveFiles = allLiveFiles.filter((path) => !excluded.has(path));
+  const missingFromLive = difference(portableFiles, liveFiles);
+  const extraInLive = difference(liveFiles, portableFiles);
+  const portableSet = new Set(portableFiles);
+  const files = await Promise.all(liveFiles.filter((path) => portableSet.has(path)).map(async (path) => {
+    const [liveContent, portableContent] = await Promise.all([
+      readFile(join(liveRoot, path), "utf8"),
+      readFile(join(portableRoot, path), "utf8"),
+    ]);
+    return { path, status: normalizeImagegenLiveFile(path, liveContent) === portableContent ? "match" : "content-mismatch" };
+  }));
+  const mismatchedFiles = files.filter((file) => file.status !== "match").map((file) => file.path);
+  return {
+    livePath: liveRoot,
+    resolvedPath,
+    expectedPath: relative(ROOT, portableRoot),
+    excludedLivePaths,
+    missingFromLive,
+    extraInLive,
+    mismatchedFiles,
+    files,
+    status: missingFromLive.length || extraInLive.length || mismatchedFiles.length ? "package-mismatch" : "match",
+  };
+}
+
 async function main() {
   const liveRegistry = option("--live-registry");
   const liveCommands = option("--live-commands");
   const liveGoalPrompt = option("--live-goal-prompt");
   const liveOrchestration = option("--live-orchestration");
+  const liveImagegen = option("--live-imagegen");
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
-  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit, portableOrchestrationPolicy] = await Promise.all([
+  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit, portableOrchestrationPolicy, imagegenAudit] = await Promise.all([
     readFile(liveRegistry, "utf8"),
     readFile(liveGoalPrompt, "utf8"),
     readFile(liveInstructions, "utf8"),
@@ -115,6 +170,7 @@ async function main() {
     readFile(join(ROOT, "policies", "core.md"), "utf8"),
     auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
     readFile(join(ROOT, "policies", "orchestration.md"), "utf8"),
+    auditImagegenPackage(liveImagegen, join(ROOT, "skills", "imagegen")),
   ]);
   const liveTools = registryToolIds(registryText);
   const portableTools = JSON.parse(toolsManifest).tools.map((tool) => tool.id).sort();
@@ -156,6 +212,7 @@ async function main() {
   if (missingLiveGoalPhrases.length) failures.push(`live goal-prompt is missing count-gate phrases: ${missingLiveGoalPhrases.join(", ")}`);
   if (missingPortableGoalPhrases.length) failures.push(`portable goal-prompt is missing count-gate phrases: ${missingPortableGoalPhrases.join(", ")}`);
   if (orchestrationAudit.status !== "match") failures.push("live orchestration skill content mismatch");
+  if (imagegenAudit.status !== "match") failures.push(`live imagegen package content mismatch: ${[...imagegenAudit.missingFromLive.map((path) => `missing ${path}`), ...imagegenAudit.extraInLive.map((path) => `extra ${path}`), ...imagegenAudit.mismatchedFiles.map((path) => `changed ${path}`)].join(", ")}`);
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
@@ -172,6 +229,7 @@ async function main() {
     portableCommandIds,
     commandSources: commandAudit.sources,
     orchestration: orchestrationAudit,
+    imagegen: imagegenAudit,
     ignoredHostSkills,
     failures,
   };
