@@ -2,7 +2,7 @@
 
 The manifest is the source of truth for the portable inventory:
 
-- `manifest/tools.json` — 19 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
+- `manifest/tools.json` — 20 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secrets.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, and creator packs.
@@ -32,3 +32,11 @@ the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
 These are source contracts only: schedules, LaunchAgents, hook state, logs,
 session data, Trashness protected-name lists, and project-specific configuration
 are never deployed or copied automatically.
+
+## Apple Suite
+
+Select `--profile apple-suite` for the complete macOS workflow. The local-productivity pack includes `asc`, the [App Store Connect CLI](https://github.com/rorkai/App-Store-Connect-CLI), alongside Notes, Reminders, and UI inspection. Its portable scope is Darwin; Windows setup reports it as excluded. The default Strict Portable profile also includes the pack.
+
+The upstream installation route is `brew install asc`, but Agent OS does not install it or authenticate automatically. The source remains `manual-unresolved` until a release is deliberately reviewed and pinned. The contract starts with `asc version`, help, auth status/doctor, and current JSON app reads. Releases, uploads, pricing, invitations, submissions, and deletion require exact targets and action intent, followed by verification.
+
+API credential names follow upstream [authentication documentation](https://github.com/rorkai/App-Store-Connect-CLI/blob/main/commands/auth.mdx). Team keys need an issuer ID; individual keys do not. Private key alternatives belong only in Agent Vault or user-owned supported credential storage. No account state, private keys, or web sessions are distributed. Upstream telemetry is enabled by default; `ASC_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` opts out.

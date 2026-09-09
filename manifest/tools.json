@@ -95,6 +95,25 @@
       "id": "youtube", "binary": "youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session.",
       "packs": ["research"], "source": "youtube-wrapper-agent-os", "disposition": "external-local", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
       "freshness": "Run OpenCLI doctor immediately before browser-backed saves and inspect the submitted YouTube URL with yt-dlp when metadata is needed.", "safety": "Never inspect cookies or session files; Watch Later saves require the exact URL, explicit user intent, and --yes; report success only after the selected state is verified."
+    },
+    {
+      "id": "asc",
+      "binary": "asc",
+      "purpose": "App Store Connect app and TestFlight inspection and explicitly requested release management.",
+      "packs": [
+        "local-productivity"
+      ],
+      "source": "asc-homebrew",
+      "disposition": "external",
+      "platforms": [
+        "darwin"
+      ],
+      "auth": [
+        "agent-vault",
+        "human-login"
+      ],
+      "freshness": "Query current App Store Connect state and confirm the selected profile and app ID before acting; verify remote state after a requested write.",
+      "safety": "Uploads, submissions, releases, pricing, tester invitations, deletion, and account changes require exact app/resource targets and action intent. Never print private keys, JWTs, or session contents."
     }
   ]
 }

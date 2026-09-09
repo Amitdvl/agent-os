@@ -105,3 +105,5 @@ absent, and changes one recognized sentence in Codex `AGENTS.md`. It records
 local rollback metadata and refuses unknown or drifted state.
 
 See the [fresh-Mac walkthrough](fresh-mac-walkthrough.md) for the friend-friendly sequence and [troubleshooting](troubleshooting.md) for next actions.
+
+For the named macOS Apple Suite profile, preview with `./bin/setup --profile apple-suite`, then add `--apply` to deploy the portable contracts. This includes App Store Connect CLI (`asc`) routing; binary installation and Apple authentication remain separate deliberate steps.

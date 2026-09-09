@@ -71,12 +71,12 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
   const commands = await json("commands");
-  assert.equal(dispositions.localTools.length, 19);
+  assert.equal(dispositions.localTools.length, 20);
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 85);
-  assert.equal(new Set(installedSkills).size, 85);
+  assert.equal(installedSkills.length, 86);
+  assert.equal(new Set(installedSkills).size, 86);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -163,4 +163,18 @@ test("twin inventory documents the only intentional live-tool exclusions", async
   assert.equal(dispositions.twin.mode, "one-way-portable-contract");
   assert.deepEqual(dispositions.twin.excludedLiveTools.map((item) => item.id).sort(), ["agent-inbox", "vox"]);
   for (const item of dispositions.twin.excludedLiveTools) assert.ok(item.reason);
+});
+
+
+test("Apple Suite includes guarded ASC with unresolved install and vault requirements", async () => {
+  const [profiles, packs, tools, sources, secrets] = await Promise.all(["profiles", "packs", "tools", "sources", "secrets"].map(json));
+  assert.deepEqual(profiles.profiles.find((p) => p.id === "apple-suite").packs, packs.packs.map((p) => p.id));
+  const asc = tools.tools.find((t) => t.id === "asc");
+  assert.deepEqual(asc.platforms, ["darwin"]);
+  assert.ok(packs.packs.find((p) => p.id === "local-productivity").tools.includes("asc"));
+  const source = sources.sources.find((s) => s.id === asc.source);
+  assert.equal(source.pin, "manual-unresolved");
+  assert.equal(source.automation, "disabled");
+  assert.equal(source.locator, "asc");
+  assert.deepEqual(secrets.requirements.find((r) => r.tool === "asc").names, ["ASC_KEY_ID", "ASC_ISSUER_ID", "ASC_PRIVATE_KEY_PATH", "ASC_PRIVATE_KEY", "ASC_PRIVATE_KEY_B64", "ASC_KEY_TYPE"]);
 });
