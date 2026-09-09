@@ -5,9 +5,9 @@
       "id": "core",
       "description": "Agent policy, portable commands, first-party skills, guard templates, status, and diagnostics.",
       "tools": [],
-      "commands": ["add", "commands", "ground", "teach", "trashness", "trunk-finish"],
+      "commands": ["add", "commands", "ground", "pamphlet", "teach", "trashness", "trunk-finish"],
       "optionalCommands": [],
-      "skills": ["fallacy-check", "agent-os", "agent-secrets", "book", "goal-prompt", "outcome-loop", "orchestration", "openai-aesthetic-images", "production-repo-baseline", "tool-routing"]
+      "skills": ["fallacy-check", "agent-os", "agent-secrets", "book", "pamphlet", "goal-prompt", "outcome-loop", "orchestration", "openai-aesthetic-images", "production-repo-baseline", "tool-routing"]
     },
     {
       "id": "local-productivity",

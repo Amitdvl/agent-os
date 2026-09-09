@@ -452,6 +452,13 @@ async function buildPlan(context) {
     for (const command of selectedCommands(context)) {
       const content = await readText(join(REPO_ROOT, command.path));
       const path = host.commandMode === "markdown" ? join(hostHome, host.commandDirectory, `${command.id}.md`) : join(hostHome, host.skillDirectory, command.id, "SKILL.md");
+      // A command can expose the same canonical package as a full skill. Codex
+      // stores both in skills/, while Claude also needs its command entrypoint.
+      const existing = operations.find((operation) => operation.path === path);
+      if (existing) {
+        if (existing.kind !== "file" || existing.content !== content) throw new Error(`conflicting command/skill destination: ${command.id}`);
+        continue;
+      }
       operations.push({ kind: "file", path, content, id: `${host.id}:command:${command.id}` });
     }
     if (host.id === "codex" && tools.length) operations.push({ kind: "file", path: join(hostHome, "rules", "agent-os.rules"), content: renderAllowRules(tools), id: "codex:allow-rules" });

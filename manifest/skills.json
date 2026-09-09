@@ -3,6 +3,7 @@
   "skills": [
     {"id": "agent-os", "path": "skills/agent-os/SKILL.md", "disposition": "portable-core"},
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
+    {"id": "pamphlet", "path": "skills/pamphlet/SKILL.md", "disposition": "portable-core", "includeTests": true},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includeTests": true},
     {"id": "cli-for-agents", "path": "skills/cli-for-agents/SKILL.md", "disposition": "portable-core"},
     {"id": "fallacy-check", "path": "skills/fallacy-check/SKILL.md", "disposition": "portable-core"},
