@@ -1,0 +1,7 @@
+interface:
+  display_name: "OpenAI Aesthetic Images"
+  short_description: "Direct warm, luminous campaign artwork"
+  default_prompt: "Use $openai-aesthetic-images to create a text-free campaign image with a directional, luminous color field."
+
+policy:
+  allow_implicit_invocation: true
