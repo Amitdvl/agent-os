@@ -39,7 +39,7 @@
       "tools": ["opencap", "spogo", "yt-dlp"],
       "commands": [],
       "optionalCommands": [],
-      "skills": []
+      "skills": ["openai-aesthetic-images"]
     }
   ]
 }

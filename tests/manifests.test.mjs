@@ -75,8 +75,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 86);
-  assert.equal(new Set(installedSkills).size, 86);
+  assert.equal(installedSkills.length, 87);
+  assert.equal(new Set(installedSkills).size, 87);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -155,6 +155,18 @@ test("portable command and goal contracts retain their required workflow section
     const content = await readFile(join(ROOT, path), "utf8");
     for (const phrase of phrases) assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${path} missing ${phrase}`);
     if (path.startsWith("commands/")) assert.doesNotMatch(content, /agent-system/, `${path} retains an active legacy dependency`);
+  }
+});
+
+test("OpenAI aesthetic skill preserves directional light-field guidance and source references", async () => {
+  const skills = await json("skills");
+  const entry = skills.skills.find((item) => item.id === "openai-aesthetic-images");
+  assert.deepEqual(entry, { id: "openai-aesthetic-images", path: "skills/openai-aesthetic-images/SKILL.md", disposition: "portable-core" });
+  const creator = (await json("packs")).packs.find((pack) => pack.id === "creator");
+  assert.ok(creator.skills.includes("openai-aesthetic-images"));
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  for (const phrase of ["Gradient Labs", "New funding to build towards AGI", "large-scale directional color flow", "isolated orange bloom", "3:1 X profile banner", "Visual acceptance check"]) {
+    assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), `missing ${phrase}`);
   }
 });
 
