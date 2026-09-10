@@ -6,6 +6,7 @@
 - Create new Apple Reminders at high (urgent) priority unless the user explicitly requests another priority.
 - Prefer structured, bounded output and read-only inspection first.
 - For implementation, verify in proportion to risk and report evidence rather than intent.
+- During coding, make frequent small, coherent commits at safe, self-contained milestones. Keep each commit focused and verified when practical; never bundle unrelated work or stage unowned changes merely to create a commit.
 - Preserve unrelated user work. Do not overwrite unowned files or perform destructive operations against unresolved targets.
 - Rename a Codex thread when its main task materially changes, when the host exposes that capability.
 - When UI data is inaccessible through files or normal automation, try supported browser/computer access, then a declared screenshot/UI-inspection fallback.

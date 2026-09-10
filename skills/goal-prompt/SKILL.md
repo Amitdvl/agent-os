@@ -24,6 +24,10 @@ whether the work appears easy. Require a lead, explicit scope/non-goals/
 acceptance checks, bounded worker or reviewer roles when delegation is
 available, and independent final verification by the lead. If delegation is
 unavailable, require the lead contract anyway and state that limitation.
+Require the host to treat worker output as evidence, not as a replacement for
+the goal: it must keep reconciling results against the agreed scope, non-goals,
+and acceptance checks, and must not silently follow a worker tangent or
+expansion.
 Outside `/goal`, use orchestration when the task has multiple independently
 valuable workstreams with separate evidence or a sensitive/irreversible
 external change needing independent risk review. Never claim a model or delegation occurred when it did not.

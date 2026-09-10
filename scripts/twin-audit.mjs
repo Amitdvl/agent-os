@@ -148,12 +148,14 @@ async function main() {
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
-  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "`/goal` is an explicit orchestration trigger", "at the beginning of the goal", "the lead owns integration", "never claim a model or delegation occurred"];
+  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "`/goal` is an explicit orchestration trigger", "at the beginning of the goal", "the lead owns integration", "never claim a model or delegation occurred", "worker output is evidence", "not a replacement goal"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
+  const requiredCorePolicyPhrases = ["frequent small, coherent commits"];
   const normalizedPortableCore = portableCorePolicy.replace(/\s+/g, " ").toLowerCase();
   const missingLiveWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
-  const missingPortableWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedPortableCore.includes(phrase));
+  const missingLiveCorePolicyPhrases = requiredCorePolicyPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const missingPortableCorePolicyPhrases = requiredCorePolicyPhrases.filter((phrase) => !normalizedPortableCore.includes(phrase));
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
   if (extraTools.length) failures.push(`Agent OS tools absent from live registry: ${extraTools.join(", ")}`);
@@ -169,7 +171,8 @@ async function main() {
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
   if (missingLiveWorkflowSummaryPhrases.length) failures.push(`live global instructions are missing conditional workflow-summary phrases: ${missingLiveWorkflowSummaryPhrases.join(", ")}`);
-  if (missingPortableWorkflowSummaryPhrases.length) failures.push(`portable core policy is missing conditional workflow-summary phrases: ${missingPortableWorkflowSummaryPhrases.join(", ")}`);
+  if (missingLiveCorePolicyPhrases.length) failures.push(`live global instructions are missing commit-hygiene phrases: ${missingLiveCorePolicyPhrases.join(", ")}`);
+  if (missingPortableCorePolicyPhrases.length) failures.push(`portable core policy is missing commit-hygiene phrases: ${missingPortableCorePolicyPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,
     platform: targetPlatform,

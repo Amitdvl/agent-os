@@ -34,6 +34,7 @@ occurred when it did not.
 2. Select roles and order work. Prefer a single executor unless parallel work is genuinely independent.
 3. Choose a requested model only when the runtime exposes model selection. Prefer a stronger planning/review model for the lead and a capable execution model for workers when available. Never claim a model or delegation occurred when it did not.
 4. Keep the lead responsible for integration, safety decisions, final diff review, and final Done/Not Done.
+5. Keep the host anchored to the original goal. Treat worker output as evidence and implementation input, not a replacement goal; reconcile it against the agreed scope, non-goals, and acceptance checks before acting on it.
 
 ## Assignments
 
@@ -51,6 +52,7 @@ Use role names that match the task: researcher (read-only evidence), executor (i
 
 - Do not let multiple workers edit the same files or mutable machine state concurrently. Sequence them or use isolated worktrees when parallel changes are necessary.
 - Keep workers task-local. Do not leak the expected conclusion into an independent review assignment.
+- Do not let a worker's tangent, partial deliverable, or proposed expansion silently redirect the work. Redirect it to the original scope, or explicitly re-scope only with user authorization.
 - Stop or redirect a worker when evidence changes the plan. Do not force the original plan through.
 - Preserve user work and existing safety boundaries. Delegation never expands authority, credentials, tools, or external-write permission.
 
