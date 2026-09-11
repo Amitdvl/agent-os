@@ -28,13 +28,11 @@ test("CLI validates the complete manifest graph", () => {
   assert.deepEqual(result.warnings, []);
 });
 
-test("default profile is opinionated and selects every capability pack", async () => {
+test("default profile is opinionated and selects the portable capability packs", async () => {
   const profiles = await json("profiles");
-  const packs = await json("packs");
   assert.equal(profiles.defaultProfile, "strict-portable");
   const profile = profiles.profiles.find((item) => item.id === "strict-portable");
   assert.deepEqual(new Set(profile.packs), new Set(["core", "local-productivity", "research", "communication", "creator"]));
-  assert.deepEqual(new Set(profile.packs), new Set(packs.packs.map((item) => item.id)));
   assert.equal(profile.memory, "disabled");
   assert.equal(profile.externalWrites, "exact-intent");
 });
@@ -75,8 +73,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 87);
-  assert.equal(new Set(installedSkills).size, 87);
+  assert.equal(installedSkills.length, 88);
+  assert.equal(new Set(installedSkills).size, 88);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -170,10 +168,26 @@ test("OpenAI aesthetic skill preserves directional light-field guidance and sour
   }
 });
 
-test("twin inventory documents the only intentional live-tool exclusions", async () => {
+test("half-bounce is an Apple Suite standalone macOS workflow", async () => {
+  const [skills, packs, profiles, dispositions] = await Promise.all(["skills", "packs", "profiles", "inventory-dispositions"].map(json));
+  const entry = skills.skills.find((item) => item.id === "half-bounce");
+  assert.deepEqual(entry, { id: "half-bounce", path: "skills/half-bounce/SKILL.md", disposition: "portable-macos-workflow" });
+  const macosDevelopment = packs.packs.find((pack) => pack.id === "macos-development");
+  assert.deepEqual(macosDevelopment.skills, ["half-bounce"]);
+  const apple = profiles.profiles.find((profile) => profile.id === "apple-suite");
+  assert.ok(apple.packs.includes("macos-development"));
+  const inventory = dispositions.skillGroups.find((group) => group.id === "macos-development");
+  assert.deepEqual(inventory.skills, ["half-bounce"]);
+  const content = await readFile(join(ROOT, entry.path), "utf8");
+  for (const phrase of ["Software readiness", "Physical readiness", "metadata-only", "freeze before dismissal", "Dock", "Not Done"]) {
+    assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), `missing ${phrase}`);
+  }
+});
+
+test("twin inventory documents intentional live-tool exclusions", async () => {
   const dispositions = await json("inventory-dispositions");
   assert.equal(dispositions.twin.mode, "one-way-portable-contract");
-  assert.deepEqual(dispositions.twin.excludedLiveTools.map((item) => item.id).sort(), ["agent-inbox", "vox"]);
+  assert.deepEqual(dispositions.twin.excludedLiveTools.map((item) => item.id).sort(), ["agent-inbox", "epubcheck", "pandoc", "silicon", "summarize", "telgo", "vox"]);
   for (const item of dispositions.twin.excludedLiveTools) assert.ok(item.reason);
 });
 

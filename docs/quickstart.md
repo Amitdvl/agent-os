@@ -106,4 +106,4 @@ local rollback metadata and refuses unknown or drifted state.
 
 See the [fresh-Mac walkthrough](fresh-mac-walkthrough.md) for the friend-friendly sequence and [troubleshooting](troubleshooting.md) for next actions.
 
-For the named macOS Apple Suite profile, preview with `./bin/setup --profile apple-suite`, then add `--apply` to deploy the portable contracts. This includes App Store Connect CLI (`asc`) routing; binary installation and Apple authentication remain separate deliberate steps.
+For the named macOS Apple Suite profile, preview with `./bin/setup --profile apple-suite`, then add `--apply` to deploy the portable contracts. This includes App Store Connect CLI (`asc`) routing and the native macOS `half-bounce` readiness workflow; binary installation, Apple authentication, and physical recording remain separate deliberate steps.

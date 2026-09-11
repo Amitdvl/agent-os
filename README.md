@@ -65,6 +65,7 @@ push decision. Commit the intended Agent OS change and push it to the configured
 Machine-only items need an explicit exclusion; credentials, sessions, archives,
 identities, and machine-specific paths must never enter this repository.
 
-Portable workflow sources include the read-only Skill Cleaner contract, paused
+Portable workflow sources include the read-only Skill Cleaner contract, the
+measured `half-bounce` workflow for native macOS app readiness, paused
 automation templates, and optional hook templates. They are not scheduled or
 installed automatically; each destination chooses and configures them locally.

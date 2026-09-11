@@ -33,7 +33,8 @@
         "local-productivity",
         "research",
         "communication",
-        "creator"
+        "creator",
+        "macos-development"
       ],
       "policies": [
         "core",
