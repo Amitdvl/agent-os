@@ -4,6 +4,11 @@
     "mode": "one-way-portable-contract",
     "excludedLiveTools": [
       {"id": "agent-inbox", "reason": "Owner-specific local messaging application; intentionally excluded from the shareable distribution."},
+      {"id": "epubcheck", "reason": "Host-local EPUB validation utility without a reviewed Agent OS portable tool contract; intentionally excluded until promoted."},
+      {"id": "pandoc", "reason": "Host-local document conversion utility without a reviewed Agent OS portable tool contract; intentionally excluded until promoted."},
+      {"id": "silicon", "reason": "Host-local code image renderer with machine-owned config/cache state; intentionally excluded from the shareable distribution."},
+      {"id": "summarize", "reason": "Service-backed media extraction utility with provider-specific auth/configuration; intentionally excluded until a portable contract is reviewed."},
+      {"id": "telgo", "reason": "Owner-specific Telegram archive and authentication state; intentionally excluded from the shareable distribution."},
       {"id": "vox", "reason": "Owner-specific telecom and provider configuration; intentionally excluded from the shareable distribution."}
     ]
   },
@@ -69,6 +74,11 @@
       "id": "creator-art-direction",
       "disposition": "portable-core",
       "skills": ["openai-aesthetic-images"]
+    },
+    {
+      "id": "macos-development",
+      "disposition": "portable-macos-workflow",
+      "skills": ["half-bounce"]
     },
     {
       "id": "real-directories",

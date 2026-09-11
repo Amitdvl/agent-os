@@ -40,6 +40,14 @@
       "commands": [],
       "optionalCommands": [],
       "skills": ["openai-aesthetic-images"]
+    },
+    {
+      "id": "macos-development",
+      "description": "Native macOS app startup-readiness and physical verification workflow.",
+      "tools": [],
+      "commands": [],
+      "optionalCommands": [],
+      "skills": ["half-bounce"]
     }
   ]
 }

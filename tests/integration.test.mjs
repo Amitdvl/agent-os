@@ -119,11 +119,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(doctor.ok, true);
   assert.match(doctor.nextActions[1], /install/);
   const catalogue = JSON.parse(run(["status", "--home", home, "--catalog", "--json"], 0, noTools).stdout);
-  assert.equal(catalogue.workflows.length, 5);
+  assert.equal(catalogue.workflows.length, 6);
   assert.ok(catalogue.hostSkills.codex.includes(WINDOWS ? "opencli" : "birdclaw"));
   assert.deepEqual(catalogue.automations, []);
   assert.deepEqual(catalogue.plugins, []);
-  assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator"]);
+  assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator", "macos-development"]);
   assert.deepEqual(catalogue.classifiedCatalogue.map((item) => item.group).filter((item, index, all) => index === all.indexOf(item)), ["personal-slash-commands", "workflows", "local-tools", "standalone-skills"]);
   assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === (WINDOWS ? "opencli" : "birdclaw")).source, "managed local-tools registry");
 
@@ -139,6 +139,21 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(await exists(codexLink), false);
   assert.equal(await exists(launcher), false);
   assert.deepEqual(JSON.parse(await readFile(join(home, ".agent-os", "state.json"), "utf8")).managed, []);
+});
+
+test("Apple Suite deploys the half-bounce skill to both host adapters", async (context) => {
+  const root = join(SANDBOX, "apple-suite-half-bounce");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const noTools = { PATH: join(root, "empty-bin") };
+  const summary = JSON.parse(run(["setup", "--home", home, "--profile", "apple-suite", "--apply", "--json"], 0, noTools).stdout);
+  assert.equal(summary.profile, "apple-suite");
+  assert.ok(summary.packs.includes("macos-development"));
+  for (const hostHome of [join(home, ".codex"), join(home, ".claude")]) {
+    const skill = join(hostHome, "skills", "half-bounce", "SKILL.md");
+    assert.match(await readFile(skill, "utf8"), /name: half-bounce/);
+    assert.match(await readFile(skill, "utf8"), /Physical readiness/);
+  }
 });
 
 test("install mode is separately invoked and remains a dry-run without reviewed apply", async (context) => {

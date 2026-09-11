@@ -5,8 +5,9 @@ The manifest is the source of truth for the portable inventory:
 - `manifest/tools.json` — 20 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secrets.json` — requirement names and access classes only; it contains no values.
-- `manifest/packs.json` — core, local productivity, research, communication, and creator packs.
+- `manifest/packs.json` — core, local productivity, research, communication, creator, and macOS development packs.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
+- `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.
 - `skills/openai-aesthetic-images/` — portable art direction for abstract campaign artwork, based on documented reference links rather than a generic gradient preset.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
@@ -24,6 +25,10 @@ The research pack's OpenCLI contract treats named X bookmark folders as an authe
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
 
+The live owner machine also has explicit inventory exclusions for `agent-inbox`,
+`epubcheck`, `pandoc`, `silicon`, `summarize`, `telgo`, and `vox`; these are
+either owner-specific or not yet covered by a reviewed portable tool contract.
+
 ## Portable workflow templates
 
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
@@ -36,7 +41,7 @@ are never deployed or copied automatically.
 
 ## Apple Suite
 
-Select `--profile apple-suite` for the complete macOS workflow. The local-productivity pack includes `asc`, the [App Store Connect CLI](https://github.com/rorkai/App-Store-Connect-CLI), alongside Notes, Reminders, and UI inspection. Its portable scope is Darwin; Windows setup reports it as excluded. The default Strict Portable profile also includes the pack.
+Select `--profile apple-suite` for the complete macOS workflow. The local-productivity pack includes `asc`, the [App Store Connect CLI](https://github.com/rorkai/App-Store-Connect-CLI), alongside Notes, Reminders, and UI inspection. The macos-development pack adds the reusable `half-bounce` skill for making the first useful surface of a native macOS app interactive before the Dock icon settles. Its portable scope is Darwin; Windows and Strict Portable profiles omit this macOS-specific pack.
 
 The upstream installation route is `brew install asc`, but Agent OS does not install it or authenticate automatically. The source remains `manual-unresolved` until a release is deliberately reviewed and pinned. The contract starts with `asc version`, help, auth status/doctor, and current JSON app reads. Releases, uploads, pricing, invitations, submissions, and deletion require exact targets and action intent, followed by verification.
 
