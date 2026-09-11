@@ -56,9 +56,12 @@ the underlying design and audit evidence.
 Agent OS is the privacy-preserving twin of its owner's reusable local workflow.
 When changing a portable local tool, slash command, policy, routing rule, or
 setup contract, mirror that behavior into this repository in the same task and
-run validation, tests, `git diff --check`, and the configured twin audit. Commit
-the intended Agent OS change and push it to the configured `origin`; never
-force-push or publish unrelated project work.
+run validation, tests, `git diff --check`, and the configured twin audit. The
+`trunk-finish` command is an execution instruction: once invoked, it verifies,
+commits intended work, promotes the verified branch to trunk, pushes trunk, and
+cleans up safe merged branches/worktrees without pausing for a second merge or
+push decision. Commit the intended Agent OS change and push it to the configured
+`origin`; never force-push or publish unrelated project work.
 Machine-only items need an explicit exclusion; credentials, sessions, archives,
 identities, and machine-specific paths must never enter this repository.
 
