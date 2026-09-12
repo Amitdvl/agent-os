@@ -87,7 +87,8 @@ test("full deployment renders central registry, host symlinks, rules, status and
   }
   if (PLATFORM_TOOL_IDS.includes("remindctl")) {
     const remindctlContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "remindctl", "SKILL.md"), "utf8");
-    assert.match(remindctlContract, /newly created reminders to high \(urgent\) priority/i);
+    assert.match(remindctlContract, /Native Urgent is unsupported/i);
+    assert.match(remindctlContract, /leave priority unset unless the user explicitly requests/i);
   }
   if (PLATFORM_TOOL_IDS.includes("notebridge")) {
     const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
@@ -201,6 +202,42 @@ test("apply and uninstall fail closed on an unowned tool destination", async (co
   assert.equal(await readFile(conflict, "utf8"), "user-owned\n");
 });
 
+test("adopt-existing records exact files and safely redirects preexisting tool links", { skip: WINDOWS }, async (context) => {
+  const root = join(SANDBOX, "adopt-existing");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const codex = join(home, ".codex");
+  const oldTool = join(codex, "local-tools", "tools", "birdclaw");
+  const oldSkill = join(codex, "skills", "birdclaw");
+  const oldGoal = join(codex, "skills", "goal-prompt", "SKILL.md");
+  await mkdir(oldTool, { recursive: true });
+  await writeFile(join(oldTool, "SKILL.md"), "legacy tool contract\n");
+  await mkdir(dirname(oldGoal), { recursive: true });
+  await writeFile(oldGoal, await readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"), "utf8");
+  await symlink(oldTool, oldSkill);
+  await writeFile(join(codex, "AGENTS.md"), "# Existing\n", "utf8");
+  const summary = JSON.parse(run(["setup", "--home", home, "--packs", "core,research", "--adopt-existing", "--apply", "--json"]).stdout);
+  assert.equal(summary.conflicts, 0);
+  assert.equal(await realpath(oldSkill), join(home, ".agent-os", "local-tools", "tools", "birdclaw"));
+  assert.equal(await readFile(join(oldTool, "SKILL.md"), "utf8"), "legacy tool contract\n");
+  assert.deepEqual(JSON.parse(run(["status", "--home", home, "--json"]).stdout).drift, []);
+});
+
+test("adopt-existing refuses an unrecognized tool-link target", { skip: WINDOWS }, async (context) => {
+  const root = join(SANDBOX, "adopt-existing-conflict");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const unknown = join(root, "unknown-tool");
+  const link = join(home, ".codex", "skills", "birdclaw");
+  await mkdir(unknown, { recursive: true });
+  await writeFile(join(unknown, "SKILL.md"), "user-owned\n", "utf8");
+  await mkdir(dirname(link), { recursive: true });
+  await symlink(unknown, link);
+  const result = run(["setup", "--home", home, "--packs", "core,research", "--adopt-existing", "--apply", "--json"], 1);
+  assert.match(result.stderr, /refusing apply with 1 conflict/);
+  assert.equal(await realpath(link), unknown);
+});
+
 test("setup refuses an existing unowned agent-os launcher", async (context) => {
   const root = join(SANDBOX, "launcher-conflict");
   context.after(() => rm(root, { recursive: true, force: true }));
@@ -288,6 +325,14 @@ test("live cutover is preview-first, exact, idempotent, and rollback restores th
   assert.equal(status.liveCutover.status, "applied");
   assert.equal(status.liveCutover.guidance, "managed");
   assert.equal(JSON.parse(run(["doctor", "--home", fixture.home, "--json"]).stdout).coreChecks.find((item) => item.id === "live-cutover").ok, true);
+
+  await writeFile(agents, `${await readFile(agents, "utf8")}\n# Later user guidance\n`, "utf8");
+  const laterStatus = JSON.parse(run(["status", "--home", fixture.home, "--json"]).stdout);
+  assert.equal(laterStatus.liveCutover.status, "applied");
+  assert.equal(JSON.parse(run(["doctor", "--home", fixture.home, "--json"]).stdout).coreChecks.find((item) => item.id === "live-cutover").ok, true);
+  const guardedRollback = run(["live-rollback", "--home", fixture.home, "--apply", "--json"], 1);
+  assert.match(guardedRollback.stderr, /refusing live rollback/);
+  await writeFile(agents, fixture.originalGuidance.replace(LEGACY_GUIDANCE, CUTOVER_GUIDANCE), "utf8");
 
   const idempotent = JSON.parse(run(["live-cutover", "--home", fixture.home, "--apply", "--json"]).stdout);
   assert.equal(idempotent.mode, "already-applied");

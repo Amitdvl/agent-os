@@ -1,6 +1,7 @@
 # Live Workflow Migration Status
 
-**Snapshot:** 2026-08-06. The owner-machine cutover is complete. This is an
+**Snapshot:** 2026-09-13. The owner machine retains a legacy command cutover;
+normal Agent OS setup is the managed deployment path. This is an
 evidence inventory, not an installation plan. It names portable contracts and
 logical source locations only; it never
 contains a user name, credential, session, archive content, recording, account
@@ -13,9 +14,9 @@ identifier, or machine-specific absolute path.
 - The normal shell launcher resolves to this checkout's `bin/agent-os`.
 - The single reusable-source sentence in global guidance names Agent OS as the
   canonical portable source. All other global guidance was preserved.
-- The two active reusable-workflow automations now run from the Agent OS
-  checkout and target its Codex project. Their original TOML files have an
-  owner-local, timestamped migration backup.
+- Portable automation templates are paused by default. The owner chooses which
+  ones to activate; schedules, run records, and local task targets are not
+  evidence of a portable deployment.
 - The transactional cutover ledger and original guidance backup live under
   `~/.agent-os`. `agent-os live-rollback` previews restoration and
   `agent-os live-rollback --apply` restores the adopted legacy links, removes
@@ -56,7 +57,7 @@ identifier, or machine-specific absolute path.
 | Scripts and packages | Legacy package/scripts were inspected as migration input; owner-local helpers remain local where explicitly excluded | archive/reference-only after cutover | **portable source:** `package.json`, `bootstrap/cli.mjs`, `bin/*`, and `scripts/twin-audit.mjs` |
 | Templates | `$AGENT_SYSTEM/templates/*`, including hook templates | active dependency | **portable source:** `templates/config.example.json` and `templates/secret-requirements.md`; project application scaffolds remain **project-specific** |
 | Hooks and workflows | `$CODEX_HOME/hooks/*`; legacy hook sources for ctx7 guard, commit/push watcher, and no-verify protection | mixed: active dependency | **portable source:** `templates/hooks/ctx7-guard/{ctx7_guard.py,ctx7_guard_config.example.json,tests/}`, `templates/hooks/commit-push-watcher/{codex_commit_push_watcher.py,manage_commit_push_hook.sh}`, and `templates/hooks/block-no-verify/block_no_verify.sh`. Runtime state, LaunchAgent files, logs, session data, and local configuration remain **local-only exclusion** / **archive-only**. |
-| Active automation contracts | `$CODEX_HOME/automations/skill-cleaner-audit` and `$CODEX_HOME/automations/reusable-agent-tooling` now target and run from Agent OS | portable source, live applied | Portable paused templates are `templates/automations/{skill-cleaner-audit,reusable-agent-tooling}/automation.toml`; owner schedules, backups, run records, and machine-selected paths are **local-only exclusion** / **archive-only**. |
+| Active automation contracts | Owner-selected Codex automations | portable templates plus local activation | Portable paused templates are `templates/automations/{skill-cleaner-audit,reusable-agent-tooling,agent-os-drift-guard}/automation.toml`; owner schedules, backups, run records, and machine-selected paths are **local-only exclusion** / **archive-only**. |
 | Skill Cleaner workflow | Legacy global skill contract and analyzer | active dependency | **portable maintainer workflow:** `skills/skill-cleaner/SKILL.md` and `skills/skill-cleaner/scripts/skill-cleaner.ts`. It is read-only/advisory; reports do not authorize deletion, disablement, or edits. |
 | Configuration project record | Legacy project configuration record | project-specific | **reference-only:** no runtime deployment or host routing is copied into Agent OS. A consuming project owns its configuration schema and values. |
 | Project commands/workflows | Project `AGENTS.md`, `.agents/skills`, CI, deployment, promotion, and business-metric workflows | project-specific | Do not migrate to the base. `margins` and `promote` are explicitly excluded from the base in `manifest/commands.json`; a project may own replacements. |

@@ -45,7 +45,7 @@ const TOOL_CONTRACTS = {
   opencli: { root: "<tool-owned browser bridge state>", preflight: ["opencli doctor", "opencli profile list"], reads: ["opencli doctor", "opencli twitter bookmark-folders -f json", "opencli twitter bookmark-folder <folder-id> --limit 1000 -f json", "opencli twitter bookmarks --limit 1000 -f json (only when the authenticated folder index fails; label results corpus-wide)"], writes: ["Browser/UI mutation only with exact target and action"], limits: "Cookies, browser profiles, extension permissions, and traces are never inspected or copied. Do not invent a bookmark-folder ID when X returns a folder-index error.", fix: "Install/enable the supported bridge and select a user-owned browser profile manually." },
   peekaboo: { root: "<macOS accessibility and screen state>", preflight: ["peekaboo --help"], reads: ["peekaboo list windows"], writes: ["UI automation only with a clear target and task authority"], limits: "Read-only inspection is preferred; Accessibility/Screen Recording stay user-controlled.", fix: "Grant only the required macOS privacy permission in System Settings." },
   "rdt-cli": { root: "<tool-owned browser-session state>", preflight: ["rdt --help"], reads: ["rdt search <query> --json --max 20"], writes: ["Comment, vote, save, subscribe, or account changes only with exact target/action"], limits: "Browser credentials are opaque and must never be inspected.", fix: "Connect the user's own supported browser session manually." },
-  remindctl: { root: "<Apple Reminders database>", preflight: ["remindctl --help"], reads: ["remindctl list"], writes: ["Create/update/complete/delete only with exact list, reminder, date, and action", "Create new reminders with high (urgent) priority unless the user explicitly requests another priority"], limits: "Results can lag native state and access requires macOS permission.", fix: "Grant Reminders access in System Settings, then verify in the native app." },
+  remindctl: { root: "<Apple Reminders database>", preflight: ["remindctl --help"], reads: ["remindctl list"], writes: ["Create/update/complete/delete only with exact list, reminder, date, and action", "Native Urgent is unsupported. Use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority"], limits: "Results can lag native state and access requires macOS permission.", fix: "Grant Reminders access in System Settings, then verify in the native app." },
   spogo: { root: "<tool-owned Spotify session>", preflight: ["spogo auth status"], reads: ["spogo now-playing"], writes: ["Playback, queue, device, library, playlist, and volume changes only on exact request"], limits: "Player changes are visible remote writes and browser credentials remain opaque.", fix: "Complete the supported user login or browser import locally." },
   "twitter-cli": { root: "<tool-owned browser-session state>", preflight: ["twitter --help"], reads: ["twitter search <query> --json --max 20"], writes: ["Post/reply/quote/delete/like/follow only with exact target and content"], limits: "Use Birdclaw for historical archive work; do not print auth diagnostics.", fix: "Connect a user-owned browser session through the tool's documented flow." },
   wacli: { root: "<tool-owned WhatsApp linked-device state>", preflight: ["wacli --help"], reads: ["wacli status"], writes: ["Send, reaction, archive, pin, group/channel, or account mutation only with exact target/action"], limits: "Linked-device sessions are user-owned and must never be read from disk.", fix: "Link the user's own device through the supported interactive flow." },
@@ -68,7 +68,7 @@ const TOOL_DETAILS = {
   opencli: "Run doctor/profile list; browser commands operate on a selected logged-in profile and extensions are manual checkpoints. For a named X bookmark folder, list folders, match the requested name, then fetch that folder. If the authenticated folder index returns X's bookmarkFoldersSlice 404, mine `opencli twitter bookmarks --limit 1000 -f json` instead and explicitly label the result corpus-wide rather than folder-attributed; never inspect cookies, storage, or traces to bypass the failure.",
   peekaboo: "Run permissions and inspect apps/windows first. UI clicks, typing, menus, clipboard, and dialogs need clear authority.",
   "rdt-cli": "Keep requests bounded and sequential; short indexes require a fresh listing. Exports use task-local paths and interactions require exact target/text.",
-  remindctl: "Use JSON and read back writes. Set newly created reminders to high (urgent) priority unless the user explicitly requests another priority. Native Reminders UI is freshest for Today/current/subtasks; never use it for calendar events.",
+  remindctl: "Use JSON and read back writes. Native Urgent is unsupported: use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority. Native Reminders UI is freshest for Today/current/subtasks; never use it for calendar events.",
   spogo: "Check auth and bound search/history. Playback, queue/device/library/playlist/volume/shuffle/repeat are user-visible writes.",
   "twitter-cli": "Prefer Birdclaw for history. Use bounded YAML/JSON and never verbose diagnostics; verify requested live writes with narrow reads.",
   wacli: "Use JSON and --read-only for exploration. Sends, reactions, account/group/channel and state mutations need exact intent.",
@@ -290,7 +290,10 @@ function platformExcludedTools(context) {
 
 function selectedSkills(context) {
   const ids = new Set(context.packs.flatMap((pack) => pack.skills ?? []));
-  return context.bundle.skills.skills.filter((skill) => ids.has(skill.id) && skill.path);
+  // A portable contract can document a host adapter without replacing that
+  // adapter. The vault skill is deliberately local because its paths and
+  // encryption identity are machine-owned.
+  return context.bundle.skills.skills.filter((skill) => ids.has(skill.id) && skill.path && skill.disposition !== "portable-core-contract");
 }
 
 function selectedCommands(context) {
@@ -370,7 +373,7 @@ function managedRecord(previousState, path) {
   return previousState?.managed?.find((item) => item.path === path) ?? null;
 }
 
-async function classifyOperation(operation, previousState) {
+async function classifyOperation(operation, previousState, adoptExisting = false) {
   if (operation.kind === "symlink") {
     let currentTarget = null;
     let currentKind = null;
@@ -382,7 +385,16 @@ async function classifyOperation(operation, previousState) {
       if (error.code !== "ENOENT") throw error;
     }
     const previous = managedRecord(previousState, operation.path);
-    if (currentKind === "other" || (currentKind === "symlink" && !previous)) return { ...operation, status: "conflict", reason: "destination is not ledger-owned", currentTarget };
+    if (currentKind === "other") return { ...operation, status: "conflict", reason: "destination is not ledger-owned", currentTarget };
+    if (currentKind === "symlink" && !previous) {
+      if (!adoptExisting) return { ...operation, status: "conflict", reason: "destination is not ledger-owned", currentTarget };
+      let resolvedTarget = null;
+      try { resolvedTarget = await realpath(operation.path); } catch { /* a broken link is not adoptable */ }
+      if (currentTarget !== operation.linkTarget && (!operation.adoptableTarget || resolvedTarget !== operation.adoptableTarget)) {
+        return { ...operation, status: "conflict", reason: "adoption only permits the declared legacy target", currentTarget };
+      }
+      return { ...operation, status: currentTarget === operation.linkTarget ? "adopt" : "replace-adopted-link", currentTarget };
+    }
     if (currentKind === "symlink" && previous?.linkTarget !== currentTarget) return { ...operation, status: "conflict", reason: "managed symlink drifted", currentTarget };
     return { ...operation, status: currentTarget === operation.linkTarget ? "unchanged" : "create", currentTarget };
   }
@@ -396,7 +408,10 @@ async function classifyOperation(operation, previousState) {
     return { ...operation, status: current === next ? "unchanged" : current === null ? "create" : "update", current, next };
   }
 
-  if (current !== null && !previous) return { ...operation, status: "conflict", reason: "destination is not ledger-owned", current };
+  if (current !== null && !previous) {
+    if (adoptExisting && current === operation.content) return { ...operation, status: "adopt", current, next: operation.content };
+    return { ...operation, status: "conflict", reason: "destination is not ledger-owned", current };
+  }
   if (current !== null && previous?.hash !== hash(current)) return { ...operation, status: "conflict", reason: "managed file drifted", current };
   return { ...operation, status: current === operation.content ? "unchanged" : current === null ? "create" : "update", current, next: operation.content };
 }
@@ -417,7 +432,7 @@ async function buildPlan(context) {
   operations.push({ kind: "file", path: join(context.localToolsRoot, "registry.json"), content: renderRegistry(tools), id: "local-tools:registry" });
   const launcher = launcherPath(context);
   if (platform() === "win32") operations.push({ kind: "file", path: launcher, content: renderWindowsLauncher(), id: "agent-os:launcher" });
-  else operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), id: "agent-os:launcher" });
+  else operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), adoptableTarget: canonicalLauncherTarget(), id: "agent-os:launcher" });
   for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
@@ -433,7 +448,7 @@ async function buildPlan(context) {
     }
     for (const tool of tools) {
       const path = join(hostHome, host.skillDirectory, tool.id);
-      operations.push({ kind: "symlink", path, linkTarget: relative(dirname(path), join(context.localToolsRoot, "tools", tool.id)), id: `${host.id}:tool-link:${tool.id}` });
+      operations.push({ kind: "symlink", path, linkTarget: relative(dirname(path), join(context.localToolsRoot, "tools", tool.id)), adoptableTarget: join(hostHome, "local-tools", "tools", tool.id), id: `${host.id}:tool-link:${tool.id}` });
     }
     for (const command of selectedCommands(context)) {
       const content = await readText(join(REPO_ROOT, command.path));
@@ -449,7 +464,7 @@ async function buildPlan(context) {
   }
 
   const classified = [];
-  for (const operation of operations) classified.push(await classifyOperation(operation, context.previousState));
+  for (const operation of operations) classified.push(await classifyOperation(operation, context.previousState, Boolean(context.options["adopt-existing"])));
   return classified;
 }
 
@@ -500,7 +515,7 @@ async function applyPlan(context, plan) {
   }
 
   for (const operation of plan) {
-    if (operation.status === "unchanged") {
+    if (operation.status === "unchanged" || operation.status === "adopt") {
       const previous = managedRecord(context.previousState, operation.path);
       if (previous) managed.push(previous);
       else if (operation.kind === "managed-block") managed.push({ id: operation.id, kind: operation.kind, path: operation.path, blockHash: hash(operation.block) });
@@ -510,6 +525,7 @@ async function applyPlan(context, plan) {
     }
     if (operation.kind === "symlink") {
       await mkdir(dirname(operation.path), { recursive: true });
+      if (operation.status === "replace-adopted-link") await rm(operation.path, { force: true });
       await symlink(operation.linkTarget, operation.path);
     } else {
       await atomicWrite(operation.path, operation.next);
@@ -663,11 +679,16 @@ async function inspectAppliedCutover(context, state) {
   const launcher = await inspectCutoverLink(launcherPath(context));
   const expectedLauncher = state?.launcher;
   const launcherMatches = launcher.kind === "symlink" && expectedLauncher && launcher.rawTarget === expectedLauncher.appliedTarget && launcher.resolvedTarget === canonicalLauncherTarget();
-  if (!launcherMatches) drift.push("launcher");
+  const setupLauncher = normalManagedLauncher(context);
+  const launcherManagedBySetup = launcher.kind === "symlink" && setupLauncher && launcher.rawTarget === setupLauncher.linkTarget && launcher.resolvedTarget === canonicalLauncherTarget();
+  if (!launcherMatches && !launcherManagedBySetup) drift.push("launcher");
   const guidance = await readText(paths.agents, null);
-  const guidanceMatches = Boolean(state?.guidance?.appliedHash) && guidance !== null && hash(guidance) === state.guidance.appliedHash;
+  // Cutover owns precisely one canonical sentence, not every later addition to
+  // the owner's global guidance. Rollback remains full-hash guarded below so
+  // it never overwrites post-cutover edits.
+  const guidanceMatches = guidance !== null && exactGuidancePlan(guidance).status === "already-cut-over";
   if (!guidanceMatches) drift.push("guidance");
-  return { links, launcher: launcherMatches ? (expectedLauncher.created ? "managed" : "preserved-managed") : launcher.kind, guidance: guidanceMatches ? "managed" : guidance === null ? "missing" : "drifted", drift };
+  return { links, launcher: launcherMatches ? (expectedLauncher.created ? "managed" : "preserved-managed") : launcherManagedBySetup ? "managed-by-setup" : launcher.kind, guidance: guidanceMatches ? "managed" : guidance === null ? "missing" : "drifted", drift };
 }
 
 async function liveCutoverPlan(context) {
@@ -783,10 +804,13 @@ async function liveRollbackPlan(context) {
   const backup = await readText(cutoverBackupPath(context), null);
   const conflicts = [...applied.drift];
   if (backup === null || hash(backup) !== state.guidance.originalHash) conflicts.push("guidance-backup");
+  const currentGuidance = await readText(cutoverPaths(context).agents, null);
+  const guidanceUnchanged = currentGuidance !== null && hash(currentGuidance) === state.guidance.appliedHash;
+  if (!guidanceUnchanged) conflicts.push("guidance:post-cutover-edit");
   const operations = LEGACY_COMMAND_IDS.map((id) => ({ path: displayPath(context, join(paths.skills, id)), status: applied.links[id] === "managed" ? "restore-link" : "conflict", reason: applied.links[id] === "managed" ? null : "managed command drifted" }));
   operations.push({ path: displayPath(context, join(paths.skills, "teach")), status: applied.links.teach === "managed" ? "remove-link" : "conflict", reason: applied.links.teach === "managed" ? null : "managed command drifted" });
   operations.push({ path: displayPath(context, launcherPath(context)), status: applied.launcher === "managed" || applied.launcher === "preserved-managed" ? state.launcher.created ? "remove-launcher" : "preserve-launcher" : "conflict", reason: applied.launcher === "managed" || applied.launcher === "preserved-managed" ? null : "managed launcher drifted" });
-  operations.push({ path: displayPath(context, paths.agents), status: applied.guidance === "managed" && !conflicts.includes("guidance-backup") ? "restore-guidance" : "conflict", reason: applied.guidance === "managed" ? (conflicts.includes("guidance-backup") ? "original guidance backup drifted" : null) : "managed guidance drifted" });
+  operations.push({ path: displayPath(context, paths.agents), status: applied.guidance === "managed" && !conflicts.includes("guidance-backup") && guidanceUnchanged ? "restore-guidance" : "conflict", reason: applied.guidance !== "managed" ? "managed guidance anchor drifted" : !guidanceUnchanged ? "post-cutover guidance changed" : conflicts.includes("guidance-backup") ? "original guidance backup drifted" : null });
   return { action: "live-rollback", apply: Boolean(context.options.apply), mode: "applied", operations, conflicts, state, guidance: backup };
 }
 
@@ -1151,7 +1175,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
-    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|live-cutover|live-rollback|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--apply] [--json]");
+    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
     return;
   }
 
@@ -1161,6 +1185,14 @@ async function main() {
     const result = { ok: validation.errors.length === 0, ...validation };
     options.json ? console.log(JSON.stringify(result)) : printHuman(result);
     if (!result.ok) process.exitCode = 1;
+    return;
+  }
+  if (command === "render-tool") {
+    const id = options._[1];
+    const tool = bundle.tools.tools.find((item) => item.id === id);
+    if (!tool) throw new Error("Usage: agent-os render-tool <tool-id>");
+    const source = byId(bundle.sources.sources).get(tool.source);
+    process.stdout.write(renderToolSkill(tool, source));
     return;
   }
   if (validation.errors.length) throw new Error(`invalid manifests: ${validation.errors.join("; ")}`);

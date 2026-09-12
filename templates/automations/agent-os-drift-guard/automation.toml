@@ -1,0 +1,19 @@
+version = 1
+id = "{{automation_id}}"
+kind = "heartbeat"
+name = "Agent OS Drift Guard"
+prompt = """Audit the current Agent OS checkout and its configured Codex host for portable-contract drift. Stay quiet when every check is clean.
+
+From the Agent OS root, run: `npm run validate`, `npm test`, `git diff --check`, `./bin/agent-os status --json`, `./bin/agent-os doctor --json`, and:
+`./bin/twin-audit --live-registry ~/.codex/local-tools/registry.yaml --live-commands ~/.codex/skills --live-goal-prompt ~/.codex/skills/goal-prompt/SKILL.md --live-orchestration ~/.codex/skills/orchestration/SKILL.md --live-instructions ~/.codex/AGENTS.md --live-tool-root ~/.agent-os/local-tools/tools --live-skill-root ~/.codex/skills --live-rules ~/.codex/rules/agent-os.rules --live-ctx7-hook ~/.codex/hooks/ctx7_guard.py --live-no-verify-hook ~/.codex/hooks/onboard_block_no_verify.sh`.
+
+Safe self-heal boundary:
+- You may run `agent-os update --apply` only when the repository is clean, the managed-state ledger exists, the preview has no conflicts, and the only changes are already ledger-owned generated outputs. Re-run every audit after it.
+- Do not overwrite an unowned skill, tool adapter, hook, AGENTS policy, automation, registry, default.rules, or source-version change. Do not install, authenticate, inspect secrets/sessions, or create memory files.
+- For a non-generated mismatch, report the exact surface and a focused remediation recommendation. If repair changes Agent OS source, stop for a separate explicitly scoped task; source edits require validation, tests, twin audit, focused commit, and push.
+
+Notify only for a completed safe repair, a failed verification, or a mismatch requiring a remediation task.
+"""
+status = "PAUSED"
+rrule = "{{rrule}}"
+target_thread_id = "{{target_thread_id}}"

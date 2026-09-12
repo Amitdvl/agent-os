@@ -6,6 +6,12 @@ Never migrate encrypted vault records, age identities, API keys, OAuth material,
 
 Existing host instruction text is preserved outside the Agent OS block. Existing command, skill, tool-link, or rule paths are conflicts until their owner is clear; do not delete a state ledger to bypass that protection.
 
+For a legacy host that already has byte-identical portable files or tool links
+to an older local-tool root, preview `setup --adopt-existing` first. It is the
+only supported bridge into the normal managed ledger: it adopts exact files and
+redirects declared portable tool links, while refusing mismatched files and
+preserving local adapters, registries, hook configuration, and private state.
+
 Portable parity means equivalent safety decisions, commands, templates, freshness, and lifecycle behavior. It does not mean copied account authority or byte-identical host behavior.
 
 For a controlled owner-machine transition from legacy command links, use the

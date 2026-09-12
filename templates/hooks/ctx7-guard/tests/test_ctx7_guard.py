@@ -152,6 +152,10 @@ class Ctx7GuardTests(unittest.TestCase):
     def test_local_import_patch_stays_allowed(self) -> None:
         self.assertEqual(run_hook(patch_payload('import { cn } from "@/lib/utils";'), self.state_path), {})
 
+    def test_configured_local_import_prefix_stays_allowed(self) -> None:
+        config_path = self.write_config({"localImportPrefixes": ["@onboard"]})
+        self.assertEqual(run_hook(patch_payload('import { helper } from "@onboard/utils";'), self.state_path, config_path), {})
+
     def test_python_stdlib_import_patch_stays_allowed(self) -> None:
         self.assertEqual(run_hook(patch_payload("import json"), self.state_path), {})
         self.assertEqual(run_hook(patch_payload("from pathlib import Path"), self.state_path), {})

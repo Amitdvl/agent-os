@@ -89,13 +89,14 @@
   "hooks": [
     {"id": "commit-push-watcher", "path": "templates/hooks/commit-push-watcher/codex_commit_push_watcher.py", "disposition": "strict-portable-optional-disabled"},
     {"id": "commit-push-hook-manager", "path": "templates/hooks/commit-push-watcher/manage_commit_push_hook.sh", "disposition": "strict-portable-template"},
-    {"id": "ctx7-guard", "path": "templates/hooks/ctx7-guard/ctx7_guard.py", "disposition": "portable-core-optional"},
-    {"id": "no-no-verify-guard", "path": "templates/hooks/block-no-verify/block_no_verify.sh", "disposition": "portable-core-optional"},
+    {"id": "ctx7-guard", "path": "templates/hooks/ctx7-guard/ctx7_guard.py", "disposition": "portable-core-optional", "localAdapter": "ctx7_guard_config.json may declare project-local import aliases through localImportPrefixes; the hook source must otherwise match the portable template."},
+    {"id": "no-no-verify-guard", "path": "templates/hooks/block-no-verify/block_no_verify.sh", "disposition": "portable-core-optional", "localAdapter": "Project-specific denial wording is a local adapter through BLOCK_NO_VERIFY_MESSAGE; do not fork the portable hook."},
     {"id": "hook-runtime-state", "disposition": "private-machine-state"}
   ],
   "automationTemplates": [
     {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
     {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"},
+    {"id": "agent-os-drift-guard", "path": "templates/automations/agent-os-drift-guard/automation.toml", "disposition": "portable-template-paused"},
     {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
