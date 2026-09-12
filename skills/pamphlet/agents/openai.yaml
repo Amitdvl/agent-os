@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pamphlet"
+  short_description: "Create compact knowledge sprints in PDF and Markdown."
+  default_prompt: "Use $pamphlet to create a researched knowledge sprint about my subject."

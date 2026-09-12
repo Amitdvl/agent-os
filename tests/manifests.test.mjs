@@ -44,14 +44,14 @@ test("Windows Suite selects every pack while platform filtering owns its exclusi
   assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
 });
 
-test("core installs all six portable commands by default", async () => {
+test("core installs all seven portable commands by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
-  assert.deepEqual(core.commands, ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(core.commands, ["add", "commands", "ground", "pamphlet", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(core.optionalCommands, []);
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
-  assert.equal(selected.length, 6);
+  assert.equal(selected.length, 7);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
 });
 
@@ -73,8 +73,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 88);
-  assert.equal(new Set(installedSkills).size, 88);
+  assert.equal(installedSkills.length, 89);
+  assert.equal(new Set(installedSkills).size, 89);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
