@@ -1,7 +1,7 @@
 # Advanced Guide
 
 ```text
-agent-os setup [--safe] [--apply] [--profile strict-portable] [--packs a,b] [--hosts codex,claude-code]
+agent-os setup [--safe] [--adopt-existing] [--apply] [--profile strict-portable] [--packs a,b] [--hosts codex,claude-code]
 agent-os install --tools a,b [--apply --reviewed-install]
 agent-os vault init --tools a,b [--age-recipient age1… | --generate-age-key] [--apply]
 agent-os vault validate [--verify-crypto]
@@ -27,5 +27,12 @@ first apply requires `--legacy-root`; it also creates the managed local launcher
 when absent (or recognizes the normal lifecycle's managed launcher). Its state
 and private guidance backup stay under the local Agent OS state directory. `live-rollback` restores only a
 verified, undrifted transaction and otherwise refuses to write.
+
+`setup --adopt-existing` is a one-time compatibility migration for exact
+portable files and existing host tool symlinks. It adopts byte-identical
+portable files into the normal ledger and redirects only the declared portable
+tool links to generated Agent OS contracts; it refuses a mismatched or
+non-symlink destination. It never replaces a local adapter such as the vault
+skill, host registry, hook configuration, or `default.rules`.
 
 Generated allow rules use one broad prefix per selected binary because command-specific rules make normal local operation fragile. They do not authorize external writes: every tool template and global policy still requires exact user intent.

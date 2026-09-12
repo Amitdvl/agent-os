@@ -1,4 +1,5 @@
 {
+  "localImportPrefixes": [],
   "topicMappings": {
     "@clerk/clerk-react": [
       "@clerk/clerk-react",

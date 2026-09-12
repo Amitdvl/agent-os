@@ -99,6 +99,14 @@ test("portable automation, hook, and skill-cleaner assets have declared sources 
   }
 });
 
+test("portable drift guard is paused and cannot overwrite unowned or semantic surfaces", async () => {
+  const content = await readFile(join(ROOT, "templates", "automations", "agent-os-drift-guard", "automation.toml"), "utf8");
+  assert.match(content, /status = "PAUSED"/);
+  assert.match(content, /agent-os update --apply/);
+  assert.match(content, /Do not overwrite an unowned skill, tool adapter, hook, AGENTS policy, automation, registry, default\.rules, or source-version change/);
+  assert.match(content, /Stay quiet when every check is clean/);
+});
+
 test("all external tools have explicit source pins or unresolved markers", async () => {
   const tools = await json("tools");
   const sources = await json("sources");

@@ -179,7 +179,23 @@ def load_topic_mappings() -> dict[str, set[str]]:
     )
 
 
+def load_local_import_prefixes() -> tuple[str, ...]:
+    try:
+        payload = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return ()
+    prefixes = payload.get("localImportPrefixes", [])
+    if not isinstance(prefixes, list):
+        return ()
+    return tuple(
+        normalize_topic_alias(prefix).strip("/") + "/"
+        for prefix in prefixes
+        if isinstance(prefix, str) and normalize_topic_alias(prefix).strip("/")
+    )
+
+
 TOPIC_MAPPINGS = load_topic_mappings()
+LOCAL_IMPORT_PREFIXES = load_local_import_prefixes()
 
 
 def alias_keys(value: str) -> set[str]:
@@ -248,7 +264,7 @@ def canonical_topic_for_js_import(specifier: str) -> str:
     normalized = normalize_topic_alias(specifier).strip("/")
     if not normalized:
         return ""
-    if normalized.startswith((".", "/")) or normalized.startswith("@/"):
+    if normalized.startswith((".", "/")) or normalized.startswith("@/") or normalized.startswith(LOCAL_IMPORT_PREFIXES):
         return ""
     if normalized.startswith("node:"):
         return ""

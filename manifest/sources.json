@@ -1,7 +1,7 @@
 {
   "version": 1,
   "sources": [
-    {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.9.4-audited", "automation": "disabled"},
+    {"id": "birdclaw-audited", "kind": "homebrew", "locator": "birdclaw", "pin": "0.12.2-audited", "automation": "disabled"},
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "discrawl", "pin": "0.11.4-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},
     {"id": "notcrawl-brew", "kind": "homebrew", "locator": "openclaw/tap/notcrawl", "pin": "0.5.1-audited", "automation": "disabled"},
@@ -9,10 +9,10 @@
     {"id": "notion-manual", "kind": "manual", "locator": "notion local CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "obsidian-manual", "kind": "manual", "locator": "obsidian CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "opencap-manual", "kind": "manual", "locator": "OpenCap", "pin": "0.1.4-audited", "automation": "disabled"},
-    {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.6", "automation": "disabled"},
+    {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.7", "automation": "disabled"},
     {"id": "peekaboo-audited", "kind": "homebrew", "locator": "peekaboo", "pin": "3.7.1-audited", "automation": "disabled"},
     {"id": "rdt-cli-git", "kind": "git", "locator": "https://github.com/public-clis/rdt-cli.git", "pin": "5e4fb3720d5c174e976cd425ccc3b879d52cac66", "automation": "disabled"},
-    {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.2-audited", "automation": "disabled", "review_notes": "New reminders default to high (urgent) priority unless the user specifies another priority."},
+    {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.4-audited", "automation": "disabled", "review_notes": "Native Urgent is unsupported. Use a timed alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority."},
     {"id": "spogo-brew", "kind": "homebrew", "locator": "steipete/tap/spogo", "pin": "0.10.0-audited", "automation": "disabled"},
     {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},

@@ -1,0 +1,3 @@
+{
+  "message": "Blocked: do not use git commit/push with --no-verify. Run the repository verification command and use the configured hooks instead."
+}
