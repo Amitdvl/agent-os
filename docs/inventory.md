@@ -9,6 +9,7 @@ The manifest is the source of truth for the portable inventory:
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.
 - `skills/openai-aesthetic-images/` — portable art direction for abstract campaign artwork, based on documented reference links rather than a generic gradient preset.
+- `skills/pamphlet/` — the canonical `/pamphlet` command and `$pamphlet` skill: researched 300–1,000-word explanations, delivered as verified PDF and Markdown pairs.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.

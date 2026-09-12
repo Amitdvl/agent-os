@@ -298,6 +298,17 @@ function selectedCommands(context) {
   return context.bundle.commands.commands.filter((command) => ids.has(command.id) && command.path && command.selectedByDefault);
 }
 
+async function packageFiles(root, prefix = "") {
+  const files = [];
+  for (const entry of await readdir(join(root, prefix), { withFileTypes: true })) {
+    if (entry.name.startsWith(".") || entry.name === "__pycache__") continue;
+    const relativePath = join(prefix, entry.name);
+    if (entry.isDirectory()) files.push(...await packageFiles(root, relativePath));
+    else if (entry.isFile() && !entry.name.endsWith(".pyc")) files.push(relativePath);
+  }
+  return files.sort();
+}
+
 function launcherPath(context) {
   return join(context.userHome, ".local", "bin", platform() === "win32" ? "agent-os.cmd" : "agent-os");
 }
@@ -413,7 +424,12 @@ async function buildPlan(context) {
     operations.push({ kind: "managed-block", path: join(hostHome, host.instructionFile), block, id: `${host.id}:instructions` });
 
     for (const skill of selectedSkills(context)) {
-      operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, "SKILL.md"), content: await readText(join(REPO_ROOT, skill.path)), id: `${host.id}:skill:${skill.id}` });
+      const source = join(REPO_ROOT, skill.path);
+      const sourceRoot = dirname(source);
+      const files = skill.includePackage ? await packageFiles(sourceRoot) : ["SKILL.md"];
+      for (const file of files) {
+        operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, file), content: await readText(join(sourceRoot, file)), id: `${host.id}:skill:${skill.id}:${file}` });
+      }
     }
     for (const tool of tools) {
       const path = join(hostHome, host.skillDirectory, tool.id);
@@ -422,6 +438,11 @@ async function buildPlan(context) {
     for (const command of selectedCommands(context)) {
       const content = await readText(join(REPO_ROOT, command.path));
       const path = host.commandMode === "markdown" ? join(hostHome, host.commandDirectory, `${command.id}.md`) : join(hostHome, host.skillDirectory, command.id, "SKILL.md");
+      const existing = operations.find((operation) => operation.path === path);
+      if (existing) {
+        if (existing.kind !== "file" || existing.content !== content) throw new Error(`conflicting command/skill destination: ${command.id}`);
+        continue;
+      }
       operations.push({ kind: "file", path, content, id: `${host.id}:command:${command.id}` });
     }
     if (host.id === "codex" && tools.length) operations.push({ kind: "file", path: join(hostHome, "rules", "agent-os.rules"), content: renderAllowRules(tools), id: "codex:allow-rules" });
