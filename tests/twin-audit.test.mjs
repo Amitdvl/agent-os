@@ -34,9 +34,9 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(unrelated), { recursive: true });
     await writeFile(unrelated, "---\nname: unrelated-tool\n---\n");
   }
-  await writeFile(goal, "## Mandatory Character-Count Gate\nprogrammatically count the prompt\nDo not send one prompt above the limit\n`/goal` is an orchestration trigger at the beginning of the goal.\nThe lead owns integration.\n");
+  await writeFile(goal, await readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"));
   await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
-  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\nAutomatically use the `orchestration` skill. `/goal` is an explicit orchestration trigger. At the beginning of the goal. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
+  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\n`/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Use one executor by default. Automatically use the `orchestration` skill only when justified. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal. Do not create user-visible tasks merely to split a goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
   return { registry, commandRoot, goal, orchestration, instructions, commands };
 }
 
@@ -98,6 +98,14 @@ test("twin audit detects live orchestration skill drift", async (context) => {
   const fixture = await writeFixture(root);
   await writeFile(fixture.orchestration, "mismatched orchestration skill\n");
   assert.match(run(auditArgs(fixture), 1).stdout, /live orchestration skill content mismatch/);
+});
+
+test("twin audit detects live goal-prompt skill drift", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(fixture.goal, "mismatched goal-prompt skill\n");
+  assert.match(run(auditArgs(fixture), 1).stdout, /live goal-prompt content mismatch/);
 });
 
 test("twin audit detects a missing conditional workflow summary rule", async (context) => {

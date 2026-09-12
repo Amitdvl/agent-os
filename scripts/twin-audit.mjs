@@ -118,15 +118,14 @@ async function main() {
   const liveInstructions = option("--live-instructions");
   const forbidRoot = option("--forbid-root", { required: false });
   const targetPlatform = valueOption("--platform");
-  const [registryText, goalText, instructions, toolsManifest, inventory, commandsManifest, portableGoalText, portableCorePolicy, orchestrationAudit] = await Promise.all([
+  const [registryText, instructions, toolsManifest, inventory, commandsManifest, portableCorePolicy, goalPromptAudit, orchestrationAudit] = await Promise.all([
     readFile(liveRegistry, "utf8"),
-    readFile(liveGoalPrompt, "utf8"),
     readFile(liveInstructions, "utf8"),
     readFile(join(ROOT, "manifest", "tools.json"), "utf8"),
     readFile(join(ROOT, "manifest", "inventory-dispositions.json"), "utf8"),
     readFile(join(ROOT, "manifest", "commands.json"), "utf8"),
-    readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"),
     readFile(join(ROOT, "policies", "core.md"), "utf8"),
+    auditSkill(liveGoalPrompt, join(ROOT, "skills", "goal-prompt", "SKILL.md")),
     auditSkill(liveOrchestration, join(ROOT, "skills", "orchestration", "SKILL.md")),
   ]);
   const liveTools = registryToolIds(registryText);
@@ -139,16 +138,11 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const portableCommandIds = portableCommands.map((item) => item.id).sort();
   const ignoredHostSkills = difference(commandAudit.hostSkillIds, portableCommandIds);
-  const requiredGoalPhrases = ["mandatory character-count gate", "programmatically count", "do not send one prompt", "orchestration trigger", "beginning of the goal", "lead"];
-  const normalizedLiveGoal = goalText.replace(/\s+/g, " ").toLowerCase();
-  const normalizedPortableGoal = portableGoalText.replace(/\s+/g, " ").toLowerCase();
-  const missingLiveGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedLiveGoal.includes(phrase));
-  const missingPortableGoalPhrases = requiredGoalPhrases.filter((phrase) => !normalizedPortableGoal.includes(phrase));
   const instructionPresent = /^#+\s+(?:Agent OS )?Twin Synchronization\s*$/mi.test(instructions);
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
-  const requiredOrchestrationPhrases = ["automatically use the `orchestration` skill", "`/goal` is an explicit orchestration trigger", "at the beginning of the goal", "the lead owns integration", "never claim a model or delegation occurred", "worker output is evidence", "not a replacement goal"];
+  const requiredOrchestrationPhrases = ["persistent, thread-scoped objective", "does not by itself require orchestration", "use one executor by default", "automatically use the `orchestration` skill only", "the lead owns integration", "never claim a model or delegation occurred", "worker output is evidence", "not a replacement goal", "do not create user-visible tasks merely to split a goal"];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
   const requiredCorePolicyPhrases = ["frequent small, coherent commits"];
@@ -164,8 +158,7 @@ async function main() {
     if (source.status === "content-mismatch") failures.push(`portable command content mismatch: ${source.id}`);
     if (source.forbidden) failures.push(`portable command resolves under forbidden root: ${source.id} -> ${source.resolvedPath}`);
   }
-  if (missingLiveGoalPhrases.length) failures.push(`live goal-prompt is missing count-gate phrases: ${missingLiveGoalPhrases.join(", ")}`);
-  if (missingPortableGoalPhrases.length) failures.push(`portable goal-prompt is missing count-gate phrases: ${missingPortableGoalPhrases.join(", ")}`);
+  if (goalPromptAudit.status !== "match") failures.push("live goal-prompt content mismatch");
   if (orchestrationAudit.status !== "match") failures.push("live orchestration skill content mismatch");
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
@@ -182,6 +175,7 @@ async function main() {
     commandRoot: commandAudit.resolvedRoot,
     portableCommandIds,
     commandSources: commandAudit.sources,
+    goalPrompt: goalPromptAudit,
     orchestration: orchestrationAudit,
     ignoredHostSkills,
     failures,

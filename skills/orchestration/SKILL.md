@@ -1,32 +1,33 @@
 ---
 name: orchestration
-description: Coordinate genuinely multi-track or high-risk work through a lead agent and bounded specialist subagents. Use automatically only when the task has multiple independently valuable workstreams or a sensitive/irreversible change needs independent risk review. Do not use merely because work spans files, is lengthy, uses /goal, or could theoretically be split.
+description: Coordinate genuinely multi-track or high-risk work through a lead agent and bounded specialist subagents. Use automatically only when the task has multiple independently valuable workstreams or a sensitive/irreversible change needs independent risk review.
 ---
 
 # Orchestration
 
-Use the smallest role team that improves correctness or throughput. The lead owns the outcome; workers own only bounded assignments.
+Use the smallest role team that improves correctness or throughput. The lead
+owns the outcome; workers own only bounded assignments.
 
 ## Activation
 
-**Default rule: every `/goal` activates orchestration.** Treat `/goal` as an
-explicit trigger, not a suggestion. Invoke this workflow at the beginning of
-the goal, establish a lead, and assign bounded worker or reviewer roles when
-delegation is available. Do not decline orchestration merely because the task
-is one feature, one system, spans multiple files, is long-running, or appears
-too easy to parallelize. If delegation is unavailable, keep the lead contract
-and state that limitation explicitly.
+Goal mode and orchestration are separate concerns. A `/goal` creates a durable,
+thread-scoped outcome; it does not by itself require orchestration. Use one
+executor by default, including for long-running or multi-file goals.
 
-Outside `/goal`, use orchestration when one of these conditions is clearly true:
+Activate orchestration only when one of these conditions is clearly true:
 
-1. The outcome needs two or more independently valuable workstreams with separate deliverables and evidence—for example, research that materially informs implementation plus an independent review, or two isolated system changes that can proceed without touching shared state.
-2. The task changes a sensitive or irreversible external surface—such as production data, permissions, deployments, secrets, or money—and an independent risk review materially reduces the chance of harm.
+1. The outcome needs two or more independently valuable workstreams with
+   separate deliverables and evidence, such as research that materially informs
+   implementation plus independent review, or isolated changes that do not
+   share mutable state.
+2. The task changes a sensitive or irreversible external surface—such as
+   production data, permissions, deployments, secrets, or money—and an
+   independent risk review materially reduces the chance of harm.
 
-For non-`/goal` work, do **not** orchestrate merely because the work spans
-multiple files, has several implementation steps, is lengthy, or can
-theoretically be divided. When the activation decision is genuinely uncertain,
-ask the human whether to orchestrate. Never claim a model or delegation
-occurred when it did not.
+Do not orchestrate merely because work uses `/goal`, spans multiple files, has
+several steps, is lengthy, or could theoretically be divided. When the
+activation decision is genuinely uncertain, ask the human whether to
+orchestrate. Never claim a model or delegation occurred when it did not.
 
 ## Lead Contract
 
@@ -46,7 +47,10 @@ Give every worker a bounded card containing:
 - constraints, non-goals, and required verification;
 - the exact evidence to return.
 
-Use role names that match the task: researcher (read-only evidence), executor (implementation), QA (tests and reproduction), reviewer (independent diff/behavior review), security reviewer (threat and permissions review), or release/migration operator. A role changes focus, not permissions.
+Use role names that match the task: researcher (read-only evidence), executor
+(implementation), QA (tests and reproduction), reviewer (independent
+diff/behavior review), security reviewer (threat and permissions review), or
+release/migration operator. A role changes focus, not permissions.
 
 ## Coordination Rules
 
@@ -58,7 +62,8 @@ Use role names that match the task: researcher (read-only evidence), executor (i
 
 ## Completion Gate
 
-The lead must independently inspect worker output, run the relevant verification, review the final diff, and check for residual risk. Report:
+The lead must independently inspect worker output, run the relevant verification,
+review the final diff, and check for residual risk. Report:
 
 - what each role did and its evidence;
 - the final acceptance-check results;
