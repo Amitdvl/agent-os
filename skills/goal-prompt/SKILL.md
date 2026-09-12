@@ -1,66 +1,101 @@
 ---
 name: goal-prompt
-description: Draft, critique, or refine compact Codex /goal prompts for long-running, measurable work.
+description: Draft, critique, or refine native Codex /goal objectives for long-running work with measurable completion. Use when the user asks for a /goal prompt, goal-mode wording, exit criteria, or help turning an ambitious task into a durable Codex goal.
 ---
 
 # Goal Prompt
 
-Use goal framing for multi-turn work, verification-heavy outcomes, meaningful tradeoffs, anti-gaming risk, iteration against tests/visuals/evals, or durable progress artifacts. For trivial work, say goal mode is probably unnecessary unless explicitly requested. Never start goal mode unless the user asks to create it.
+`/goal` creates a persistent, thread-scoped objective. Its text is both the
+first prompt and the completion criterion, so make it a concise execution
+contract rather than a backlog or an orchestration script. Never start goal
+mode unless the user explicitly asks to create a goal.
+
+Use goal framing for work that is likely to take multiple turns and has a clear
+outcome plus a way to verify completion. For an unclear outcome, help the user
+plan first; for a trivial one-turn task, say goal mode is probably unnecessary.
+
+## Goal Lifecycle
+
+Keep related work in the same goal thread. Use the native goal controls to
+pause, resume, edit, or clear it, and use same-thread follow-up messages to add
+context or adjust constraints. A new chat or task has its own goal state; it
+does not extend, share, or aggregate the original goal.
 
 ## Workflow
 
-1. Identify the actual outcome and convert it into measurable exit criteria.
-2. Name authoritative starting points, realistic environment, and measurement loops (tests, benchmarks, previews, screenshots, devices, logs, or evals).
-3. Forbid metric gaming: deleting tests, lowering coverage, stubbing behavior, hiding failures, hardcoding eval answers, weakening security, or using a reference image as a cropped/inlined substitute unless requested.
-4. For visual work, require flows/states, design-system and responsive constraints, visual comparisons where useful, and manual polish review; images are context, not sole proof.
-5. Require progress artifacts for long work (meaningful commits, status artifact, preview, or check-ins), final cleanup, diff review, evidence, and residual risks.
+1. State one desired outcome and a verifiable stopping condition.
+2. Include only applicable constraints: required tools, boundaries, compatible
+   behavior, approaches to avoid, and an authoritative file, ticket, plan, or
+   document to consult first.
+3. Name proof of completion: tests, benchmarks, previews, screenshots, device
+   checks, logs, evals, or manual review criteria.
+4. Add anti-gaming guardrails when relevant: do not delete tests, lower
+   coverage, stub behavior, hide failures, hardcode eval answers, weaken
+   security, or use a reference image as a cropped/inlined substitute unless
+   requested.
+5. For visual work, name required states, responsive and design-system
+   constraints, useful visual comparisons, and manual polish review. Images are
+   context, not sole proof.
+6. Require the final verification, diff review, cleanup of failed experiments
+   or temporary scaffolding, evidence of completion, and residual risks.
 
-## Orchestration
+Progress reports can be brief and checkpoint-based. Do not require a status
+file, draft PR, or automation unless it materially helps the requested work.
 
-Every `/goal` prompt must explicitly activate the `orchestration` workflow at
-the beginning of the goal. `/goal` is an orchestration trigger by default; do
-not make orchestration conditional on task length, file count, parallelism, or
-whether the work appears easy. Require a lead, explicit scope/non-goals/
-acceptance checks, bounded worker or reviewer roles when delegation is
-available, and independent final verification by the lead. If delegation is
-unavailable, require the lead contract anyway and state that limitation.
-Require the host to treat worker output as evidence, not as a replacement for
-the goal: it must keep reconciling results against the agreed scope, non-goals,
-and acceptance checks, and must not silently follow a worker tangent or
-expansion.
-Outside `/goal`, use orchestration when the task has multiple independently
-valuable workstreams with separate evidence or a sensitive/irreversible
-external change needing independent risk review. Never claim a model or delegation occurred when it did not.
+## Delegation
 
-Ask at most three material clarifying questions; otherwise state reasonable assumptions. Keep the paste-ready prompt at 3,800 characters or fewer.
+Goal mode does not by itself require orchestration. Use one executor by default.
+Activate the `orchestration` workflow only when the work has independently
+valuable workstreams with separate evidence, or a sensitive/irreversible change
+needs an independent risk review. Keep parallel writers in isolated worktrees
+or on disjoint mutable surfaces.
 
-## Mandatory character-count gate
+When delegation is justified, the lead owns scope, non-goals, acceptance checks,
+integration, and final verification. Worker output is evidence, not a
+replacement for the goal. Internal subagents or separate tasks do not share the
+native goal state; do not create user-visible tasks merely to split a goal.
 
-Before delivering a `/goal` prompt, programmatically count the exact text the
-user will paste, including the `/goal ` prefix, spaces, punctuation, and
-newlines. Never estimate by eye or claim it fits without that count. Do not send
-one prompt above 3,800 characters: shorten it without losing required criteria,
-or split it into ordered self-contained sessions. State the exact count after
-every delivered prompt.
+## Objective Length
+
+Programmatically count the exact stored objective, excluding the `/goal `
+command prefix and any explanatory Markdown outside the objective. It must be
+non-empty and at most 4,000 characters.
+
+If the objective would exceed 4,000 characters, keep its outcome, constraints,
+and verification concise and put supporting detail in an explicit referenced
+plan, ticket, or specification. Do not split one outcome into multiple `/goal`
+sessions merely to fit the limit. State the exact objective character count
+after every delivered prompt.
+
+## Output Format
+
+When drafting for the user, keep the answer compact:
 
 ```text
-Goal: [specific outcome and exit criteria].
+Use this /goal objective:
 
-Context and starting points:
-- [authoritative files, docs, prior plan]
+[Paste-ready objective]
+```
 
-Measure progress with:
-- [tests, benchmarks, previews, screenshots, logs]
+Then state `Objective character count: N (excluding the /goal prefix).` Add a
+short Notes section only when assumptions, missing inputs, or tradeoffs matter.
 
-Environment:
-- [production-like setup, devices, data, flags]
+## Objective Template
+
+Use this structure when helpful; omit irrelevant parts:
+
+```text
+Deliver [specific outcome].
+
+Context:
+- Start with [authoritative files, docs, ticket, or plan].
 
 Constraints:
-- [preserve behavior/security; no gaming or hiding failures]
+- [required tools, boundaries, compatibility needs, approaches to avoid].
 
-Progress reporting:
-- [commits, status artifact, periodic evidence]
+Verification:
+- [tests, measurements, previews, screenshots, logs, evals, or review criteria].
 
-Completion:
-- Run verification, inspect the final diff, remove failed experiments/temporary scaffolding, and report evidence plus remaining risks.
+Done when:
+- [verifiable stopping condition], with final verification and diff review complete.
 ```
