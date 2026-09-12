@@ -11,14 +11,14 @@ function setup(home, apply = false) {
   return JSON.parse(result.stdout);
 }
 
-test("Pamphlet installs one canonical Codex entry and a complete package on both hosts", async (context) => {
+test("Pamphlet installs a complete skill package on both hosts", async (context) => {
   const temporary = await mkdtemp(join(tmpdir(), "agent-os-pamphlet-install-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));
   const home = join(temporary, "user");
   const preview = setup(home);
   const entries = preview.operations.filter((item) => item.path.endsWith(".codex/skills/pamphlet/SKILL.md"));
-  assert.equal(entries.length, 1, "command and skill must not write the same Codex file twice");
-  assert.ok(preview.operations.some((item) => item.path.endsWith(".claude/commands/pamphlet.md")));
+  assert.equal(entries.length, 1);
+  assert.equal(preview.operations.some((item) => item.path.endsWith(".claude/commands/pamphlet.md")), false);
   setup(home, true);
   const canonical = await readFile("skills/pamphlet/SKILL.md", "utf8");
   for (const host of [".codex", ".claude"]) {
@@ -28,7 +28,6 @@ test("Pamphlet installs one canonical Codex entry and a complete package on both
       assert.equal(await readFile(join(root, relative), "utf8"), await readFile(join("skills/pamphlet", relative), "utf8"));
     }
   }
-  assert.equal(await readFile(join(home, ".claude/commands/pamphlet.md"), "utf8"), canonical);
   const repeat = setup(home);
   assert.equal(repeat.conflicts, 0);
   assert.ok(repeat.operations.filter((item) => item.path.includes("pamphlet")).every((item) => item.status === "unchanged"));

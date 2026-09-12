@@ -44,15 +44,16 @@ test("Windows Suite selects every pack while platform filtering owns its exclusi
   assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
 });
 
-test("core installs all seven portable commands by default", async () => {
+test("core installs all six portable commands by default and Pamphlet as a skill", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
-  assert.deepEqual(core.commands, ["add", "commands", "ground", "pamphlet", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(core.commands, ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(core.optionalCommands, []);
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
-  assert.equal(selected.length, 7);
+  assert.equal(selected.length, 6);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
+  assert.ok(core.skills.includes("pamphlet"));
 });
 
 test("CLI design guidance is portable and defaults custom CLIs to Go", async () => {
