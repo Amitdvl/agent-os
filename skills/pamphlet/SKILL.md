@@ -1,6 +1,6 @@
 ---
 name: pamphlet
-description: Create researched 300–1,000-word knowledge pamphlets as finished PDF and Markdown files. Use for /pamphlet, $pamphlet, or an explicit request to produce a Pamphlets knowledge sprint.
+description: Create researched 300–1,000-word knowledge pamphlets as finished PDF and Markdown files. Use for $pamphlet or an explicit request to produce a Pamphlet knowledge sprint.
 ---
 
 # Pamphlet
