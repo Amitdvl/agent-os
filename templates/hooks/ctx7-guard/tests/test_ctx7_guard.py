@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "ctx7_guard.py"
-REPO_ROOT = Path(__file__).resolve().parents[3]
+TEST_CWD = Path(tempfile.gettempdir()).resolve()
 DEMO_FILE = "src/demo.tsx"
 
 
@@ -23,6 +23,7 @@ def run_hook(payload: dict, state_path: Path, config_path: Path | None = None) -
         text=True,
         capture_output=True,
         env=env,
+        cwd=TEST_CWD,
         check=False,
     )
     if result.returncode != 0:
@@ -31,7 +32,7 @@ def run_hook(payload: dict, state_path: Path, config_path: Path | None = None) -
 
 
 def command_payload(command: str) -> dict:
-    return {"tool_input": {"command": command, "cwd": str(REPO_ROOT)}}
+    return {"tool_input": {"command": command, "cwd": str(TEST_CWD)}}
 
 
 def patch_payload(*added_lines: str) -> dict:
