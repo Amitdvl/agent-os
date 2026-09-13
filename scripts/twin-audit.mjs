@@ -163,6 +163,68 @@ async function auditSkillRootLinks(root) {
   }));
 }
 
+function skillName(content) {
+  const frontmatter = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+  if (!frontmatter) return null;
+  const value = frontmatter.match(/^name:\s*(.+?)\s*$/m)?.[1]?.trim();
+  return value?.replace(/^(?:"(.*)"|'(.*)')$/, "$1$2") || null;
+}
+
+async function disabledSkillPaths(configPath) {
+  if (!configPath) return new Set();
+  let content;
+  try { content = await readFile(configPath, "utf8"); } catch (error) { if (error.code === "ENOENT") return new Set(); throw error; }
+  const disabled = new Set();
+  for (const block of content.split(/^\[\[skills\.config\]\]\s*$/m).slice(1)) {
+    const section = block.split(/^\[\[?[^\]]+\]\]?\s*$/m)[0];
+    if (!/^enabled\s*=\s*false\s*$/m.test(section)) continue;
+    const rawPath = section.match(/^path\s*=\s*"([^"]+)"\s*$/m)?.[1];
+    if (rawPath) disabled.add(resolve(rawPath));
+  }
+  return disabled;
+}
+
+async function skillRecords(root, disabled) {
+  let entries;
+  try { entries = await readdir(root, { withFileTypes: true }); } catch (error) { if (error.code === "ENOENT") return []; throw error; }
+  const candidates = [];
+  for (const entry of entries) {
+    if (!(entry.isDirectory() || entry.isSymbolicLink())) continue;
+    const direct = join(root, entry.name, "SKILL.md");
+    if (await readableStatus(direct) === "readable") candidates.push(direct);
+    else if (entry.name.startsWith(".")) {
+      let nested = [];
+      try { nested = await readdir(join(root, entry.name), { withFileTypes: true }); } catch (error) { if (!["ENOENT", "ENOTDIR"].includes(error.code)) throw error; }
+      for (const child of nested) if (child.isDirectory() || child.isSymbolicLink()) {
+        const path = join(root, entry.name, child.name, "SKILL.md");
+        if (await readableStatus(path) === "readable") candidates.push(path);
+      }
+    }
+  }
+  return Promise.all(candidates.map(async (path) => ({
+    root,
+    path,
+    resolvedPath: await realpath(path),
+    name: skillName(await readFile(path, "utf8")),
+    enabled: !disabled.has(resolve(path)),
+  })));
+}
+
+async function auditSkillNames(roots, configPath) {
+  const disabled = await disabledSkillPaths(configPath);
+  const records = (await Promise.all(roots.map((root) => skillRecords(root, disabled)))).flat().filter((record) => record.name);
+  const groups = new Map();
+  for (const record of records.filter((item) => item.enabled)) {
+    const normalized = record.name.normalize("NFKC").toLocaleLowerCase("en-US");
+    groups.set(normalized, [...(groups.get(normalized) ?? []), record]);
+  }
+  const collisions = [...groups.entries()].flatMap(([normalizedName, entries]) => {
+    const distinct = [...new Map(entries.map((entry) => [entry.resolvedPath, entry])).values()];
+    return distinct.length > 1 ? [{ normalizedName, entries: distinct }] : [];
+  }).sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
+  return { records, collisions, disabledPaths: [...disabled].sort() };
+}
+
 function referencedSkillPaths(instructions, liveInstructions) {
   const home = dirname(dirname(liveInstructions));
   const paths = [];
@@ -292,6 +354,7 @@ async function main() {
   const liveToolRoot = optionalPathOption("--live-tool-root");
   const liveSkillRoot = optionalPathOption("--live-skill-root");
   const liveSymlinkRoots = pathOptions("--live-symlink-root");
+  const liveCodexConfig = optionalPathOption("--live-codex-config");
   const liveRules = optionalPathOption("--live-rules");
   const liveCtx7Hook = optionalPathOption("--live-ctx7-hook");
   const liveNoVerifyHook = optionalPathOption("--live-no-verify-hook");
@@ -318,13 +381,14 @@ async function main() {
   const portableCommands = JSON.parse(commandsManifest).commands.filter((item) => item.path);
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const roots = [...new Set([liveCommands, liveSkillRoot, ...liveSymlinkRoots].filter(Boolean))];
-  const [toolAudit, skillAudit, ctx7Audit, noVerifyAudit, ctx7TestAudit, rootLinkGroups] = await Promise.all([
+  const [toolAudit, skillAudit, ctx7Audit, noVerifyAudit, ctx7TestAudit, rootLinkGroups, skillNames] = await Promise.all([
     auditRenderedTools(liveToolRoot, allTools),
     auditPortableSkills(liveSkillRoot, skillsManifest.skills),
     auditExactFile(liveCtx7Hook, join(ROOT, "templates", "hooks", "ctx7-guard", "ctx7_guard.py")),
     auditExactFile(liveNoVerifyHook, join(ROOT, "templates", "hooks", "block-no-verify", "block_no_verify.sh")),
     auditExactFile(liveCtx7Test, join(ROOT, "templates", "hooks", "ctx7-guard", "tests", "test_ctx7_guard.py")),
     Promise.all(roots.map(auditSkillRootLinks)),
+    auditSkillNames(roots, liveCodexConfig),
   ]);
   const skillLinks = rootLinkGroups.flat();
   let rulesAudit = null;
@@ -378,6 +442,7 @@ async function main() {
     if (source.link !== "readable") failures.push(`registered tool skill link ${source.link}: ${source.id}`);
   }
   for (const link of skillLinks) if (link.status !== "ok") failures.push(`host skill symlink ${link.status}: ${link.livePath}`);
+  for (const collision of skillNames.collisions) failures.push(`enabled live skill name collision: ${collision.normalizedName} (${collision.entries.map((entry) => entry.path).join(", ")})`);
   if (uncoveredHostSkills.length) failures.push(`live skills missing from Agent OS inventory: ${uncoveredHostSkills.join(", ")}`);
   for (const reference of instructionSkillPaths) if (reference.status !== "readable") failures.push(`live instruction skill path ${reference.status}: ${reference.path}`);
   if (rulesAudit && rulesAudit.status !== "match") failures.push(`generated Agent OS rules ${rulesAudit.status}`);
@@ -408,6 +473,7 @@ async function main() {
     toolContracts: toolAudit,
     portableSkills: skillAudit,
     skillLinks,
+    skillNames,
     uncoveredHostSkills,
     instructionSkillPaths,
     rules: rulesAudit,

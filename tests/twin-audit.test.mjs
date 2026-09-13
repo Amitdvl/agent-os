@@ -93,6 +93,27 @@ test("twin audit rejects dangling host skill links before inventory filtering", 
   assert.match(report.failures.join("\n"), /host skill symlink broken-target: .*unlisted-broken-skill/);
 });
 
+test("twin audit rejects duplicate enabled skill names and honors an exact Codex disable entry", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const sharedRoot = join(root, "shared-skills");
+  const duplicate = join(sharedRoot, "cli-copy", "SKILL.md");
+  await mkdir(dirname(duplicate), { recursive: true });
+  await writeFile(duplicate, "---\nname: cli-for-agents\ndescription: shared fixture\n---\n");
+  const args = [...auditArgs(fixture), "--live-symlink-root", sharedRoot];
+  const failed = JSON.parse(run(args, 1).stdout);
+  assert.match(failed.failures.join("\n"), /enabled live skill name collision: cli-for-agents/);
+  assert.equal(failed.skillNames.collisions[0].entries.length, 2);
+
+  const config = join(root, "config.toml");
+  await writeFile(config, `[[skills.config]]\npath = "${duplicate}"\nenabled = false\n`);
+  const passing = JSON.parse(run([...args, "--live-codex-config", config]).stdout);
+  assert.equal(passing.ok, true);
+  assert.deepEqual(passing.skillNames.collisions, []);
+  assert.ok(passing.skillNames.disabledPaths.includes(duplicate));
+});
+
 test("twin audit rejects a missing registered tool routing document", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));

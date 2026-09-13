@@ -39,7 +39,7 @@
       "tools": ["opencap", "spogo", "yt-dlp"],
       "commands": [],
       "optionalCommands": [],
-      "skills": ["openai-aesthetic-images"]
+      "skills": ["image-art-direction", "openai-aesthetic-images"]
     },
     {
       "id": "macos-development",
