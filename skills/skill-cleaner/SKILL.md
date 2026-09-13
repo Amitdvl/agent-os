@@ -20,6 +20,7 @@ node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --
 node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --months 6 --max-log-mb 800 --deep-logs
 node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --context-tokens 272000 --budget-percent 2 --no-logs
 node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --root <configured-skill-root> --json
+node --experimental-strip-types skills/skill-cleaner/scripts/skill-cleaner.ts --no-logs --check --json
 ```
 
 The analyzer reads `codex debug prompt-input` when available, discovers plugin,
@@ -27,6 +28,11 @@ configured, Agent OS, and requested roots, calculates context/budget pressure,
 compares duplicate bodies and descriptions, and uses recent logs only within
 the selected age and byte budget. It emits text or JSON reports. Do not print
 raw logs, private skill content, credentials, or session data.
+
+`--check` is the automation gate: it fails when the live Codex inventory cannot
+be observed, when enabled live names collide, when configured skills are absent
+from the live prompt despite allowing implicit invocation, when skills are omitted by the modeled budget, or when a skill entrypoint is broken. Explicit-only skills are excluded from that comparison. Description truncation alone is
+reported but is not a failure because Codex applies that degradation deliberately.
 
 ## Decision rules
 
