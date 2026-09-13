@@ -162,6 +162,8 @@ test("status requires executable binaries and reports every independent readines
   const fakeBin = join(root, "bin");
   await mkdir(fakeBin, { recursive: true });
   await writeFile(join(fakeBin, "asc"), "not executable\n", "utf8");
+  await writeFile(join(fakeBin, "notcrawl"), "#!/bin/sh\nexit 0\n", "utf8");
+  await chmod(join(fakeBin, "notcrawl"), 0o755);
   run(["setup", "--home", home, "--apply", "--json"], 0, { PATH: fakeBin });
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, { PATH: fakeBin }).stdout);
   const asc = status.tools.find((item) => item.id === "asc");
@@ -169,8 +171,13 @@ test("status requires executable binaries and reports every independent readines
   assert.equal(asc.vault.status, "unconfigured");
   assert.equal(asc.authentication.status, "unknown");
   assert.ok(asc.readiness.actions.some((item) => /install/.test(item)));
-  assert.ok(asc.readiness.actions.some((item) => /vault/.test(item)));
-  assert.ok(asc.readiness.actions.some((item) => /authentication preflight/.test(item)));
+  assert.ok(asc.readiness.actions.some((item) => /encrypted record/.test(item)));
+  assert.ok(asc.readiness.actions.some((item) => /Choose one supported authentication route/.test(item)));
+  const notcrawl = status.tools.find((item) => item.id === "notcrawl");
+  assert.equal(notcrawl.authentication.mode, "any-of");
+  assert.equal(notcrawl.vault.status, "unconfigured");
+  assert.equal(notcrawl.readiness.status, "preflight-required");
+  assert.ok(notcrawl.readiness.actions.some((item) => /Choose one supported authentication route/.test(item)));
 });
 
 test("vault adapter binding is preview-first, metadata-only, and reversible", { skip: WINDOWS }, async (context) => {
@@ -180,7 +187,7 @@ test("vault adapter binding is preview-first, metadata-only, and reversible", { 
   const vaultRoot = join(home, "agent-vault");
   const helper = join(vaultRoot, "scripts", "agent-secrets");
   await mkdir(dirname(helper), { recursive: true });
-  await writeFile(helper, "#!/bin/sh\n[ \"$1\" = list ] || exit 91\nprintf 'tools/notion.sops.yaml\\ntools/notion.sops.env\\ntools/asc.sops.yaml\\n'\n", "utf8");
+  await writeFile(helper, "#!/bin/sh\n[ \"$1\" = list ] || exit 91\n[ -z \"${FAKE_API_TOKEN+x}\" ] || exit 92\nprintf 'tools/notion.sops.yaml\\ntools/notion.sops.env\\ntools/asc.sops.yaml\\n'\n", "utf8");
   await chmod(helper, 0o755);
   run(["setup", "--home", home, "--apply", "--json"]);
   const configPath = join(home, ".agent-os", "config.json");
@@ -194,7 +201,7 @@ test("vault adapter binding is preview-first, metadata-only, and reversible", { 
   run(["vault", "bind", "--home", home, "--kind", "agent-secrets", "--root", vaultRoot, "--apply", "--json"]);
   const bound = JSON.parse(await readFile(configPath, "utf8"));
   assert.deepEqual(bound.vaultAdapter, { version: 1, kind: "agent-secrets", root: vaultRoot, helper: "scripts/agent-secrets", recordIds: {} });
-  const status = JSON.parse(run(["status", "--home", home, "--json"]).stdout);
+  const status = JSON.parse(run(["status", "--home", home, "--json"], 0, { FAKE_API_TOKEN: "must-not-reach-helper" }).stdout);
   assert.equal(status.vault.adapter.status, "available");
   assert.equal(status.tools.find((item) => item.id === "notion").vault.status, "records-present-unverified");
   assert.equal(status.tools.find((item) => item.id === "notion").vault.usability, "unknown");

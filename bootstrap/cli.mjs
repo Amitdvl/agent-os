@@ -658,7 +658,10 @@ async function inspectVaultAdapter(context, override = null) {
     encoding: "utf8",
     timeout: 5000,
     maxBuffer: 1024 * 1024,
-    env: { ...process.env, AGENT_SECRETS_DIR: normalized.root },
+    env: Object.fromEntries([
+      ["AGENT_SECRETS_DIR", normalized.root],
+      ...["HOME", "PATH", "SOPS_AGE_KEY_FILE", "LANG", "LC_ALL"].flatMap((name) => typeof process.env[name] === "string" ? [[name, process.env[name]]] : []),
+    ]),
   });
   if (result.error || result.status !== 0) {
     return { ...normalized, status: "unavailable", reason: result.error?.code === "ETIMEDOUT" ? "helper-timeout" : "helper-failed", records: new Set() };
@@ -694,23 +697,32 @@ function vaultArtifactState(records, recordId, role) {
 
 function toolReadiness(tool, available, vault, authMethods, permissionRequirements) {
   const actions = [];
+  const hasVaultRoute = vault.declaration === "agent-vault";
+  const hasAlternativeAuthRoute = hasVaultRoute && authMethods.length > 0;
+  const vaultIsRequired = hasVaultRoute && !hasAlternativeAuthRoute;
   if (!available) actions.push(`Review and preview: agent-os install --tools ${tool.id}`);
   if (vault.status === "unconfigured" || vault.status === "incomplete") {
-    actions.push(vault.source === "adapter"
-      ? `Add the missing encrypted ${tool.id} record through the configured vault adapter`
-      : `Initialize or fill the managed vault record for ${tool.id}`);
+    actions.push(hasAlternativeAuthRoute
+      ? `Choose one supported authentication route for ${tool.id}: run the human-login preflight or add the missing encrypted record`
+      : vault.source === "adapter"
+        ? `Add the missing encrypted ${tool.id} record through the configured vault adapter`
+        : `Initialize or fill the managed vault record for ${tool.id}`);
   } else if (vault.status === "unknown") {
-    actions.push("Repair or rebind the configured vault adapter metadata check");
+    actions.push(hasAlternativeAuthRoute
+      ? `Use ${tool.id}'s human-login preflight, or repair the optional vault adapter route`
+      : "Repair or rebind the configured vault adapter metadata check");
   } else if (vault.status === "records-present-unverified") {
-    actions.push(`Verify the encrypted ${tool.id} record only when authenticated work is requested`);
+    actions.push(hasAlternativeAuthRoute
+      ? `Verify either ${tool.id}'s encrypted record or its human-login route when authenticated work is requested`
+      : `Verify the encrypted ${tool.id} record only when authenticated work is requested`);
   }
-  if (authMethods.length) actions.push(`Run ${tool.id}'s supported authentication preflight; sign in manually only if needed`);
+  if (authMethods.length && !hasAlternativeAuthRoute) actions.push(`Run ${tool.id}'s supported authentication preflight; sign in manually only if needed`);
   if (permissionRequirements.length) actions.push(`Verify ${tool.id}'s required macOS permission; grant it manually only if absent`);
   if (!actions.length) actions.push("Ready for the documented preflight");
 
   const status = !available ? "unavailable"
-    : vault.status === "unconfigured" || vault.status === "incomplete" ? "configuration-incomplete"
-    : vault.status === "unknown" ? "unknown"
+    : vaultIsRequired && (vault.status === "unconfigured" || vault.status === "incomplete") ? "configuration-incomplete"
+    : vaultIsRequired && vault.status === "unknown" ? "unknown"
     : authMethods.length || permissionRequirements.length || vault.status === "records-present-unverified" ? "preflight-required"
     : "ready-for-preflight";
   return { status, actions };
@@ -1101,7 +1113,17 @@ async function statusReport(context, catalogue = false) {
       status: vaultStatus,
       usability: toolRequirements.length ? "unknown" : "not-applicable",
     };
-    const authentication = { methods: authMethods, status: authMethods.length ? "unknown" : "not-required", evidence: authMethods.length ? "not-probed" : "not-applicable" };
+    const routes = [
+      ...(toolRequirements.length ? [{ kind: "agent-vault", status: vault.status, evidence: "metadata-only" }] : []),
+      ...authMethods.map((kind) => ({ kind, status: "unknown", evidence: "not-probed" })),
+    ];
+    const authentication = {
+      methods: authMethods,
+      mode: routes.length > 1 ? "any-of" : routes.length === 1 ? "single" : "not-required",
+      routes,
+      status: routes.length ? "unknown" : "not-required",
+      evidence: routes.length ? "not-probed" : "not-applicable",
+    };
     const permissions = { requirements: permissionRequirements, status: permissionRequirements.length ? "unknown" : "not-required", evidence: permissionRequirements.length ? "not-probed" : "not-applicable" };
     tools.push({
       id: tool.id,
