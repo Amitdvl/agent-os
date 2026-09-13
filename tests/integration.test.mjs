@@ -119,15 +119,18 @@ test("full deployment renders central registry, host symlinks, rules, status and
   }
 
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);
+  assert.equal(status.reportSchema, 2);
   assert.equal(status.installed, true);
   assert.deepEqual(status.drift, []);
   const statusTool = WINDOWS ? "opencli" : "notion";
-  assert.equal(status.tools.find((item) => item.id === statusTool).cli, "absent");
-  assert.equal(status.tools.find((item) => item.id === statusTool).vault, WINDOWS ? "not-required-or-present" : "missing-requirement");
-  if (!WINDOWS) assert.equal(status.tools.find((item) => item.id === "remindctl").permission, "missing-macos-permission");
-  assert.equal(status.tools.find((item) => item.id === "wacli").auth, "unauthenticated-human-checkpoint");
+  assert.equal(status.tools.find((item) => item.id === statusTool).cli.status, "absent");
+  assert.equal(status.tools.find((item) => item.id === statusTool).vault.status, WINDOWS ? "not-required" : "unconfigured");
+  if (!WINDOWS) assert.equal(status.tools.find((item) => item.id === "remindctl").permissions.status, "unknown");
+  assert.equal(status.tools.find((item) => item.id === "wacli").authentication.status, "unknown");
+  assert.equal(status.tools.find((item) => item.id === "wacli").authentication.evidence, "not-probed");
   const doctor = JSON.parse(run(["doctor", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(doctor.ok, true);
+  assert.deepEqual(doctor.readinessSummary, status.readinessSummary);
   assert.match(doctor.nextActions[1], /install/);
   const catalogue = JSON.parse(run(["status", "--home", home, "--catalog", "--json"], 0, noTools).stdout);
   assert.equal(catalogue.workflows.length, 6);
@@ -150,6 +153,63 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(await exists(codexLink), false);
   assert.equal(await exists(launcher), false);
   assert.deepEqual(JSON.parse(await readFile(join(home, ".agent-os", "state.json"), "utf8")).managed, []);
+});
+
+test("status requires executable binaries and reports every independent readiness action", { skip: WINDOWS }, async (context) => {
+  const root = join(SANDBOX, "truthful-readiness");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const fakeBin = join(root, "bin");
+  await mkdir(fakeBin, { recursive: true });
+  await writeFile(join(fakeBin, "asc"), "not executable\n", "utf8");
+  run(["setup", "--home", home, "--apply", "--json"], 0, { PATH: fakeBin });
+  const status = JSON.parse(run(["status", "--home", home, "--json"], 0, { PATH: fakeBin }).stdout);
+  const asc = status.tools.find((item) => item.id === "asc");
+  assert.equal(asc.cli.status, "absent");
+  assert.equal(asc.vault.status, "unconfigured");
+  assert.equal(asc.authentication.status, "unknown");
+  assert.ok(asc.readiness.actions.some((item) => /install/.test(item)));
+  assert.ok(asc.readiness.actions.some((item) => /vault/.test(item)));
+  assert.ok(asc.readiness.actions.some((item) => /authentication preflight/.test(item)));
+});
+
+test("vault adapter binding is preview-first, metadata-only, and reversible", { skip: WINDOWS }, async (context) => {
+  const root = join(SANDBOX, "vault-adapter");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const vaultRoot = join(home, "agent-vault");
+  const helper = join(vaultRoot, "scripts", "agent-secrets");
+  await mkdir(dirname(helper), { recursive: true });
+  await writeFile(helper, "#!/bin/sh\n[ \"$1\" = list ] || exit 91\nprintf 'tools/notion.sops.yaml\\ntools/notion.sops.env\\ntools/asc.sops.yaml\\n'\n", "utf8");
+  await chmod(helper, 0o755);
+  run(["setup", "--home", home, "--apply", "--json"]);
+  const configPath = join(home, ".agent-os", "config.json");
+  const before = await readFile(configPath, "utf8");
+  run(["vault", "bind", "--home", home, "--kind", "agent-secrets", "--root", vaultRoot, "--helper", "/bin/sh", "--json"], 1);
+  assert.equal(await readFile(configPath, "utf8"), before);
+  const preview = JSON.parse(run(["vault", "bind", "--home", home, "--kind", "agent-secrets", "--root", vaultRoot, "--json"]).stdout);
+  assert.equal(preview.apply, false);
+  assert.equal(preview.adapter.status, "available");
+  assert.equal(await readFile(configPath, "utf8"), before);
+  run(["vault", "bind", "--home", home, "--kind", "agent-secrets", "--root", vaultRoot, "--apply", "--json"]);
+  const bound = JSON.parse(await readFile(configPath, "utf8"));
+  assert.deepEqual(bound.vaultAdapter, { version: 1, kind: "agent-secrets", root: vaultRoot, helper: "scripts/agent-secrets", recordIds: {} });
+  const status = JSON.parse(run(["status", "--home", home, "--json"]).stdout);
+  assert.equal(status.vault.adapter.status, "available");
+  assert.equal(status.tools.find((item) => item.id === "notion").vault.status, "records-present-unverified");
+  assert.equal(status.tools.find((item) => item.id === "notion").vault.usability, "unknown");
+  assert.equal(status.tools.find((item) => item.id === "asc").vault.status, "incomplete");
+  const helperBefore = await readFile(helper, "utf8");
+  const unbindPreview = JSON.parse(run(["vault", "unbind", "--home", home, "--json"]).stdout);
+  assert.equal(unbindPreview.apply, false);
+  assert.equal(JSON.parse(await readFile(configPath, "utf8")).vaultAdapter.kind, "agent-secrets");
+  run(["vault", "unbind", "--home", home, "--apply", "--json"]);
+  assert.equal(JSON.parse(await readFile(configPath, "utf8")).vaultAdapter, "");
+  assert.equal(await readFile(helper, "utf8"), helperBefore);
+  const legacy = { ...JSON.parse(await readFile(configPath, "utf8")), vaultAdapter: "legacy-adapter" };
+  await writeFile(configPath, `${JSON.stringify(legacy, null, 2)}\n`);
+  const legacyStatus = JSON.parse(run(["status", "--home", home, "--json"]).stdout);
+  assert.deepEqual(legacyStatus.vault.adapter, { status: "invalid", reason: "legacy-string-unsupported", recordCount: 0 });
 });
 
 test("adopt-existing refuses file ownership through an unowned directory symlink", async (context) => {

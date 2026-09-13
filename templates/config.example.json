@@ -10,5 +10,11 @@
   "paths": {
     "obsidianVault": ""
   },
-  "vaultAdapter": ""
+  "vaultAdapter": {
+    "version": 1,
+    "kind": "agent-secrets",
+    "root": "<absolute-user-owned-vault-root>",
+    "helper": "scripts/agent-secrets",
+    "recordIds": {}
+  }
 }

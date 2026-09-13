@@ -5,6 +5,8 @@ agent-os setup [--safe] [--adopt-existing] [--apply] [--profile strict-portable]
 agent-os install --tools a,b [--apply --reviewed-install]
 agent-os vault init --tools a,b [--age-recipient age1… | --generate-age-key] [--apply]
 agent-os vault validate [--verify-crypto]
+agent-os vault bind --kind agent-secrets --root /absolute/user-owned/vault [--helper scripts/agent-secrets] [--apply]
+agent-os vault unbind [--apply]
 agent-os status [--catalog] [--json]
 agent-os doctor [--json]
 agent-os update [--apply]
@@ -12,6 +14,12 @@ agent-os safe-uninstall [--apply]
 agent-os live-cutover --legacy-root <legacy-root> [--apply]
 agent-os live-rollback [--apply]
 ```
+
+`vault bind` is preview-first and invokes only the adapter's metadata-only
+`list` operation. Status never opens or decrypts a record: filenames are
+reported as `present-unverified`, while credential usability remains `unknown`
+until the relevant tool preflight is explicitly requested. The binding is
+machine-local configuration and is never copied into the portable repository.
 
 All destination options (`--home`, `--state-dir`, `--codex-home`, `--claude-home`, and `--vault-dir`) must remain under `--home`. This makes isolated testing and recovery bounded.
 

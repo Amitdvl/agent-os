@@ -1,6 +1,7 @@
 {
   "manifestSchema": 1,
   "stateSchema": 1,
+  "configSchema": 1,
+  "statusSchema": 2,
   "minimumAgentOsVersion": "0.1.0"
 }
-
