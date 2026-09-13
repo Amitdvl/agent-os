@@ -1,0 +1,8 @@
+interface:
+  display_name: "Image Gen"
+  short_description: "Collaborative art direction and image creation"
+  icon_small: "./assets/imagegen-small.svg"
+  icon_large: "./assets/imagegen.png"
+  default_prompt: "Use $image-art-direction to develop and preserve a precise visual brief for an image workflow."
+policy:
+  allow_implicit_invocation: true

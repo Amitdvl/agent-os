@@ -13,6 +13,10 @@
     ],
     "excludedLiveSkills": [
       {"id": "no-temptation-lockin", "reason": "Owner-specific identity and focus boundary; intentionally machine-only and never copied into the portable distribution."}
+    ],
+    "excludedLiveConfiguration": [
+      {"id": "codex-skill-path-enablements", "reason": "Exact absolute skill-path enablement belongs to the owner machine. Agent OS mirrors the collision policy and audit contract, never machine-specific paths."},
+      {"id": "agent-vault-adapter-binding", "reason": "The vault root and helper location are machine-local. Agent OS mirrors only the versioned adapter schema and metadata-only behavior."}
     ]
   },
   "localTools": [
