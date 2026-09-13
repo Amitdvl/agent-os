@@ -84,6 +84,7 @@ const deepLogs = args.has("--deep-logs");
 const json = args.has("--json");
 const includeAll = args.has("--all");
 const noLive = args.has("--no-live");
+const check = args.has("--check");
 const model = argValue("--model", "gpt-5.5");
 const budgetPercent = Number(argValue("--budget-percent", "2"));
 const contextTokensOverride = argValue("--context-tokens", "");
@@ -214,7 +215,7 @@ function parseYamlScalar(raw: string): string {
   return value;
 }
 
-function parseFrontmatter(file: string): { name?: string; description?: string; body: string } | null {
+export function parseFrontmatter(file: string): { name?: string; description?: string; body: string } | null {
   const text = fs.readFileSync(file, "utf8");
   const lines = text.split(/\r?\n/);
   if (lines[0]?.trim() !== "---") return null;
@@ -238,7 +239,7 @@ function parseFrontmatter(file: string): { name?: string; description?: string; 
     const raw = match[2] ?? "";
     if (key === "name") name = sanitizeSingleLine(parseYamlScalar(raw));
     if (key === "description") {
-      if (raw.trim() === "|" || raw.trim() === ">") {
+      if (/^[|>][+-]?$/.test(raw.trim())) {
         const block: string[] = [];
         for (let j = i + 1; j < fm.length; j++) {
           if (/^[A-Za-z0-9_-]+:\s*/.test(fm[j] ?? "")) break;
@@ -346,7 +347,7 @@ function parseLiveSkills(live: LivePrompt): Skill[] {
     if (!exists(file)) return [];
     const parsed = parseFrontmatter(file);
     if (!parsed) return [];
-    const description = parsed.description ?? "";
+    const description = sanitizeSingleLine(match[2] ?? "");
     const realPath = fs.realpathSync(file);
     const root = [...live.roots.values()]
       .filter((candidate) => realPath === candidate || realPath.startsWith(`${candidate}${path.sep}`))
@@ -412,7 +413,7 @@ function skillRootScope(root: string): string {
   if (normalized.includes("/.codex/skills")) return "codex";
   if (normalized.includes("/agent-system/skills")) return "agent-system";
   if (normalized.includes("/Projects/agent-scripts/skills")) return "agent-scripts";
-  if (normalized.includes("/.agents/skills")) return "repo";
+  if (normalized.includes("/.agents/skills")) return "shared-agents";
   if (normalized.includes("/Dropbox/")) return "dropbox";
   return "extra";
 }
@@ -443,6 +444,7 @@ function displayPathPriority(skill: Skill): number {
 }
 
 function preferredDisplaySkill(a: Skill, b: Skill): Skill {
+  if (a.enabled !== b.enabled) return a.enabled ? a : b;
   const byDisplay = displayPathPriority(a) - displayPathPriority(b);
   if (byDisplay < 0) return a;
   if (byDisplay > 0) return b;
@@ -1090,6 +1092,16 @@ function skillBudget(skills: Skill[], metadataOverheadTokens = 0): Budget {
   };
 }
 
+function allowsImplicitInvocation(skill: Skill): boolean {
+  const interfacePath = path.join(skill.dir, "agents", "openai.yaml");
+  if (!exists(interfacePath)) return true;
+  try {
+    return !/^\s*allow_implicit_invocation:\s*false\s*$/m.test(fs.readFileSync(interfacePath, "utf8"));
+  } catch {
+    return true;
+  }
+}
+
 function isLikelyCopy(score: { description: number; body: number }): boolean {
   return score.body >= 0.95 || (score.body >= 0.85 && score.description >= 0.85);
 }
@@ -1100,6 +1112,7 @@ function duplicateDeleteSuggestions(groups: [string, Skill[]][]): string[] {
     const keep = preferredKeepSkill(list);
     const candidates = list
       .filter((skill) => skill.realPath !== keep.realPath)
+      .filter((skill) => skill.scope === "codex-plugin")
       .map((skill) => ({ skill, score: similarity(keep, skill) }))
       .filter(({ score }) => isLikelyCopy(score))
       .sort((a, b) => b.score.body - a.score.body || b.score.description - a.score.description);
@@ -1134,6 +1147,8 @@ function render(
   logFiles: string[],
   live: LivePrompt | null,
   integrityIssues: IntegrityIssue[],
+  liveDuplicateNames: { name: string; paths: string[] }[],
+  omittedLiveSkills: { name: string; path: string }[],
 ): string {
   const considered = includeAll ? discovered : selected;
   const roots = groupBy(discovered, (skill) => skill.root);
@@ -1170,6 +1185,16 @@ function render(
   lines.push("## Integrity Issues", "");
   for (const issue of integrityIssues) lines.push(`- ${issue.status}: ${issue.path}${issue.target ? ` -> ${issue.target}` : ""}`);
   if (integrityIssues.length === 0) lines.push("- none");
+  lines.push("");
+
+  lines.push("## Missing From Live Prompt", "");
+  for (const skill of omittedLiveSkills) lines.push(`- ${skill.name}: ${skill.path}`);
+  if (omittedLiveSkills.length === 0) lines.push("- none");
+  lines.push("");
+
+  lines.push("## Enabled Live Name Collisions", "");
+  for (const duplicate of liveDuplicateNames) lines.push(`- ${duplicate.name}: ${duplicate.paths.join(", ")}`);
+  if (liveDuplicateNames.length === 0) lines.push("- none");
   lines.push("");
 
   lines.push("## Skill Budget", "");
@@ -1263,6 +1288,21 @@ function main(): void {
   const usage = scanUsage([...skills, ...liveSkills], logFiles);
   const consideredSkills = includeAll ? skills : selectedSkills;
   const budget = skillBudget(consideredSkills, liveMetadataOverhead(live));
+  const liveDuplicateNames = [...groupBy(liveSkills, (skill) => skill.name.normalize("NFKC").toLocaleLowerCase("en-US")).entries()]
+    .filter(([, list]) => list.length > 1)
+    .map(([name, list]) => ({ name, paths: list.map((skill) => skill.path).sort() }));
+  const liveRootPaths = live ? [...live.roots.values()].map((root) => expandHome(root)) : [];
+  const liveRealPaths = new Set(liveSkills.map((skill) => skill.realPath));
+  const omittedLiveSkills = live ? skills
+    .filter((skill) => skill.enabled)
+    .filter(allowsImplicitInvocation)
+    .filter((skill) => liveRootPaths.some((root) => {
+      const relativePath = path.relative(root, skill.path);
+      return !relativePath.startsWith("..") && relativePath.split(path.sep).length === 2 && path.basename(relativePath) === "SKILL.md";
+    }))
+    .filter((skill) => !liveRealPaths.has(skill.realPath))
+    .map((skill) => ({ name: skill.name, path: skill.path }))
+    .sort((a, b) => a.name.localeCompare(b.name) || a.path.localeCompare(b.path)) : [];
   const output = json
     ? JSON.stringify({
         skills,
@@ -1272,10 +1312,12 @@ function main(): void {
         logFiles,
         budget,
         integrityIssues,
+        liveDuplicateNames,
+        omittedLiveSkills,
       }, null, 2)
-    : render(skills, selectedSkills, usage, logFiles, live, integrityIssues);
+    : render(skills, selectedSkills, usage, logFiles, live, integrityIssues, liveDuplicateNames, omittedLiveSkills);
   console.log(output);
-  if (integrityIssues.length) process.exitCode = 1;
+  if (integrityIssues.length || (check && (!live || liveDuplicateNames.length > 0 || omittedLiveSkills.length > 0 || budget.omittedSkills > 0))) process.exitCode = 1;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

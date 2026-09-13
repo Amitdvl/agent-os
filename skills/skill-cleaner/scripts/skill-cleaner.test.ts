@@ -6,12 +6,21 @@ import test from "node:test";
 
 import {
   compactDescription,
+  parseFrontmatter,
   parseLiveSkillsPrompt,
   plainLogSkillReads,
   referencedSkillPaths,
   skillEntryIssues,
   usageEvidence,
 } from "./skill-cleaner.ts";
+
+test("parses folded and chomped YAML descriptions", (context) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-cleaner-frontmatter-"));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  const skill = join(root, "SKILL.md");
+  writeFileSync(skill, "---\nname: folded\ndescription: >-\n  First line\n  second line\n---\nBody\n");
+  assert.equal(parseFrontmatter(skill)?.description, "First line second line");
+});
 
 test("reports dangling and entrypoint-less skill symlinks", (context) => {
   const root = mkdtempSync(join(tmpdir(), "skill-cleaner-integrity-"));
