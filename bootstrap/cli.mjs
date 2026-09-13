@@ -373,6 +373,20 @@ function managedRecord(previousState, path) {
   return previousState?.managed?.find((item) => item.path === path) ?? null;
 }
 
+async function symlinkAncestor(path) {
+  let current = dirname(path);
+  while (true) {
+    try {
+      if ((await lstat(current)).isSymbolicLink()) return current;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    const parent = dirname(current);
+    if (parent === current) return null;
+    current = parent;
+  }
+}
+
 async function classifyOperation(operation, previousState, adoptExisting = false) {
   if (operation.kind === "symlink") {
     let currentTarget = null;
@@ -409,7 +423,11 @@ async function classifyOperation(operation, previousState, adoptExisting = false
   }
 
   if (current !== null && !previous) {
-    if (adoptExisting && current === operation.content) return { ...operation, status: "adopt", current, next: operation.content };
+    if (adoptExisting && current === operation.content) {
+      const ancestor = await symlinkAncestor(operation.path);
+      if (ancestor) return { ...operation, status: "conflict", reason: `refusing to adopt a file through symlink ancestor: ${ancestor}`, current };
+      return { ...operation, status: "adopt", current, next: operation.content };
+    }
     return { ...operation, status: "conflict", reason: "destination is not ledger-owned", current };
   }
   if (current !== null && previous?.hash !== hash(current)) return { ...operation, status: "conflict", reason: "managed file drifted", current };
@@ -578,9 +596,27 @@ async function binaryAvailable(binary) {
 }
 
 async function stateHealth(context) {
-  if (!context.previousState) return { installed: false, managed: [], drift: [] };
   const managed = [];
   const drift = [];
+  for (const host of context.hosts) {
+    const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
+    const root = join(hostHome, host.skillDirectory);
+    let entries = [];
+    try { entries = await readdir(root, { withFileTypes: true }); } catch (error) { if (error.code !== "ENOENT") throw error; }
+    for (const entry of entries.filter((item) => item.isSymbolicLink())) {
+      const path = join(root, entry.name);
+      let status = "ok";
+      try {
+        await realpath(path);
+        if (await readText(join(path, "SKILL.md"), null) === null) status = "missing-entrypoint";
+      } catch (error) {
+        if (["ENOENT", "ENOTDIR"].includes(error.code)) status = "broken-target";
+        else throw error;
+      }
+      if (status !== "ok") drift.push({ path: displayPath(context, path), status, scope: "host-skill" });
+    }
+  }
+  if (!context.previousState) return { installed: false, managed, drift };
   for (const item of context.previousState.managed ?? []) {
     let status = "ok";
     if (item.kind === "symlink") {

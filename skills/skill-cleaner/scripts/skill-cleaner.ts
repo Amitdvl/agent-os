@@ -61,6 +61,12 @@ type Budget = {
   truncatedDescriptionCount: number;
 };
 
+type IntegrityIssue = {
+  path: string;
+  status: "broken-target" | "missing-entrypoint";
+  target: string | null;
+};
+
 const home = os.homedir();
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const agentOsSkillRoot = path.resolve(scriptDir, "../..");
@@ -512,6 +518,7 @@ function discoverRoots(): string[] {
   const rootsByRealPath = new Map<string, string>();
   [
     path.join(home, ".codex/skills"),
+    path.join(home, ".agents/skills"),
     path.join(home, ".codex/plugins/cache"),
     agentOsSkillRoot,
     path.join(process.cwd(), "skills"),
@@ -536,6 +543,29 @@ function discoverRoots(): string[] {
     }
   }
   return [...rootsByRealPath.values()].sort();
+}
+
+export function skillEntryIssues(roots: string[]): IntegrityIssue[] {
+  const issues: IntegrityIssue[] = [];
+  for (const root of roots) {
+    if (!exists(root)) continue;
+    let entries: fs.Dirent[] = [];
+    try { entries = fs.readdirSync(root, { withFileTypes: true }); } catch { continue; }
+    for (const entry of entries.filter((item) => item.isSymbolicLink())) {
+      const entryPath = path.join(root, entry.name);
+      let target: string | null = null;
+      try { target = fs.readlinkSync(entryPath); } catch {}
+      let resolved: string;
+      try {
+        resolved = fs.realpathSync(entryPath);
+      } catch {
+        issues.push({ path: entryPath, status: "broken-target", target });
+        continue;
+      }
+      if (!exists(path.join(resolved, "SKILL.md"))) issues.push({ path: entryPath, status: "missing-entrypoint", target });
+    }
+  }
+  return issues.sort((left, right) => left.path.localeCompare(right.path));
 }
 
 function discoverSkills(): Skill[] {
@@ -1103,6 +1133,7 @@ function render(
   usage: Map<string, Usage>,
   logFiles: string[],
   live: LivePrompt | null,
+  integrityIssues: IntegrityIssue[],
 ): string {
   const considered = includeAll ? discovered : selected;
   const roots = groupBy(discovered, (skill) => skill.root);
@@ -1135,6 +1166,11 @@ function render(
   lines.push(`description_chars: ${totalDescChars}`);
   lines.push(`rendered_line_chars: ${totalLineChars}`);
   lines.push(`log_files_scanned: ${logFiles.length}`, "");
+
+  lines.push("## Integrity Issues", "");
+  for (const issue of integrityIssues) lines.push(`- ${issue.status}: ${issue.path}${issue.target ? ` -> ${issue.target}` : ""}`);
+  if (integrityIssues.length === 0) lines.push("- none");
+  lines.push("");
 
   lines.push("## Skill Budget", "");
   lines.push(`model: ${budget.model}`);
@@ -1215,7 +1251,9 @@ function render(
 }
 
 function main(): void {
+  const roots = discoverRoots();
   const skills = discoverSkills();
+  const integrityIssues = skillEntryIssues(roots.filter((root) => !root.includes(`${path.sep}plugins${path.sep}cache`)));
   const live = livePrompt();
   const liveSkills = live ? parseLiveSkills(live) : [];
   const selectedSkills = liveSkills.length > 0
@@ -1233,9 +1271,11 @@ function main(): void {
         usage: Object.fromEntries(usage),
         logFiles,
         budget,
+        integrityIssues,
       }, null, 2)
-    : render(skills, selectedSkills, usage, logFiles, live);
+    : render(skills, selectedSkills, usage, logFiles, live, integrityIssues);
   console.log(output);
+  if (integrityIssues.length) process.exitCode = 1;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

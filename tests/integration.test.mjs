@@ -108,6 +108,15 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(orchestration, /## Completion Gate/);
     assert.match(await readFile(join(hostHome, "skills", "pamphlet", "SKILL.md"), "utf8"), /name: pamphlet/);
   }
+  const [skillsManifest, packsManifest] = await Promise.all([
+    readFile(join(ROOT, "manifest", "skills.json"), "utf8").then(JSON.parse),
+    readFile(join(ROOT, "manifest", "packs.json"), "utf8").then(JSON.parse),
+  ]);
+  const selectedSkillIds = new Set(packsManifest.packs.filter((pack) => setup.packs.includes(pack.id)).flatMap((pack) => pack.skills ?? []));
+  const expectedSkills = skillsManifest.skills.filter((skill) => selectedSkillIds.has(skill.id) && skill.path && skill.disposition !== "portable-core-contract");
+  for (const hostHome of [join(home, ".codex"), join(home, ".claude")]) {
+    for (const skill of expectedSkills) assert.match(await readFile(join(hostHome, "skills", skill.id, "SKILL.md"), "utf8"), new RegExp(`name: ${skill.id}`));
+  }
 
   const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);
   assert.equal(status.installed, true);
@@ -141,6 +150,39 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(await exists(codexLink), false);
   assert.equal(await exists(launcher), false);
   assert.deepEqual(JSON.parse(await readFile(join(home, ".agent-os", "state.json"), "utf8")).managed, []);
+});
+
+test("adopt-existing refuses file ownership through an unowned directory symlink", async (context) => {
+  const root = join(SANDBOX, "adopt-symlink-ancestor");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const externalSkill = join(root, "external-agent-os-skill");
+  const source = await readFile(join(ROOT, "skills", "agent-os", "SKILL.md"), "utf8");
+  await mkdir(externalSkill, { recursive: true });
+  await writeFile(join(externalSkill, "SKILL.md"), source);
+  await mkdir(join(home, ".codex", "skills"), { recursive: true });
+  await symlink(externalSkill, join(home, ".codex", "skills", "agent-os"));
+
+  const preview = JSON.parse(run(["setup", "--home", home, "--safe", "--adopt-existing", "--json"]).stdout);
+  const operation = preview.operations.find((item) => item.id === "codex:skill:agent-os:SKILL.md");
+  assert.equal(operation.status, "conflict");
+  assert.match(operation.reason, /symlink ancestor/);
+  run(["setup", "--home", home, "--safe", "--adopt-existing", "--apply", "--json"], 1);
+  assert.equal(await readFile(join(externalSkill, "SKILL.md"), "utf8"), source);
+});
+
+test("status and doctor report an unmanaged dangling host skill link", async (context) => {
+  const root = join(SANDBOX, "dangling-host-skill");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const noTools = { PATH: join(root, "empty-bin") };
+  run(["setup", "--home", home, "--safe", "--apply", "--json"], 0, noTools);
+  await symlink(join(root, "vanished-skill"), join(home, ".codex", "skills", "unmanaged-broken"));
+  const status = JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout);
+  assert.ok(status.drift.some((item) => item.path.endsWith("/.codex/skills/unmanaged-broken") && item.status === "broken-target"));
+  const doctor = JSON.parse(run(["doctor", "--home", home, "--json"], 1, noTools).stdout);
+  assert.equal(doctor.ok, false);
+  assert.equal(doctor.coreChecks.find((item) => item.id === "managed-state").ok, false);
 });
 
 test("Apple Suite deploys the half-bounce skill to both host adapters", async (context) => {

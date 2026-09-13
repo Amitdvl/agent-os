@@ -36,3 +36,10 @@ non-symlink destination. It never replaces a local adapter such as the vault
 skill, host registry, hook configuration, or `default.rules`.
 
 Generated allow rules use one broad prefix per selected binary because command-specific rules make normal local operation fragile. They do not authorize external writes: every tool template and global policy still requires exact user intent.
+
+The portable drift guard audits every top-level symlink in the configured live
+skill roots before inventory filtering. It also checks registered local-tool
+`SKILL.md`/`routing.md` pairs, absolute skill references in live instructions,
+and the governed ctx7 hook test copy. An unknown but valid live skill must be
+added to the portable inventory or named as an explicit machine-only exclusion;
+a dangling link is always a failure.

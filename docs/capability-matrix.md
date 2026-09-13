@@ -5,6 +5,9 @@
 | Core policy and commands | Safe core setup and recovery-first command contracts | Host app sign-in | Host setup and managed-drift review |
 | Custom CLI design | Go-based, non-interactive CLI contracts with help, pipeline, retry, and safety conventions | Project-specific framework choice | Project implementation and release review |
 | Task orchestration | Lead-owned acceptance, bounded role assignments, independent verification | Available model/agent selection | Review of any destructive or external action |
+| Consequential reasoning review | Quiet, high-confidence intervention only when a faulty inference materially changes a decision | Current conversation context | No background monitoring or user profiling |
+| Production repository baseline | Preview-first Git, secret-hygiene, Dependabot, and real-script CI foundation | Repository stack and existing policy | Product architecture, deployment, and remote publishing choices |
+| Long-form book production | One approved conception, researched manuscript, mechanical QA, and validated EPUB | Subject, language, and editorial approval | External research access and required local document tools |
 | Native macOS startup readiness | Opt-in bounded trace, deferred noncritical work, focused/full verification, and Dock-based physical evidence gate | App-specific readiness boundaries and authorized recording conditions | Installed-app replacement, permissions, recording, or analyzer submission |
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |

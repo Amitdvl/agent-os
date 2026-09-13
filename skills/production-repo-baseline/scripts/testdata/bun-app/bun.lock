@@ -1,0 +1,2 @@
+# Deliberately minimal fixture lockfile: the baseline checks its committed presence,
+# while Bun validates real dependency graphs in application CI.

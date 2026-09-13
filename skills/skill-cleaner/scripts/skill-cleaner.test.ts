@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
-import { resolve } from "node:path";
+import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import test from "node:test";
 
 import {
@@ -7,8 +9,26 @@ import {
   parseLiveSkillsPrompt,
   plainLogSkillReads,
   referencedSkillPaths,
+  skillEntryIssues,
   usageEvidence,
 } from "./skill-cleaner.ts";
+
+test("reports dangling and entrypoint-less skill symlinks", (context) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-cleaner-integrity-"));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  const valid = join(root, "valid-target");
+  const empty = join(root, "empty-target");
+  mkdirSync(valid);
+  mkdirSync(empty);
+  writeFileSync(join(valid, "SKILL.md"), "---\nname: valid\ndescription: fixture\n---\n");
+  symlinkSync(valid, join(root, "valid-link"));
+  symlinkSync(empty, join(root, "empty-link"));
+  symlinkSync(join(root, "vanished-target"), join(root, "broken-link"));
+  assert.deepEqual(skillEntryIssues([root]).map((issue) => [issue.status, issue.path.split("/").at(-1)]), [
+    ["broken-target", "broken-link"],
+    ["missing-entrypoint", "empty-link"],
+  ]);
+});
 
 test("parses Codex skill roots and model-visible lines", () => {
   const raw = JSON.stringify([
