@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { access, chmod, lstat, mkdir, readFile, readdir, readlink, realpath, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { homedir, platform } from "node:os";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -196,12 +196,13 @@ async function validateBundle(bundle) {
   }
 
   if (bundle["schema-version"].manifestSchema !== 1) errors.push("unsupported manifest schema");
+  if (bundle["schema-version"].statusSchema !== 2) errors.push("unsupported status schema");
   return { errors, warnings };
 }
 
 function parseArgs(argv) {
   const result = { _: [] };
-  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config", "--tools", "--vault-dir", "--age-recipient", "--legacy-root"]);
+  const valueFlags = new Set(["--profile", "--packs", "--hosts", "--home", "--state-dir", "--codex-home", "--claude-home", "--config", "--tools", "--vault-dir", "--age-recipient", "--legacy-root", "--kind", "--root", "--helper"]);
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (!value.startsWith("--")) {
@@ -272,7 +273,7 @@ async function resolveContext(bundle, options, preferState = false) {
 
   const localToolsRoot = join(stateDir, "local-tools");
   const vaultDir = ensureUnder(userHome, options["vault-dir"] ?? join(stateDir, "vault"), "vault directory");
-  return { bundle, options, userHome, stateDir, statePath, previousState, profile, packs, hosts, codexHome, claudeHome, localToolsRoot, vaultDir, config };
+  return { bundle, options, userHome, stateDir, statePath, previousState, profile, packs, hosts, codexHome, claudeHome, localToolsRoot, vaultDir, configPath, config };
 }
 
 function selectedToolCandidates(context) {
@@ -586,13 +587,133 @@ async function binaryAvailable(binary) {
       const candidate = join(entry, name);
       try {
         const info = await stat(candidate);
-        if (info.isFile()) return candidate;
+        if (info.isFile() && (process.platform === "win32" || (info.mode & 0o111) !== 0)) return candidate;
       } catch {
         // Continue without reading tool-owned state.
       }
     }
   }
   return null;
+}
+
+function normalizeVaultAdapter(context) {
+  const raw = context.config.vaultAdapter;
+  if (raw == null || raw === "") return { status: "unbound", reason: null };
+  if (typeof raw === "string") return { status: "invalid", reason: "legacy-string-unsupported" };
+  if (typeof raw !== "object" || raw.version !== 1 || raw.kind !== "agent-secrets") {
+    return { status: "invalid", reason: "unsupported-config" };
+  }
+  if (typeof raw.root !== "string" || !raw.root.trim()) return { status: "invalid", reason: "missing-root" };
+  const helper = typeof raw.helper === "string" && raw.helper.trim() ? raw.helper.trim() : "scripts/agent-secrets";
+  if (isAbsolute(helper)) return { status: "invalid", reason: "helper-must-be-relative" };
+  let root;
+  try {
+    root = ensureUnder(context.userHome, raw.root, "vault adapter root");
+  } catch {
+    return { status: "invalid", reason: "root-outside-home" };
+  }
+  const helperPath = resolve(root, helper);
+  const helperRelative = relative(root, helperPath);
+  if (helperRelative === "" || helperRelative === ".." || helperRelative.startsWith(`..${sep}`)) {
+    return { status: "invalid", reason: "helper-outside-root" };
+  }
+  const recordIds = {};
+  if (raw.recordIds != null) {
+    if (typeof raw.recordIds !== "object" || Array.isArray(raw.recordIds)) return { status: "invalid", reason: "invalid-record-ids" };
+    for (const [tool, recordId] of Object.entries(raw.recordIds)) {
+      if (!/^[a-z0-9][a-z0-9._-]*$/i.test(tool) || typeof recordId !== "string" || !/^[a-z0-9][a-z0-9._-]*$/i.test(recordId)) {
+        return { status: "invalid", reason: "invalid-record-ids" };
+      }
+      recordIds[tool] = recordId;
+    }
+  }
+  return { status: "configured", reason: null, root, helperPath, recordIds };
+}
+
+function safeVaultRecordPath(line) {
+  const normalized = line.trim().replaceAll("\\", "/");
+  if (!normalized || normalized.startsWith("/") || normalized.includes("../")) return null;
+  return /^(?:[A-Za-z0-9._-]+\/)*[A-Za-z0-9._-]+\.sops\.(?:yaml|yml|json|env)$/.test(normalized)
+    ? normalized
+    : null;
+}
+
+async function inspectVaultAdapter(context, override = null) {
+  const normalized = override ?? normalizeVaultAdapter(context);
+  if (normalized.status !== "configured") return { ...normalized, records: new Set() };
+  try {
+    const [resolvedHome, resolvedRoot, resolvedHelper] = await Promise.all([realpath(context.userHome), realpath(normalized.root), realpath(normalized.helperPath)]);
+    const rootFromHome = relative(resolvedHome, resolvedRoot);
+    const helperFromRoot = relative(resolvedRoot, resolvedHelper);
+    if (rootFromHome === ".." || rootFromHome.startsWith(`..${sep}`)) return { ...normalized, status: "unavailable", reason: "root-resolves-outside-home", records: new Set() };
+    if (helperFromRoot === ".." || helperFromRoot.startsWith(`..${sep}`)) return { ...normalized, status: "unavailable", reason: "helper-resolves-outside-root", records: new Set() };
+    const info = await stat(normalized.helperPath);
+    if (!info.isFile() || (process.platform !== "win32" && (info.mode & 0o111) === 0)) {
+      return { ...normalized, status: "unavailable", reason: "helper-not-executable", records: new Set() };
+    }
+  } catch {
+    return { ...normalized, status: "unavailable", reason: "helper-unavailable", records: new Set() };
+  }
+  const result = spawnSync(normalized.helperPath, ["list"], {
+    encoding: "utf8",
+    timeout: 5000,
+    maxBuffer: 1024 * 1024,
+    env: { ...process.env, AGENT_SECRETS_DIR: normalized.root },
+  });
+  if (result.error || result.status !== 0) {
+    return { ...normalized, status: "unavailable", reason: result.error?.code === "ETIMEDOUT" ? "helper-timeout" : "helper-failed", records: new Set() };
+  }
+  const records = new Set((result.stdout ?? "").split(/\r?\n/).map(safeVaultRecordPath).filter(Boolean));
+  return { ...normalized, status: "available", reason: null, records };
+}
+
+async function managedVaultMetadata(context) {
+  const records = new Set();
+  try {
+    for (const name of await readdir(join(context.vaultDir, "tools"))) {
+      const safe = safeVaultRecordPath(`tools/${name}`);
+      if (safe) records.add(safe);
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  let tmpClean = true;
+  try { tmpClean = (await readdir(join(context.vaultDir, "tmp"))).length === 0; } catch (error) { if (error.code !== "ENOENT") throw error; }
+  return {
+    path: displayPath(context, context.vaultDir),
+    config: await exists(join(context.vaultDir, ".sops.yaml")) ? "present-unverified" : "absent",
+    records,
+    tmpClean,
+  };
+}
+
+function vaultArtifactState(records, recordId, role) {
+  const extensions = role === "inventory" ? ["yaml", "yml", "json"] : ["env"];
+  return extensions.some((extension) => records.has(`tools/${recordId}.sops.${extension}`)) ? "present-unverified" : "absent";
+}
+
+function toolReadiness(tool, available, vault, authMethods, permissionRequirements) {
+  const actions = [];
+  if (!available) actions.push(`Review and preview: agent-os install --tools ${tool.id}`);
+  if (vault.status === "unconfigured" || vault.status === "incomplete") {
+    actions.push(vault.source === "adapter"
+      ? `Add the missing encrypted ${tool.id} record through the configured vault adapter`
+      : `Initialize or fill the managed vault record for ${tool.id}`);
+  } else if (vault.status === "unknown") {
+    actions.push("Repair or rebind the configured vault adapter metadata check");
+  } else if (vault.status === "records-present-unverified") {
+    actions.push(`Verify the encrypted ${tool.id} record only when authenticated work is requested`);
+  }
+  if (authMethods.length) actions.push(`Run ${tool.id}'s supported authentication preflight; sign in manually only if needed`);
+  if (permissionRequirements.length) actions.push(`Verify ${tool.id}'s required macOS permission; grant it manually only if absent`);
+  if (!actions.length) actions.push("Ready for the documented preflight");
+
+  const status = !available ? "unavailable"
+    : vault.status === "unconfigured" || vault.status === "incomplete" ? "configuration-incomplete"
+    : vault.status === "unknown" ? "unknown"
+    : authMethods.length || permissionRequirements.length || vault.status === "records-present-unverified" ? "preflight-required"
+    : "ready-for-preflight";
+  return { status, actions };
 }
 
 async function stateHealth(context) {
@@ -951,32 +1072,65 @@ async function statusReport(context, catalogue = false) {
   const liveCutover = await liveCutoverStatus(context);
   const tools = [];
   const requirements = context.bundle.secrets.requirements;
+  const managedVault = await managedVaultMetadata(context);
+  const adapter = await inspectVaultAdapter(context);
   for (const tool of selectedTools(context)) {
     const available = Boolean(await binaryAvailable(tool.binary));
     const toolRequirements = requirements.filter((item) => item.tool === tool.id && item.class === "agent-vault");
-    const vaultReady = !toolRequirements.length || await exists(join(context.vaultDir, "tools", `${tool.id}.sops.yaml`));
-    const permissionNeeded = tool.auth.includes("macos-permission");
-    const authNeeded = tool.auth.some((item) => ["human-login", "browser-session", "telecom-consent"].includes(item));
-    const nextAction = !available ? `Review and preview: agent-os install --tools ${tool.id}`
-      : !vaultReady ? `Initialize/fill the vault requirement for ${tool.id}`
-      : permissionNeeded ? "Grant the required macOS permission manually, then rerun doctor"
-      : authNeeded ? "Complete the tool's supported interactive login manually"
-      : "Ready for the documented preflight";
-    tools.push({ id: tool.id, binary: tool.binary, cli: available ? "available" : "absent", vault: vaultReady ? "not-required-or-present" : "missing-requirement", auth: authNeeded ? "unauthenticated-human-checkpoint" : "not-required", permission: permissionNeeded ? "missing-macos-permission" : "not-required", disposition: tool.disposition, nextAction });
+    const authMethods = tool.auth.filter((item) => ["human-login", "browser-session", "telecom-consent"].includes(item));
+    const permissionRequirements = tool.auth.filter((item) => item === "macos-permission");
+    const recordSource = adapter.status === "unbound" ? managedVault.records : adapter.records;
+    const recordId = adapter.recordIds?.[tool.id] ?? tool.id;
+    const source = toolRequirements.length ? (adapter.status === "unbound" ? "managed" : "adapter") : null;
+    const inventory = !toolRequirements.length ? "not-applicable"
+      : ["invalid", "unavailable"].includes(adapter.status) ? "unknown"
+      : vaultArtifactState(recordSource, recordId, "inventory");
+    const env = !toolRequirements.length ? "not-applicable"
+      : ["invalid", "unavailable"].includes(adapter.status) ? "unknown"
+      : vaultArtifactState(recordSource, recordId, "env");
+    const vaultStatus = !toolRequirements.length ? "not-required"
+      : ["invalid", "unavailable"].includes(adapter.status) ? "unknown"
+      : inventory === "absent" && env === "absent" ? "unconfigured"
+      : inventory === "absent" || env === "absent" ? "incomplete"
+      : "records-present-unverified";
+    const vault = {
+      declaration: toolRequirements.length ? "agent-vault" : "not-required",
+      source,
+      inventory,
+      env,
+      status: vaultStatus,
+      usability: toolRequirements.length ? "unknown" : "not-applicable",
+    };
+    const authentication = { methods: authMethods, status: authMethods.length ? "unknown" : "not-required", evidence: authMethods.length ? "not-probed" : "not-applicable" };
+    const permissions = { requirements: permissionRequirements, status: permissionRequirements.length ? "unknown" : "not-required", evidence: permissionRequirements.length ? "not-probed" : "not-applicable" };
+    tools.push({
+      id: tool.id,
+      binary: tool.binary,
+      cli: { status: available ? "present" : "absent", evidence: "filesystem-executable" },
+      vault,
+      authentication,
+      permissions,
+      disposition: tool.disposition,
+      readiness: toolReadiness(tool, available, vault, authMethods, permissionRequirements),
+    });
   }
   const registryPath = join(context.localToolsRoot, "registry.json");
-  let tmpClean = true;
-  try { tmpClean = (await readdir(join(context.vaultDir, "tmp"))).length === 0; } catch (error) { if (error.code !== "ENOENT") throw error; }
+  const readinessSummary = Object.fromEntries([...new Set(tools.map((tool) => tool.readiness.status))].sort().map((status) => [status, tools.filter((tool) => tool.readiness.status === status).length]));
   const report = {
+    reportSchema: 2,
     installed: health.installed,
     profile: context.profile.id,
     packs: context.packs.map((item) => item.id),
     hosts: context.hosts.map((item) => item.id),
     drift: health.drift,
     registry: { path: displayPath(context, registryPath), status: await exists(registryPath) ? "present" : "absent" },
-    vault: { path: displayPath(context, context.vaultDir), config: await exists(join(context.vaultDir, ".sops.yaml")) ? "present" : "absent", tmpClean },
+    vault: {
+      managed: { path: managedVault.path, config: managedVault.config, tmpClean: managedVault.tmpClean, recordCount: managedVault.records.size },
+      adapter: { status: adapter.status, reason: adapter.reason, recordCount: adapter.records.size },
+    },
     liveCutover,
     tools,
+    readinessSummary,
     platformExcludedTools: platformExcludedTools(context).map((tool) => ({ id: tool.id, platforms: tool.platforms })),
   };
   if (catalogue) {
@@ -1017,8 +1171,9 @@ async function doctorReport(context) {
     coreChecks,
     warnings: validation.warnings,
     optionalTools: status.tools,
+    readinessSummary: status.readinessSummary,
     nextActions: [
-      status.installed ? "Run agent-os status --json and follow each selected tool's nextAction." : "Run agent-os setup to review the platform-compatible deployment plan.",
+      status.installed ? "Run agent-os status --json and follow each selected tool's readiness.actions." : "Run agent-os setup to review the platform-compatible deployment plan.",
       "Use agent-os install --tools <id> for a reviewed installation plan; it is preview-only unless explicitly confirmed.",
       platformExcludedTools(context).length ? `Skipped on ${platform()}: ${platformExcludedTools(context).map((tool) => tool.id).join(", ")}.` : "All selected tools are compatible with this platform.",
       platform() === "win32" ? "Live cutover remains macOS-only." : "Use agent-os live-cutover --legacy-root <legacy-root> to preview the separate Codex command cutover.",
@@ -1067,6 +1222,49 @@ function runChecked(command, args, label) {
 function vaultTools(context) {
   const wanted = new Set(requestedTools(context).map((tool) => tool.id));
   return context.bundle.secrets.requirements.filter((item) => wanted.has(item.tool) && item.class === "agent-vault");
+}
+
+async function vaultBindPlan(context) {
+  const kind = context.options.kind ?? "agent-secrets";
+  if (kind !== "agent-secrets") throw new Error("vault bind currently supports only --kind agent-secrets");
+  if (!context.options.root || !isAbsolute(context.options.root)) throw new Error("vault bind requires an absolute --root under the selected home");
+  const root = ensureUnder(context.userHome, context.options.root, "vault adapter root");
+  const helper = context.options.helper ?? "scripts/agent-secrets";
+  if (isAbsolute(helper)) throw new Error("vault adapter helper must be a relative path inside the adapter root");
+  const candidate = { status: "configured", reason: null, root, helperPath: resolve(root, helper), recordIds: {} };
+  const helperRelative = relative(root, candidate.helperPath);
+  if (!helperRelative || helperRelative === ".." || helperRelative.startsWith(`..${sep}`)) throw new Error("vault adapter helper must be a relative path inside the adapter root");
+  const inspected = await inspectVaultAdapter(context, candidate);
+  if (inspected.status !== "available") throw new Error(`vault adapter metadata check failed: ${inspected.reason}`);
+  return {
+    apply: Boolean(context.options.apply),
+    operation: "bind",
+    adapter: { version: 1, kind, root: displayPath(context, root), helper, metadataCheck: "list", status: inspected.status, recordCount: inspected.records.size },
+    config: displayPath(context, context.configPath),
+    safety: "Metadata-only: no record is opened or decrypted.",
+  };
+}
+
+async function applyVaultBind(context, plan) {
+  const root = ensureUnder(context.userHome, context.options.root, "vault adapter root");
+  const next = { ...context.config, vaultAdapter: { version: 1, kind: plan.adapter.kind, root, helper: plan.adapter.helper, recordIds: context.config.vaultAdapter?.recordIds ?? {} } };
+  await atomicWrite(context.configPath, `${JSON.stringify(next, null, 2)}\n`);
+}
+
+async function vaultUnbindPlan(context) {
+  const current = normalizeVaultAdapter(context);
+  return {
+    apply: Boolean(context.options.apply),
+    operation: "unbind",
+    adapter: { status: current.status, kind: current.status === "configured" ? "agent-secrets" : null },
+    config: displayPath(context, context.configPath),
+    safety: "Only Agent OS configuration changes; vault files are never modified.",
+  };
+}
+
+async function applyVaultUnbind(context) {
+  const next = { ...context.config, vaultAdapter: "" };
+  await atomicWrite(context.configPath, `${JSON.stringify(next, null, 2)}\n`);
 }
 
 async function vaultPlan(context) {
@@ -1212,6 +1410,7 @@ async function main() {
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
     console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
+    console.log("Vault adapters: agent-os vault bind --kind agent-secrets --root /absolute/path [--helper scripts/agent-secrets] [--apply]; agent-os vault unbind [--apply]");
     return;
   }
 
@@ -1257,6 +1456,18 @@ async function main() {
 
   if (command === "vault") {
     const subcommand = options._[1] ?? "help";
+    if (subcommand === "bind") {
+      const plan = await vaultBindPlan(context);
+      if (options.apply) await applyVaultBind(context, plan);
+      options.json ? console.log(JSON.stringify(plan)) : printHuman(plan);
+      return;
+    }
+    if (subcommand === "unbind") {
+      const plan = await vaultUnbindPlan(context);
+      if (options.apply) await applyVaultUnbind(context);
+      options.json ? console.log(JSON.stringify(plan)) : printHuman(plan);
+      return;
+    }
     if (subcommand === "init") {
       const plan = await vaultPlan(context);
       if (options.apply) await applyVaultInit(context);
@@ -1269,7 +1480,7 @@ async function main() {
       if (!report.ok) process.exitCode = 1;
       return;
     }
-    throw new Error("Usage: agent-os vault <init|validate> [--tools a,b] [--age-recipient age1…] [--generate-age-key] [--apply]");
+    throw new Error("Usage: agent-os vault <bind|unbind|init|validate> [--tools a,b] [--kind agent-secrets] [--root PATH] [--helper PATH] [--age-recipient age1…] [--generate-age-key] [--apply]");
   }
 
   if (command === "setup" || command === "update") {

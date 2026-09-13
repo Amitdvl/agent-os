@@ -12,6 +12,10 @@ Core setup can still be healthy. Run `agent-os install --tools <id>` to see the 
 
 Run `agent-os vault init --tools <id>` for a no-write plan. Create a new user vault; do not paste secrets into chat or copy a previous vault. `vault validate --verify-crypto` verifies through SOPS without printing plaintext.
 
+For an existing Agent Vault, use `agent-os vault bind --kind agent-secrets --root <absolute-path>` first without `--apply`. Review the metadata-only plan, then repeat with `--apply`. An inventory or env filename in `status --json` means only `present-unverified`; run the tool's own preflight when authenticated work is actually requested.
+
+If the same unqualified skill name is visible from multiple enabled roots, disable the non-canonical exact `SKILL.md` path with a Codex `[[skills.config]]` entry and run `twin-audit` with `--live-codex-config`. Preserve shared `.agents/skills` packages used by other harnesses; do not delete them just to clean Codex discovery.
+
 ## Doctor says a human checkpoint remains
 
 Complete the tool’s supported login, browser extension, account consent, telecom consent, or narrow macOS permission manually. Agent OS never clicks these dialogs or imports sessions.
