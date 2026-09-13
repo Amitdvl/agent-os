@@ -114,6 +114,18 @@ test("twin audit rejects duplicate enabled skill names and honors an exact Codex
   assert.ok(passing.skillNames.disabledPaths.includes(duplicate));
 });
 
+test("twin audit reports same-target aliases without treating Codex's realpath deduplication as a collision", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const sharedRoot = join(root, "shared-skills");
+  await mkdir(sharedRoot, { recursive: true });
+  await symlink(join(fixture.commandRoot, "cli-for-agents"), join(sharedRoot, "cli-alias"));
+  const report = JSON.parse(run([...auditArgs(fixture), "--live-symlink-root", sharedRoot]).stdout);
+  assert.deepEqual(report.skillNames.collisions, []);
+  assert.equal(report.skillNames.aliases.find((item) => item.normalizedName === "cli-for-agents").entries.length, 2);
+});
+
 test("twin audit rejects a missing registered tool routing document", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));

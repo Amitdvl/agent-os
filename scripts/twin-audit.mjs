@@ -222,7 +222,14 @@ async function auditSkillNames(roots, configPath) {
     const distinct = [...new Map(entries.map((entry) => [entry.resolvedPath, entry])).values()];
     return distinct.length > 1 ? [{ normalizedName, entries: distinct }] : [];
   }).sort((a, b) => a.normalizedName.localeCompare(b.normalizedName));
-  return { records, collisions, disabledPaths: [...disabled].sort() };
+  const aliases = [...groups.entries()].flatMap(([normalizedName, entries]) => [...groupByResolvedPath(entries)].flatMap(([resolvedPath, aliasEntries]) => aliasEntries.length > 1 ? [{ normalizedName, resolvedPath, entries: aliasEntries }] : []));
+  return { records, collisions, aliases, disabledPaths: [...disabled].sort() };
+}
+
+function groupByResolvedPath(entries) {
+  const grouped = new Map();
+  for (const entry of entries) grouped.set(entry.resolvedPath, [...(grouped.get(entry.resolvedPath) ?? []), entry]);
+  return grouped;
 }
 
 function referencedSkillPaths(instructions, liveInstructions) {

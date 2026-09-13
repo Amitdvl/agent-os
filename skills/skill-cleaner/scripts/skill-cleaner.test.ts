@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -13,6 +14,16 @@ import {
   skillEntryIssues,
   usageEvidence,
 } from "./skill-cleaner.ts";
+
+test("check JSON is compact and never serializes normalized skill bodies", () => {
+  const result = spawnSync(process.execPath, ["--experimental-strip-types", new URL("./skill-cleaner.ts", import.meta.url).pathname, "--no-live", "--no-logs", "--check", "--json"], { encoding: "utf8" });
+  assert.equal(result.status, 1);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.check, true);
+  assert.equal(report.ok, false);
+  assert.equal("skills" in report, false);
+  assert.doesNotMatch(result.stdout, /bodyKey|descKey|description/);
+});
 
 test("parses folded and chomped YAML descriptions", (context) => {
   const root = mkdtempSync(join(tmpdir(), "skill-cleaner-frontmatter-"));

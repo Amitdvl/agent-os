@@ -1303,18 +1303,34 @@ function main(): void {
     .filter((skill) => !liveRealPaths.has(skill.realPath))
     .map((skill) => ({ name: skill.name, path: skill.path }))
     .sort((a, b) => a.name.localeCompare(b.name) || a.path.localeCompare(b.path)) : [];
+  const publicSkills = (items: Skill[]) => items.map(({ bodyKey: _bodyKey, descKey: _descKey, ...skill }) => skill);
   const output = json
-    ? JSON.stringify({
-        skills,
-        selectedSkills,
-        inventorySource: live ? "codex debug prompt-input" : "filesystem fallback",
-        usage: Object.fromEntries(usage),
-        logFiles,
-        budget,
-        integrityIssues,
-        liveDuplicateNames,
-        omittedLiveSkills,
-      }, null, 2)
+    ? JSON.stringify(check ? {
+      check: true,
+      ok: Boolean(live && integrityIssues.length === 0 && liveDuplicateNames.length === 0 && omittedLiveSkills.length === 0 && budget.omittedSkills === 0),
+      inventorySource: live ? "codex debug prompt-input" : "filesystem fallback",
+      counts: { discovered: skills.length, live: selectedSkills.length },
+      budget: {
+        budgetTokens: budget.budgetTokens,
+        budgetedTokens: budget.budgetedTokens,
+        includedSkills: budget.includedSkills,
+        omittedSkills: budget.omittedSkills,
+        truncatedDescriptionCount: budget.truncatedDescriptionCount,
+      },
+      integrityIssues,
+      liveDuplicateNames,
+      omittedLiveSkills,
+    } : {
+      skills: publicSkills(skills),
+      selectedSkills: publicSkills(selectedSkills),
+      inventorySource: live ? "codex debug prompt-input" : "filesystem fallback",
+      usage: Object.fromEntries(usage),
+      logFiles,
+      budget,
+      integrityIssues,
+      liveDuplicateNames,
+      omittedLiveSkills,
+    }, null, 2)
     : render(skills, selectedSkills, usage, logFiles, live, integrityIssues, liveDuplicateNames, omittedLiveSkills);
   console.log(output);
   if (integrityIssues.length || (check && (!live || liveDuplicateNames.length > 0 || omittedLiveSkills.length > 0 || budget.omittedSkills > 0))) process.exitCode = 1;

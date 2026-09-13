@@ -25,8 +25,9 @@ The local-tools root is the sole rendered tool source. Both hosts link to it ins
 - `--safe` is core-only, excludes tool registry/symlinks/rules, and refuses package installation, SOPS/age execution, and vault decryption.
 - `install` is separate from setup. It plans only selected tools; execution additionally requires `--apply --reviewed-install` and supports only resolved install sources.
 - `vault init` creates a new SOPS + age configuration plus encrypted non-secret inventory/env placeholders. `vault validate --verify-crypto` decrypts to `/dev/null` only; it never prints values.
-- `vault bind` connects a user-owned Agent Vault through a versioned, machine-local adapter. Routine status may run only its bounded `list` operation; record presence never implies valid credentials, authentication, or permissions.
+- `vault bind` connects a user-owned Agent Vault through a versioned, machine-local adapter. Routine status may run only its bounded `list` operation with an allowlisted environment; record presence never implies valid credentials, authentication, or permissions.
 - Status schema 2 separates core integrity from tool readiness. Executable discovery is filesystem evidence; unprobed login and macOS permissions are `unknown`; all independent follow-up actions are retained.
+- Multiple declared authentication routes are `any-of`. A missing vault record does not block a tool that can instead complete its supported human-login preflight.
 
 ## Host adapters
 
