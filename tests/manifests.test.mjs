@@ -44,7 +44,7 @@ test("Windows Suite selects every pack while platform filtering owns its exclusi
   assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
 });
 
-test("core installs all six portable commands by default and Pamphlet as a skill", async () => {
+test("core installs all six portable commands and every portable core skill by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
@@ -53,7 +53,7 @@ test("core installs all six portable commands by default and Pamphlet as a skill
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
   assert.equal(selected.length, 6);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
-  assert.ok(core.skills.includes("pamphlet"));
+  for (const id of ["book", "cli-for-agents", "fallacy-check", "outcome-loop", "pamphlet", "production-repo-baseline"]) assert.ok(core.skills.includes(id), `${id} is not selected by core`);
 });
 
 test("CLI design guidance is portable and defaults custom CLIs to Go", async () => {
@@ -74,8 +74,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 89);
-  assert.equal(new Set(installedSkills).size, 89);
+  assert.equal(installedSkills.length, 92);
+  assert.equal(new Set(installedSkills).size, 92);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -104,6 +104,9 @@ test("portable drift guard is paused and cannot overwrite unowned or semantic su
   assert.match(content, /status = "PAUSED"/);
   assert.match(content, /agent-os update --apply/);
   assert.match(content, /Do not overwrite an unowned skill, tool adapter, hook, AGENTS policy, automation, registry, default\.rules, or source-version change/);
+  assert.match(content, /--live-symlink-root ~\/\.agents\/skills/);
+  assert.match(content, /--live-ctx7-test ~\/\.codex\/hooks\/tests\/test_ctx7_guard\.py/);
+  assert.match(content, /missing registered `routing\.md`/);
   assert.match(content, /Stay quiet when every check is clean/);
 });
 
@@ -163,6 +166,43 @@ test("portable command and goal contracts retain their required workflow section
     for (const phrase of phrases) assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${path} missing ${phrase}`);
     if (path.startsWith("commands/")) assert.doesNotMatch(content, /agent-system/, `${path} retains an active legacy dependency`);
   }
+});
+
+test("restored core skills are declared, packaged, and behaviorally anchored", async () => {
+  const [skills, packs, dispositions, tools] = await Promise.all(["skills", "packs", "inventory-dispositions", "tools"].map(json));
+  const core = packs.packs.find((pack) => pack.id === "core");
+  const inventory = dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills");
+  for (const id of ["book", "fallacy-check", "outcome-loop", "production-repo-baseline"]) {
+    const entry = skills.skills.find((skill) => skill.id === id);
+    assert.ok(entry?.path, `${id} missing from skill manifest`);
+    assert.ok(core.skills.includes(id), `${id} missing from core pack`);
+    assert.ok(inventory.skills.includes(id), `${id} missing from inventory dispositions`);
+    await stat(join(ROOT, entry.path));
+  }
+  assert.equal(skills.skills.find((skill) => skill.id === "book").includePackage, true);
+  assert.equal(skills.skills.find((skill) => skill.id === "production-repo-baseline").includePackage, true);
+  assert.ok(!tools.tools.some((tool) => tool.id === "fallacy-check"));
+  const fallacy = await readFile(join(ROOT, "skills/fallacy-check/SKILL.md"), "utf8");
+  assert.ok(fallacy.includes("## Intervention threshold"));
+  const outcome = await readFile(join(ROOT, "skills/outcome-loop/SKILL.md"), "utf8");
+  for (const phrase of ["## Establish the target", "## Close the loop", "Do not replace the objective with an easier metric", "## Leave the result in Notion"]) assert.ok(outcome.includes(phrase), `outcome-loop missing ${phrase}`);
+  const baseline = await readFile(join(ROOT, "skills/production-repo-baseline/SKILL.md"), "utf8");
+  for (const phrase of ["# Production Repo Baseline", "second things", "initialize Git with `main`", "no fake application CI", "Do **not** scaffold Bun", "Dependabot"]) assert.ok(baseline.includes(phrase), `production-repo-baseline missing ${phrase}`);
+  await stat(join(ROOT, "skills/production-repo-baseline/scripts/main.go"));
+});
+
+test("every deployable skill is selected and live-only skills are explicitly excluded", async () => {
+  const [skills, packs, dispositions] = await Promise.all(["skills", "packs", "inventory-dispositions"].map(json));
+  const selected = new Set(packs.packs.flatMap((pack) => pack.skills ?? []));
+  for (const skill of skills.skills.filter((item) => item.path && item.disposition !== "portable-core-contract")) {
+    assert.ok(selected.has(skill.id), `${skill.id} is deployable but absent from every pack`);
+  }
+  for (const id of selected) assert.ok(skills.skills.some((skill) => skill.id === id), `${id} is pack-selected but absent from skills manifest`);
+  assert.deepEqual(dispositions.twin.excludedLiveSkills.map((item) => item.id), ["no-temptation-lockin"]);
+  assert.ok(dispositions.twin.excludedLiveSkills[0].reason);
+  const outcome = skills.skills.find((skill) => skill.id === "outcome-loop");
+  assert.equal(outcome.path, "skills/outcome-loop/SKILL.md");
+  assert.ok(selected.has("outcome-loop"));
 });
 
 test("OpenAI aesthetic skill preserves directional light-field guidance and source references", async () => {

@@ -10,11 +10,15 @@ The manifest is the source of truth for the portable inventory:
 - `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.
 - `skills/openai-aesthetic-images/` — portable art direction for abstract campaign artwork, based on documented reference links rather than a generic gradient preset.
 - `skills/pamphlet/` — the `$pamphlet` skill: researched 300–1,000-word explanations, delivered as verified PDF and Markdown pairs. Codex custom slash commands are no longer supported; invoke this skill with `$pamphlet`.
+- `skills/book/` — the explicitly invoked `$book` workflow, including its complete research, EPUB build, validation, and test package.
+- `skills/fallacy-check/` — a quiet conversational reasoning review that alerts only for clear, consequential inference errors.
+- `skills/outcome-loop/` — an evidence-driven feedback loop that owns iterative execution, verification, and durable reporting without expanding authority.
+- `skills/production-repo-baseline/` — a preview-first repository foundation helper with its deterministic Go implementation and fixtures.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
 
-The `remindctl` contract creates new reminders with high (urgent) priority by default, unless the user explicitly specifies another priority.
+The `remindctl` contract reflects the native limitation: there is no Urgent toggle. Use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority.
 
 The portable core policy also makes reusable-workflow reporting conditional:
 completion summaries name local-tool, Agent OS, command, skill, automation, hook,
@@ -29,6 +33,9 @@ Intentional exclusions include accounts, credentials, encryption identities, bro
 The live owner machine also has explicit inventory exclusions for `agent-inbox`,
 `epubcheck`, `pandoc`, `silicon`, `summarize`, `telgo`, and `vox`; these are
 either owner-specific or not yet covered by a reviewed portable tool contract.
+The owner-specific `no-temptation-lockin` skill is separately inventoried as an
+intentional machine-only identity/focus exclusion; Agent OS does not copy its
+content.
 
 ## Portable workflow templates
 

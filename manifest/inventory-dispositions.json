@@ -10,6 +10,9 @@
       {"id": "summarize", "reason": "Service-backed media extraction utility with provider-specific auth/configuration; intentionally excluded until a portable contract is reviewed."},
       {"id": "telgo", "reason": "Owner-specific Telegram archive and authentication state; intentionally excluded from the shareable distribution."},
       {"id": "vox", "reason": "Owner-specific telecom and provider configuration; intentionally excluded from the shareable distribution."}
+    ],
+    "excludedLiveSkills": [
+      {"id": "no-temptation-lockin", "reason": "Owner-specific identity and focus boundary; intentionally machine-only and never copied into the portable distribution."}
     ]
   },
   "localTools": [
@@ -68,7 +71,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["cli-for-agents", "orchestration", "pamphlet"]
+      "skills": ["book", "cli-for-agents", "fallacy-check", "orchestration", "outcome-loop", "pamphlet", "production-repo-baseline"]
     },
     {
       "id": "creator-art-direction",
@@ -83,7 +86,7 @@
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "doc", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "durable-objects", "engineer-algorithm", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
     }
   ],
   "hooks": [

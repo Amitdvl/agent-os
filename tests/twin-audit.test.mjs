@@ -18,33 +18,50 @@ function run(args, expected = 0) {
 async function writeFixture(root, { extraSkill = false } = {}) {
   const tools = JSON.parse(await readFile(join(ROOT, "manifest", "tools.json"), "utf8")).tools.map((item) => item.id);
   const commands = JSON.parse(await readFile(join(ROOT, "manifest", "commands.json"), "utf8")).commands.filter((item) => item.path);
+  const skills = JSON.parse(await readFile(join(ROOT, "manifest", "skills.json"), "utf8")).skills.filter((item) => item.path && item.disposition !== "portable-core-contract");
   const registry = join(root, "registry.yaml");
   const commandRoot = join(root, "skills");
-  const goal = join(root, "goal-prompt.md");
-  const orchestration = join(root, "orchestration.md");
+  const goal = join(commandRoot, "goal-prompt", "SKILL.md");
+  const orchestration = join(commandRoot, "orchestration", "SKILL.md");
   const instructions = join(root, "AGENTS.md");
-  await writeFile(registry, `version: 1\ntools:\n${[...tools, "agent-inbox", "vox"].sort().map((id) => `  ${id}:`).join("\n")}\n`);
+  const registryIds = [...tools, "agent-inbox", "vox"].sort();
+  const registryRoot = join(root, "registry-tools");
+  const registryLinkRoot = join(root, "registry-links");
+  const registryLines = [];
+  await mkdir(registryLinkRoot, { recursive: true });
+  for (const id of registryIds) {
+    const toolRoot = join(registryRoot, id);
+    await mkdir(toolRoot, { recursive: true });
+    await writeFile(join(toolRoot, "SKILL.md"), `---\nname: ${id}\ndescription: fixture\n---\n`);
+    await writeFile(join(toolRoot, "routing.md"), `# ${id} routing\n`);
+    await symlink(toolRoot, join(registryLinkRoot, id));
+    registryLines.push(`  ${id}:\n    binary: ${id}\n    skill: ${join(toolRoot, "SKILL.md")}\n    skill_symlink: ${join(registryLinkRoot, id)}`);
+  }
+  await writeFile(registry, `version: 1\ntools:\n${registryLines.join("\n")}\n`);
   for (const command of commands) {
     const commandPath = join(commandRoot, command.id, "SKILL.md");
     await mkdir(dirname(commandPath), { recursive: true });
     await writeFile(commandPath, await readFile(join(ROOT, command.path), "utf8"));
   }
-  if (extraSkill) {
-    const unrelated = join(commandRoot, "unrelated-tool", "SKILL.md");
-    await mkdir(dirname(unrelated), { recursive: true });
-    await writeFile(unrelated, "---\nname: unrelated-tool\n---\n");
+  for (const skill of skills) {
+    const skillPath = join(commandRoot, skill.id, "SKILL.md");
+    await mkdir(dirname(skillPath), { recursive: true });
+    await writeFile(skillPath, await readFile(join(ROOT, skill.path), "utf8"));
   }
-  await writeFile(goal, await readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"), "utf8"));
-  await writeFile(orchestration, await readFile(join(ROOT, "skills", "orchestration", "SKILL.md"), "utf8"));
-  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\n`/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Use one executor by default. Automatically use the `orchestration` skill only when justified. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal. Do not create user-visible tasks merely to split a goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
-  return { registry, commandRoot, goal, orchestration, instructions, commands };
+  if (extraSkill) {
+    const unrelated = join(commandRoot, "no-temptation-lockin", "SKILL.md");
+    await mkdir(dirname(unrelated), { recursive: true });
+    await writeFile(unrelated, "---\nname: no-temptation-lockin\ndescription: private fixture\n---\n");
+  }
+  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\n`/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Use one executor by default. Automatically use the `orchestration` skill only when justified. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal. Do not create user-visible tasks merely to split a goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones. Use `fallacy-check` quietly.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
+  return { registry, registryRoot, registryLinkRoot, commandRoot, goal, orchestration, instructions, commands, skills };
 }
 
 function auditArgs(fixture) {
-  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions];
+  return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions, "--live-skill-root", fixture.commandRoot, "--live-symlink-root", fixture.commandRoot];
 }
 
-test("twin audit accepts six mirrored commands and ignores unrelated host skills", async (context) => {
+test("twin audit accepts mirrored commands and an explicitly excluded live skill", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));
   const fixture = await writeFixture(root, { extraSkill: true });
@@ -52,7 +69,37 @@ test("twin audit accepts six mirrored commands and ignores unrelated host skills
   assert.equal(report.ok, true);
   assert.deepEqual(report.portableCommandIds, ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(report.commandSources.map((source) => source.status), Array(fixture.commands.length).fill("match"));
-  assert.deepEqual(report.ignoredHostSkills, ["unrelated-tool"]);
+  assert.ok(report.ignoredHostSkills.includes("no-temptation-lockin"));
+  assert.deepEqual(report.uncoveredHostSkills, []);
+});
+
+test("twin audit detects missing and mismatched portable skill content", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(join(fixture.commandRoot, "fallacy-check", "SKILL.md"), "mismatched skill\n");
+  await rm(join(fixture.commandRoot, "outcome-loop", "SKILL.md"));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /portable skill content-mismatch: fallacy-check/);
+  assert.match(report.failures.join("\n"), /portable skill missing: outcome-loop/);
+});
+
+test("twin audit rejects dangling host skill links before inventory filtering", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await symlink(join(root, "vanished-skill"), join(fixture.commandRoot, "unlisted-broken-skill"));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /host skill symlink broken-target: .*unlisted-broken-skill/);
+});
+
+test("twin audit rejects a missing registered tool routing document", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await rm(join(fixture.registryRoot, "discrawl", "routing.md"));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /registered tool routing missing: discrawl/);
 });
 
 test("twin audit detects missing and mismatched portable command content", async (context) => {
@@ -115,4 +162,14 @@ test("twin audit detects a missing conditional workflow summary rule", async (co
   const content = await readFile(fixture.instructions, "utf8");
   await writeFile(fixture.instructions, content.replace(/\n\n## Conditional Workflow Summaries[\s\S]*$/, "\n"));
   assert.match(run(auditArgs(fixture), 1).stdout, /missing conditional workflow-summary phrases/);
+});
+
+test("twin audit rejects an unreadable absolute skill path in live instructions", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const content = await readFile(fixture.instructions, "utf8");
+  await writeFile(fixture.instructions, `${content}\nRead \`${join(root, "missing", "skills", "declared", "SKILL.md")}\`.\n`);
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /live instruction skill path missing/);
 });
