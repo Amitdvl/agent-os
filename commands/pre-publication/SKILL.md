@@ -1,0 +1,17 @@
+---
+name: pre-publication
+description: Use for /pre-publication followed by a project name or path to audit, harden, and, when the release gate passes, make that exact GitHub project public.
+---
+
+# Pre-Publication
+
+Usage: `/pre-publication <project name or path>`. Also respond to the explicit `$pre-publication` skill invocation on Codex hosts that do not support custom slash-command UI entries. A named project plus this command authorizes the ordinary preparation and public GitHub launch, without a second routine publish confirmation. It does not authorize publishing a different repository, exposing private content, or rewriting shared history.
+
+Read the `publication-safety` skill and use its bundled guard. Resolve the project exactly; if multiple projects match, ask which one. Identify the GitHub owner/repository from an existing verified remote or an unambiguous user-supplied destination. If the destination, public rights/license choice, or intended disclosures cannot be established, stop for that specific decision.
+
+1. Inspect the repository, instructions, Git and GitHub state. Run the full publication-safety audit, including historical refs, untracked/ignored material, public metadata/artifacts, and an independent secret scanner. Classify findings without showing secret values.
+2. Make safe, scoped local repairs; add and verify the layered future-commit guards. Run project tests and repeat the entire scan on the final candidate. For history findings, revoke/rotate real secrets and stop for coordinated history remediation if needed. Never turn a finding into an unreviewed allowlist exception.
+3. Before any external change, verify authenticated control of the exact GitHub destination and the complete publication set (branches, tags, LFS, releases, forks, issues, wiki, Actions history/logs). If remote history or settings cannot be inspected, stop. Do not use `--no-verify`, force-push, delete the original repository, or treat a new clean clone as a substitute for handling the old private remote without an explicit choice.
+4. Commit only intended preparation changes. Re-run checks on the exact commit and push only the inspected refs. If creating a repository, use the resolved owner/name and private visibility first; verify the pushed state and safety controls before changing it to public. For an existing private GitHub repository, inspect its remote history and public-facing surfaces before changing visibility. Immediately re-read GitHub visibility, default branch, and safety controls afterward. If GitHub disables a push rule during the visibility change, restore/verify the intended rule before claiming future protection.
+
+Stop with a concise blocker when the independent scan is unavailable, a private datum is unresolved, an existing public surface cannot be inspected, authority/target is ambiguous, an irreversible remediation needs a choice, or verification fails. Report the target and URL only after verifying the repository is public; otherwise say exactly what was prepared and what remains blocked. Never claim that any guard makes leaks impossible.

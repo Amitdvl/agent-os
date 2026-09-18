@@ -98,7 +98,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   }
   assert.match(await readFile(join(home, ".codex", "rules", "agent-os.rules"), "utf8"), new RegExp(`prefix_rule\\(pattern=\\["${WINDOWS ? "opencli" : "birdclaw"}"\\]`));
   if (!WINDOWS) assert.ok((await readlink(codexLink)).includes(".agent-os/local-tools/tools/birdclaw"));
-  for (const id of ["add", "archive", "commands", "ground", "teach", "trashness", "trunk-finish"]) {
+  for (const id of ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"]) {
     assert.match(await readFile(join(home, ".codex", "skills", id, "SKILL.md"), "utf8"), new RegExp(`name: ${id}`));
     assert.match(await readFile(join(home, ".claude", "commands", `${id}.md`), "utf8"), new RegExp(`name: ${id}`));
   }
@@ -107,6 +107,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.match(orchestration, /name: orchestration/);
     assert.match(orchestration, /## Completion Gate/);
     assert.match(await readFile(join(hostHome, "skills", "pamphlet", "SKILL.md"), "utf8"), /name: pamphlet/);
+    assert.match(await readFile(join(hostHome, "skills", "publication-safety", "scripts", "guard.py"), "utf8"), /def scan\(/);
   }
   const [skillsManifest, packsManifest] = await Promise.all([
     readFile(join(ROOT, "manifest", "skills.json"), "utf8").then(JSON.parse),

@@ -46,6 +46,7 @@
     {"id": "archive", "disposition": "portable-core"},
     {"id": "commands", "disposition": "portable-core"},
     {"id": "ground", "disposition": "portable-core"},
+    {"id": "pre-publication", "disposition": "portable-core"},
     {"id": "trashness", "disposition": "portable-core"},
     {"id": "trunk-finish", "disposition": "portable-core"},
     {"id": "teach", "disposition": "portable-core"},
@@ -61,7 +62,7 @@
     {
       "id": "commands",
       "disposition": "portable-core",
-      "skills": ["add", "archive", "commands", "ground", "teach", "trashness", "trunk-finish"]
+      "skills": ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"]
     },
     {
       "id": "gstack",
@@ -76,7 +77,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["book", "cli-for-agents", "fallacy-check", "orchestration", "outcome-loop", "pamphlet", "production-repo-baseline"]
+      "skills": ["book", "cli-for-agents", "fallacy-check", "orchestration", "outcome-loop", "pamphlet", "production-repo-baseline", "publication-safety"]
     },
     {
       "id": "creator-art-direction",
