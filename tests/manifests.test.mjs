@@ -44,14 +44,14 @@ test("Windows Suite selects every pack while platform filtering owns its exclusi
   assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
 });
 
-test("core installs all six portable commands and every portable core skill by default", async () => {
+test("core installs all seven portable commands and every portable core skill by default", async () => {
   const packs = await json("packs");
   const commands = await json("commands");
   const core = packs.packs.find((pack) => pack.id === "core");
-  assert.deepEqual(core.commands, ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(core.commands, ["add", "archive", "commands", "ground", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(core.optionalCommands, []);
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
-  assert.equal(selected.length, 6);
+  assert.equal(selected.length, 7);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
   for (const id of ["book", "cli-for-agents", "fallacy-check", "outcome-loop", "pamphlet", "production-repo-baseline"]) assert.ok(core.skills.includes(id), `${id} is not selected by core`);
 });
@@ -74,8 +74,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 92);
-  assert.equal(new Set(installedSkills).size, 92);
+  assert.equal(installedSkills.length, 93);
+  assert.equal(new Set(installedSkills).size, 93);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -153,6 +153,7 @@ test("documentation links resolve inside the repository", async () => {
 test("portable command and goal contracts retain their required workflow sections", async () => {
   const required = {
     "commands/add/SKILL.md": ["## Operating Principle", "## Workflow", "## Skill Document Requirements", "## Registry Requirements", "## Verification Commands", "## Stop Conditions", "## Output Contract", "Agent OS"],
+    "commands/archive/SKILL.md": ["## Usage", "## Resolve the target", "## Move safely", "## Verify and report", "Documents/ArchivedProjects", "git worktree move", "git worktree repair", "Never overwrite"],
     "commands/commands/SKILL.md": ["## Usage", "## Workflow", "## Rules", "agent-os status --catalog --json", "personal slash commands", "active automations", "credential files", "Agent OS"],
     "commands/ground/SKILL.md": ["## Usage", "## Natural-language activation", "## Operating Principle", "## The V.A.L.U.E. Formula", "## OS Order Contract", "## Source Handling", "### Durable web links", "### Link completion gate", "### Durable file attachments", "## OS Library Record", "## Output Contract", "semantic intent", "Ground these", "study-ready", "each distinct source", "retrieval-first", "one material page", "Area umbrella", "Never paste a bare URL as plain text", "actual rich-text hyperlink", "rendered link's", "target/href", "expected-source manifest", "saved record must be a bijection", "re-read the complete material page", "Resolve every external", "exact target ID", "whole-page scan", "validate-link-record.mjs", "Never say `Grounded`", "clickable file block", "clean, human filename", "attachment path is only a temporary input", "prominent, real, clickable source link", "ephemeral or machine-local path", "clear action label", "temporary signed download URL", "actual file-block `name`", "rendered filename on the attachment control", "Do not add a raw-source dump"],
     "commands/trashness/SKILL.md": ["## Operating Principle", "## Build Artifact Hygiene", "## Eligible Categories", "## Absolute Exclusions", "## Approval Contract", "## Deletion Workflow", "## Monthly Automation Behavior", "stable, ignored output root", "unrelated worktrees", "protected-names", "permanent deletion", "exact manifest"],

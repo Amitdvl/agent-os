@@ -9,6 +9,13 @@
       "purpose": "Onboard a new external tool into Agent OS manifests and guidance without silently authenticating it."
     },
     {
+      "id": "archive",
+      "path": "commands/archive/SKILL.md",
+      "disposition": "portable-core",
+      "selectedByDefault": true,
+      "purpose": "Move an explicitly identified local project into the user's ArchivedProjects folder while preserving all work and linked Git metadata."
+    },
+    {
       "id": "commands",
       "path": "commands/commands/SKILL.md",
       "disposition": "portable-core",

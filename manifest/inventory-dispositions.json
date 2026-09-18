@@ -43,6 +43,7 @@
   ],
   "commands": [
     {"id": "add", "disposition": "portable-core"},
+    {"id": "archive", "disposition": "portable-core"},
     {"id": "commands", "disposition": "portable-core"},
     {"id": "ground", "disposition": "portable-core"},
     {"id": "trashness", "disposition": "portable-core"},
@@ -60,7 +61,7 @@
     {
       "id": "commands",
       "disposition": "portable-core",
-      "skills": ["add", "commands", "ground", "teach", "trashness", "trunk-finish"]
+      "skills": ["add", "archive", "commands", "ground", "teach", "trashness", "trunk-finish"]
     },
     {
       "id": "gstack",
