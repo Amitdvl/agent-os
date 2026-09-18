@@ -1,3 +1,4 @@
+import os
 import pathlib
 import subprocess
 import sys
@@ -36,7 +37,9 @@ class GuardTest(unittest.TestCase):
         self.git("commit", "-qm", "remove fixture")
         history = self.run_guard("scan", "--scope", "history")
         self.assertEqual(history.returncode, 1)
-        self.assertIn("history: key.txt: github-token", history.stdout)
+        self.assertIn("history: path-sha256=", history.stdout)
+        self.assertIn("github-token", history.stdout)
+        self.assertNotIn("key.txt", history.stdout)
 
     def test_sensitive_path_and_install_conflicts(self):
         (self.repo / ".env.local").write_text("harmless")
@@ -46,6 +49,7 @@ class GuardTest(unittest.TestCase):
         installed = self.run_guard("install")
         self.assertEqual(installed.returncode, 0, installed.stderr)
         self.assertTrue((self.repo / ".githooks/pre-commit").exists())
+        self.assertTrue((self.repo / ".githooks/commit-msg").exists())
         self.assertIn("Never bypass hooks", (self.repo / "AGENTS.md").read_text())
         self.assertEqual(self.git("config", "--local", "--get", "core.hooksPath").stdout.strip(), b".githooks")
         self.assertEqual(self.run_guard("install").returncode, 2)
@@ -55,7 +59,9 @@ class GuardTest(unittest.TestCase):
         (self.repo / ".env.local").write_text("private local config")
         result = self.run_guard("scan", "--scope", "worktree")
         self.assertEqual(result.returncode, 0)
-        self.assertIn("ignored-local: .env.local: confirm-never-published", result.stdout)
+        self.assertIn("ignored-local: path-sha256=", result.stdout)
+        self.assertIn("confirm-never-published", result.stdout)
+        self.assertNotIn(".env.local", result.stdout)
 
     def test_clean_fixture_and_oversized_fail_closed(self):
         (self.repo / "README.md").write_text("Public sample with no secrets.\n")
@@ -92,6 +98,16 @@ class GuardTest(unittest.TestCase):
         self.assertIn("github-token", result.stdout + result.stderr)
         self.assertNotIn("B" * 36, result.stdout + result.stderr)
 
+    def test_installed_commit_message_hook_blocks_secret(self):
+        self.assertEqual(self.run_guard("install").returncode, 0)
+        (self.repo / "README.md").write_text("harmless\n")
+        self.git("add", "README.md")
+        token = "ghp_" + "F" * 36
+        result = subprocess.run(["git", "-C", str(self.repo), "commit", "-m", token], text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("commit-message", result.stdout + result.stderr)
+        self.assertNotIn(token, result.stdout + result.stderr)
+
     def test_outgoing_detects_unreferenced_commit(self):
         (self.repo / "token.txt").write_text("ghp_" + "C" * 36)
         self.git("add", "token.txt")
@@ -102,6 +118,87 @@ class GuardTest(unittest.TestCase):
         result = subprocess.run([sys.executable, str(GUARD), "scan", "--repo", str(self.repo), "--scope", "outgoing"], input=update, text=True, capture_output=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn("github-token", result.stdout)
+
+    def test_metadata_and_historical_aliases_are_scanned(self):
+        token = "ghp_" + "D" * 36
+        (self.repo / "safe.txt").write_text("harmless")
+        self.git("add", "safe.txt")
+        self.git("commit", "-qm", "fixture")
+        self.git("commit", "--allow-empty", "-qm", token)
+        self.git("tag", "-a", "review-tag", "-m", token)
+        (self.repo / ".env.local").write_text("harmless")
+        self.git("add", ".env.local")
+        self.git("commit", "-qm", "historical name")
+        self.git("rm", "-q", ".env.local")
+        self.git("commit", "-qm", "remove alias")
+        result = self.run_guard("scan", "--scope", "history")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("history-metadata", result.stdout)
+        self.assertIn("history-path", result.stdout)
+        self.assertIn("sensitive-path", result.stdout)
+        self.assertNotIn(token, result.stdout + result.stderr)
+        self.assertNotIn(".env.local", result.stdout)
+
+    def test_annotated_tag_message_is_scanned(self):
+        (self.repo / "README.md").write_text("harmless\n")
+        self.git("add", "README.md")
+        self.git("commit", "-qm", "fixture")
+        token = "ghp_" + "G" * 36
+        self.git("tag", "-a", "review-tag", "-m", token)
+        result = self.run_guard("scan", "--scope", "history")
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("history-metadata", result.stdout)
+        self.assertIn("github-token", result.stdout)
+        self.assertNotIn(token, result.stdout + result.stderr)
+
+    def test_lfs_pointer_and_sensitive_filename_block_without_echo(self):
+        pointer = "version https://git-lfs.github.com/spec/v1\noid sha256:" + "a" * 64 + "\nsize 5\n"
+        (self.repo / "artifact.bin").write_text(pointer)
+        token = "ghp_" + "E" * 36
+        (self.repo / token).write_text("harmless")
+        self.git("add", ".")
+        result = self.run_guard("scan", "--scope", "staged")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("lfs-payload-unreviewed", result.stdout)
+        self.assertIn("sensitive-filename", result.stdout)
+        self.assertNotIn(token, result.stdout + result.stderr)
+
+    def test_staged_symlink_requires_review(self):
+        (self.repo / "linked").symlink_to("private-target")
+        self.git("add", "linked")
+        result = self.run_guard("scan", "--scope", "staged")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("symlink-review", result.stdout)
+        self.assertNotIn("private-target", result.stdout)
+
+    def test_common_connection_assignment_blocks(self):
+        (self.repo / "settings.example").write_text("DATABASE_URL=postgres://fixture:secret@example.invalid/db\n")
+        self.git("add", "settings.example")
+        result = self.run_guard("scan", "--scope", "staged")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("credential-assignment", result.stdout)
+        self.assertNotIn("postgres://", result.stdout)
+
+    def test_shallow_history_fails_closed(self):
+        (self.repo / "README.md").write_text("first\n")
+        self.git("add", "README.md")
+        self.git("commit", "-qm", "first")
+        (self.repo / "README.md").write_text("second\n")
+        self.git("commit", "-qam", "second")
+        clone = self.repo / "shallow-clone"
+        subprocess.run(["git", "clone", "-q", "--depth=1", self.repo.as_uri(), str(clone)], check=True)
+        result = subprocess.run([sys.executable, str(GUARD), "scan", "--repo", str(clone), "--scope", "history"], text=True, capture_output=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("publication guard incomplete", result.stderr)
+
+    def test_install_refuses_inherited_hook_path(self):
+        config = self.repo / "global.gitconfig"
+        config.write_text("[core]\n\thooksPath = /tmp/existing-hooks\n")
+        environment = os.environ.copy()
+        environment["GIT_CONFIG_GLOBAL"] = str(config)
+        result = subprocess.run([sys.executable, str(GUARD), "install", "--repo", str(self.repo)], text=True, capture_output=True, env=environment)
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse((self.repo / ".githooks").exists())
 
 
 if __name__ == "__main__":

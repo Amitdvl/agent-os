@@ -15,7 +15,7 @@ The manifest is the source of truth for the portable inventory:
 - `skills/outcome-loop/` — an evidence-driven feedback loop that owns iterative execution, verification, and durable reporting without expanding authority.
 - `skills/production-repo-baseline/` — a preview-first repository foundation helper with its deterministic Go implementation and fixtures.
 - `commands/archive/` — `/archive <project name or path>` resolves an exact local project and moves it into the current user's `Documents/ArchivedProjects`; broad stale-project requests require a reviewed candidate list.
-- `commands/pre-publication/` and `skills/publication-safety/` — named-project public GitHub release gate with history and privacy review, a value-redacting repository guard, conflict-safe hooks, and CI. The Codex skill is also invocable as `$pre-publication` where a custom slash UI entry is unavailable; no detector can promise zero future leaks.
+- `commands/pre-publication/` and `skills/publication-safety/` — named-project public GitHub release gate with an official Codex Security scan of the frozen candidate, independent history-capable secret scanning, remote/privacy review, a path-redacting repository guard, conflict-safe local hooks, and advisory repo-owned CI. The Codex skill is also invocable as `$pre-publication` where a custom slash UI entry is unavailable; no detector can promise zero future leaks.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
 Every selected tool is rendered to a managed `SKILL.md` with a data-root placeholder, preflight, safe reads, guarded writes, limitation, and troubleshooting instruction. Its two host skill entries are symlinks to that one managed template.
