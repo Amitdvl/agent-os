@@ -35,8 +35,10 @@ Do not auto-approve, fabricate a reply, or delete while waiting.
 When a machine-local build or test produces macOS app bundles or similarly
 large generated outputs:
 
-1. Prefer a stable, ignored output root for repeatable builds. Use a per-run
-   root only when isolation or retained evidence requires it.
+1. Prefer a stable, ignored `.noindex` output root for repeatable builds.
+   Never use an ordinary `build/` or `dist/` directory as a persistent
+   intermediate app-bundle location. Use a per-run root only when isolation or
+   retained evidence requires it.
 2. Before task completion, inventory the generated artifacts and identify the
    active or deployed app separately from rebuildable products.
 3. Preserve source, untracked user work, active or deployed apps, requested
@@ -44,6 +46,9 @@ large generated outputs:
    unopened, ignored or reproducible outputs for cleanup.
 4. When stale pre-existing output remains, it is approval-gated: present a
    fresh exact manifest and delete only the user-approved targets.
+5. Before declaring the task complete, confirm that no indexable generated app
+   copy remains. Unregister and remove task-created disposable bundles; route
+   older bundles through the approval workflow above.
 
 ## Eligible Categories
 

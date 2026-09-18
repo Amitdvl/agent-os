@@ -1,0 +1,19 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+test("core policy prevents Spotlight-visible generated macOS app copies", async () => {
+  const content = await readFile(join(ROOT, "policies", "core.md"), "utf8");
+  for (const phrase of [
+    "ending in `.noindex`",
+    "indexable generated app copy remains",
+    "unregister and remove task-created disposable products",
+    "fresh exact approval manifest",
+  ]) {
+    assert.ok(content.includes(phrase), `core build-artifact policy is missing: ${phrase}`);
+  }
+});

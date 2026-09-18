@@ -43,9 +43,10 @@ content.
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
 audit, reusable-tooling harvest, and an approval-gated monthly Trashness cleanup.
 Its portable core policy and Trashness command also require build-artifact
-hygiene: use stable ignored build roots where possible, inventory generated
-bundles, preserve active apps and unrelated worktrees, and obtain fresh exact
-approval before deleting stale pre-existing outputs.
+hygiene: put non-deployed macOS app bundles under ignored `.noindex` roots,
+inventory generated bundles, preserve active apps and unrelated worktrees,
+remove task-created disposable products before completion, and obtain fresh
+exact approval before deleting stale pre-existing outputs.
 It also carries optional portable sources for
 the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
 These are source contracts only: schedules, LaunchAgents, hook state, logs,

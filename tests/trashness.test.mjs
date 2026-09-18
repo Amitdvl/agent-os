@@ -18,10 +18,11 @@ test("trashness requires exact approval and completes deletion", async () => {
     "~/.config/trashness/protected-names",
     "do not use mole",
     "never empty trash wholesale",
-    "stable, ignored output root",
+    "stable, ignored `.noindex` output root",
     "active or deployed app",
     "unrelated worktrees",
     "stale pre-existing output remains, it is approval-gated",
+    "before declaring the task complete",
   ]) {
     assert.ok(content.includes(phrase), `trashness command is missing safety contract: ${phrase}`);
   }
