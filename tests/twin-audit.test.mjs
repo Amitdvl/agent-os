@@ -67,7 +67,7 @@ test("twin audit accepts mirrored commands and an explicitly excluded live skill
   const fixture = await writeFixture(root, { extraSkill: true });
   const report = JSON.parse(run(auditArgs(fixture)).stdout);
   assert.equal(report.ok, true);
-  assert.deepEqual(report.portableCommandIds, ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"]);
+  assert.deepEqual(report.portableCommandIds, ["add", "archive", "commands", "decision-queue", "ground", "pre-publication", "teach", "trashness", "trunk-finish"]);
   assert.deepEqual(report.commandSources.map((source) => source.status), Array(fixture.commands.length).fill("match"));
   assert.ok(report.ignoredHostSkills.includes("no-temptation-lockin"));
   assert.deepEqual(report.uncoveredHostSkills, []);

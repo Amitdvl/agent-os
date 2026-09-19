@@ -23,6 +23,13 @@
       "purpose": "Show the current capability catalogue derived from manifests and installed state."
     },
     {
+      "id": "decision-queue",
+      "path": "commands/decision-queue/SKILL.md",
+      "disposition": "portable-optional",
+      "selectedByDefault": false,
+      "purpose": "Capture a natural-language decision in a user-configured Notion Decision Queue without changing its schema or views."
+    },
+    {
       "id": "ground",
       "path": "commands/ground/SKILL.md",
       "disposition": "portable-core",

@@ -45,6 +45,7 @@
     {"id": "add", "disposition": "portable-core"},
     {"id": "archive", "disposition": "portable-core"},
     {"id": "commands", "disposition": "portable-core"},
+    {"id": "decision-queue", "disposition": "portable-optional"},
     {"id": "ground", "disposition": "portable-core"},
     {"id": "pre-publication", "disposition": "portable-core"},
     {"id": "trashness", "disposition": "portable-core"},
@@ -63,6 +64,11 @@
       "id": "commands",
       "disposition": "portable-core",
       "skills": ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"]
+    },
+    {
+      "id": "configured-workflows",
+      "disposition": "portable-optional",
+      "skills": ["decision-queue"]
     },
     {
       "id": "gstack",

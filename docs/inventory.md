@@ -15,6 +15,7 @@ The manifest is the source of truth for the portable inventory:
 - `skills/outcome-loop/` — an evidence-driven feedback loop that owns iterative execution, verification, and durable reporting without expanding authority.
 - `skills/production-repo-baseline/` — a preview-first repository foundation helper with its deterministic Go implementation and fixtures.
 - `commands/archive/` — `/archive <project name or path>` resolves an exact local project and moves it into the current user's `Documents/ArchivedProjects`; broad stale-project requests require a reviewed candidate list.
+- `commands/decision-queue/` — `/decision-queue <decision or uncertainty>` adds one unresolved record to a user-configured Notion Decision Queue. The database identifier is local configuration and is never distributed.
 - `commands/pre-publication/` and `skills/publication-safety/` — context-resolved public GitHub release gate with an official Codex Security scan of the frozen candidate, independent history-capable secret scanning, remote/privacy review, a path-redacting repository guard, conflict-safe local hooks, and advisory repo-owned CI. The Codex skill is also invocable as `$pre-publication` where a custom slash UI entry is unavailable; no detector can promise zero future leaks.
 - `manifest/compatibility.json` — macOS, Node, and two host adapters.
 
