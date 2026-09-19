@@ -22,6 +22,9 @@ const MANIFEST_NAMES = [
   "sources",
   "tools",
 ];
+const MANIFEST_FILENAMES = {
+  secrets: "secret-requirements",
+};
 const START_PREFIX = "<!-- agent-os:start";
 const END_MARKER = "<!-- agent-os:end -->";
 const LIVE_CUTOVER_COMMAND_IDS = ["add", "commands", "teach", "trunk-finish"];
@@ -108,7 +111,8 @@ async function readJson(target) {
 async function loadBundle() {
   const bundle = {};
   for (const name of MANIFEST_NAMES) {
-    bundle[name] = await readJson(join(REPO_ROOT, "manifest", `${name}.json`));
+    const filename = MANIFEST_FILENAMES[name] ?? name;
+    bundle[name] = await readJson(join(REPO_ROOT, "manifest", `${filename}.json`));
   }
   bundle.package = await readJson(join(REPO_ROOT, "package.json"));
   return bundle;

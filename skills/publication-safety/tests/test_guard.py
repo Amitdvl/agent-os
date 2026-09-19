@@ -54,6 +54,22 @@ class GuardTest(unittest.TestCase):
         self.assertEqual(self.git("config", "--local", "--get", "core.hooksPath").stdout.strip(), b".githooks")
         self.assertEqual(self.run_guard("install").returncode, 2)
 
+    def test_public_secret_requirements_manifest_keeps_content_scanning(self):
+        manifest = self.repo / "manifest"
+        manifest.mkdir()
+        requirements = manifest / "secrets.json"
+        requirements.write_text('{"requirements": []}\n')
+        self.git("add", "manifest/secrets.json")
+        self.assertEqual(self.run_guard("scan", "--scope", "staged").returncode, 0)
+
+        token = "ghp_" + "H" * 36
+        requirements.write_text(token)
+        self.git("add", "manifest/secrets.json")
+        result = self.run_guard("scan", "--scope", "staged")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("github-token", result.stdout)
+        self.assertNotIn(token, result.stdout + result.stderr)
+
     def test_ignored_local_env_is_review_notice_not_publication_blob(self):
         (self.repo / ".gitignore").write_text(".env.local\n")
         (self.repo / ".env.local").write_text("private local config")

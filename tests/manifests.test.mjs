@@ -8,7 +8,8 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 async function json(name) {
-  return JSON.parse(await readFile(join(ROOT, "manifest", `${name}.json`), "utf8"));
+  const filename = name === "secrets" ? "secret-requirements" : name;
+  return JSON.parse(await readFile(join(ROOT, "manifest", `${filename}.json`), "utf8"));
 }
 
 async function filesUnder(root) {
@@ -35,6 +36,25 @@ test("default profile is opinionated and selects the portable capability packs",
   assert.deepEqual(new Set(profile.packs), new Set(["core", "local-productivity", "research", "communication", "creator"]));
   assert.equal(profile.memory, "disabled");
   assert.equal(profile.externalWrites, "exact-intent");
+});
+
+test("core policy makes Awareness HUD command registration a mandatory completion gate", async () => {
+  const content = await readFile(join(ROOT, "policies", "core.md"), "utf8");
+  for (const phrase of [
+    "Mandatory command-registry step",
+    "Awareness HUD **Commands** page",
+    "required completion criterion",
+    "refresh the page and verify that the entry is visible",
+    "leave the task incomplete",
+  ]) {
+    assert.ok(content.includes(phrase), `core policy missing ${phrase}`);
+  }
+});
+
+test("secret requirements use a guard-safe manifest filename", async () => {
+  const requirements = await json("secrets");
+  assert.ok(Array.isArray(requirements.requirements));
+  await stat(join(ROOT, "manifest", "secret-requirements.json"));
 });
 
 test("Windows Suite selects every pack while platform filtering owns its exclusions", async () => {

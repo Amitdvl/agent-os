@@ -4,7 +4,7 @@ The manifest is the source of truth for the portable inventory:
 
 - `manifest/tools.json` — 20 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
-- `manifest/secrets.json` — requirement names and access classes only; it contains no values.
+- `manifest/secret-requirements.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, creator, and macOS development packs.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.

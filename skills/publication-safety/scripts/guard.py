@@ -11,6 +11,10 @@ import sys
 
 LIMIT = 5 * 1024 * 1024
 SENSITIVE = re.compile(r"(^|/)(\.env($|\.(?!example$|sample$|template$)[^/]+$)|\.(npmrc|pypirc|netrc|git-credentials)$|\.aws/credentials$|\.kube/config$|id_(rsa|ed25519|ecdsa|dsa)$|[^/]*\.(pem|p12|pfx|key)$|credentials?\.json$|secrets?\.(json|ya?ml|toml)$|service.account[^/]*\.json$)", re.I)
+# This is a public, schema-only Agent OS manifest. Keep the exception exact:
+# content is still scanned for credential patterns, and every other sensitive
+# filename remains blocked.
+PUBLIC_SCHEMA_PATHS = {"manifest/secrets.json"}
 PATTERNS = {
     "private-key": re.compile(rb"-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----"),
     "github-token": re.compile(rb"\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"),
@@ -36,7 +40,7 @@ def validate(repo):
 def inspect(label, path, content, findings):
     path = path.replace("\\", "/")
     reasons = []
-    if SENSITIVE.search(path):
+    if path not in PUBLIC_SCHEMA_PATHS and SENSITIVE.search(path):
         reasons.append("sensitive-path")
     if any(pattern.search(os.fsencode(path)) for pattern in PATTERNS.values()):
         reasons.append("sensitive-filename")
