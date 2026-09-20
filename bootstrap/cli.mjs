@@ -583,6 +583,53 @@ async function applyPlan(context, plan) {
   return state;
 }
 
+// This deliberately evaluates only the instruction block and state record. It
+// is for a provenance-only mismatch: the live block must already be exactly
+// what the current portable profile renders, so no host guidance is written.
+async function instructionReconciliationPlan(context) {
+  if (!context.previousState) {
+    return [{ id: "instructions:ledger", path: context.statePath, status: "conflict", reason: "managed-state ledger is missing" }];
+  }
+  const block = await renderInstructionBlock(context);
+  const operations = [];
+  for (const host of context.hosts) {
+    const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
+    const path = join(hostHome, host.instructionFile);
+    const previous = managedRecord(context.previousState, path);
+    const current = await readText(path, null);
+    const existing = current === null ? null : extractBlock(current);
+    if (!previous || previous.kind !== "managed-block") {
+      operations.push({ id: `${host.id}:instructions`, kind: "managed-block", path, status: "conflict", reason: "instruction block is not ledger-owned" });
+    } else if (!existing) {
+      operations.push({ id: `${host.id}:instructions`, kind: "managed-block", path, status: "conflict", reason: "managed instruction block is missing" });
+    } else if (existing.text !== block) {
+      operations.push({ id: `${host.id}:instructions`, kind: "managed-block", path, status: "conflict", reason: "managed instruction block differs from the current portable render" });
+    } else {
+      operations.push({ id: `${host.id}:instructions`, kind: "managed-block", path, block, status: previous.blockHash === hash(existing.text) ? "unchanged" : "adopt" });
+    }
+  }
+  return operations;
+}
+
+async function applyInstructionReconciliation(context, plan) {
+  const conflicts = plan.filter((item) => item.status === "conflict");
+  if (conflicts.length) throw new Error(`refusing instruction reconciliation with ${conflicts.length} conflict(s)`);
+  if (!plan.some((item) => item.status === "adopt")) return context.previousState;
+
+  const blockHashes = new Map(plan.map((item) => [item.path, hash(item.block)]));
+  const state = {
+    ...context.previousState,
+    agentOsVersion: context.bundle.package.version,
+    manifestDigest: hash(JSON.stringify(context.bundle)),
+    updatedAt: new Date().toISOString(),
+    managed: context.previousState.managed.map((item) => blockHashes.has(item.path)
+      ? { ...item, blockHash: blockHashes.get(item.path) }
+      : item),
+  };
+  await atomicWrite(context.statePath, `${JSON.stringify(state, null, 2)}\n`);
+  return state;
+}
+
 async function binaryAvailable(binary) {
   const pathEntries = (process.env.PATH ?? "").split(process.platform === "win32" ? ";" : ":").filter(Boolean);
   for (const entry of pathEntries) {
@@ -1435,7 +1482,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
-    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
+    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|reconcile-instructions|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
     console.log("Vault adapters: agent-os vault bind --kind agent-secrets --root /absolute/path [--helper scripts/agent-secrets] [--apply]; agent-os vault unbind [--apply]");
     return;
   }
@@ -1458,7 +1505,7 @@ async function main() {
   }
   if (validation.errors.length) throw new Error(`invalid manifests: ${validation.errors.join("; ")}`);
 
-  const preferState = ["status", "doctor", "update", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
+  const preferState = ["status", "doctor", "update", "reconcile-instructions", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
   if (platform() === "win32" && ["live-cutover", "live-rollback"].includes(command)) {
     throw new Error(`${command} is not supported on Windows.`);
@@ -1513,6 +1560,17 @@ async function main() {
     const plan = await buildPlan(context);
     const summary = planSummary(context, plan);
     if (options.apply) await applyPlan(context, plan);
+    options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
+    return;
+  }
+  if (command === "reconcile-instructions") {
+    const plan = await instructionReconciliationPlan(context);
+    const summary = {
+      apply: Boolean(options.apply),
+      operations: plan.map(({ id, path, status, reason }) => ({ id, path: displayPath(context, path), status, reason: reason ?? null })),
+      conflicts: plan.filter((item) => item.status === "conflict").map((item) => `${displayPath(context, item.path)}: ${item.reason}`),
+    };
+    if (options.apply) await applyInstructionReconciliation(context, plan);
     options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
     return;
   }

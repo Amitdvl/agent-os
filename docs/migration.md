@@ -11,6 +11,10 @@ to an older local-tool root, preview `setup --adopt-existing` first. It is the
 only supported bridge into the normal managed ledger: it adopts exact files and
 redirects declared portable tool links, while refusing mismatched files and
 preserving local adapters, registries, hook configuration, and private state.
+For a stale managed-instruction ledger hash, use
+`agent-os reconcile-instructions --apply`. Its exact-match rule refreshes only
+that ledger record without changing the host guidance or evaluating unrelated
+managed surfaces.
 
 Portable parity means equivalent safety decisions, commands, templates, freshness, and lifecycle behavior. It does not mean copied account authority or byte-identical host behavior.
 

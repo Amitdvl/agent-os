@@ -239,6 +239,36 @@ test("adopt-existing refuses file ownership through an unowned directory symlink
   assert.equal(await readFile(join(externalSkill, "SKILL.md"), "utf8"), source);
 });
 
+test("reconcile-instructions refreshes only an exact managed instruction ledger", async (context) => {
+  const root = join(SANDBOX, "reconcile-managed-block");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const noTools = { PATH: join(root, "empty-bin") };
+  run(["setup", "--home", home, "--safe", "--apply", "--json"], 0, noTools);
+  const agents = join(home, ".codex", "AGENTS.md");
+  const before = await readFile(agents, "utf8");
+  const statePath = join(home, ".agent-os", "state.json");
+  const state = JSON.parse(await readFile(statePath, "utf8"));
+  const record = state.managed.find((item) => item.path === agents);
+  record.blockHash = "stale-ledger-hash";
+  await writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`);
+
+  const preview = JSON.parse(run(["reconcile-instructions", "--home", home, "--safe", "--json"], 0, noTools).stdout);
+  assert.deepEqual(preview.operations.map((item) => item.id), ["codex:instructions", "claude-code:instructions"]);
+  assert.equal(preview.operations.find((item) => item.id === "codex:instructions").status, "adopt");
+  run(["reconcile-instructions", "--home", home, "--safe", "--apply", "--json"], 0, noTools);
+  assert.equal(await readFile(agents, "utf8"), before);
+  const reconciled = JSON.parse(await readFile(statePath, "utf8"));
+  assert.notEqual(reconciled.managed.find((item) => item.path === agents).blockHash, "stale-ledger-hash");
+  assert.deepEqual(JSON.parse(run(["status", "--home", home, "--json"], 0, noTools).stdout).drift, []);
+
+  await writeFile(agents, before.replace("# Core Agent Policy", "# Tampered Core Agent Policy"));
+  const conflict = JSON.parse(run(["reconcile-instructions", "--home", home, "--safe", "--json"], 0, noTools).stdout);
+  assert.equal(conflict.operations[0].status, "conflict");
+  run(["reconcile-instructions", "--home", home, "--safe", "--apply", "--json"], 1, noTools);
+  await writeFile(agents, before);
+});
+
 test("status and doctor report an unmanaged dangling host skill link", async (context) => {
   const root = join(SANDBOX, "dangling-host-skill");
   context.after(() => rm(root, { recursive: true, force: true }));

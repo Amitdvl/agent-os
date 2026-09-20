@@ -10,6 +10,7 @@ agent-os vault unbind [--apply]
 agent-os status [--catalog] [--json]
 agent-os doctor [--json]
 agent-os update [--apply]
+agent-os reconcile-instructions [--apply]
 agent-os safe-uninstall [--apply]
 agent-os live-cutover --legacy-root <legacy-root> [--apply]
 agent-os live-rollback [--apply]
@@ -42,6 +43,13 @@ portable files into the normal ledger and redirects only the declared portable
 tool links to generated Agent OS contracts; it refuses a mismatched or
 non-symlink destination. It never replaces a local adapter such as the vault
 skill, host registry, hook configuration, or `default.rules`.
+
+`reconcile-instructions` is the narrow repair for a stale managed-instruction
+hash. It examines only the selected host instruction block and its ledger
+record, and updates ledger metadata only when the live block is byte-for-byte
+identical to the freshly rendered portable block. It never writes guidance or
+touches skills, tools, rules, hooks, or other managed outputs; any content
+difference stays a conflict.
 
 Generated allow rules use one broad prefix per selected binary because command-specific rules make normal local operation fragile. They do not authorize external writes: every tool template and global policy still requires exact user intent.
 
