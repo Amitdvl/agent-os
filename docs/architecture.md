@@ -7,6 +7,7 @@ Agent OS owns portable policy and rendered integration structure. A destination 
 ```text
 agent-os/                         # portable source checkout
 ~/.agent-os/                      # generated state, ledger, backups
+  workspaces.json                 # optional private machine navigation map
   local-tools/
     registry.json                 # path-resolved portable registry
     tools/<id>/SKILL.md           # one complete managed template per tool
@@ -17,6 +18,14 @@ agent-os/                         # portable source checkout
 ```
 
 The local-tools root is the sole rendered tool source. Both hosts link to it instead of receiving divergent copies. The state ledger records hashes for files and targets for symlinks. Any unowned path or changed managed target is a conflict; setup, update, and uninstall refuse to overwrite it. Changed content is backed up under `~/.agent-os/backups` before a managed replacement.
+
+`~/.agent-os/workspaces.json` is an optional, owner-authored navigation map for
+canonical projects, task scratch, deliverables, tools, and protected roots.
+Agents consult it before broad filesystem searches, verify every path before
+acting, and keep task intermediates in `work/` and deliverables in `outputs/`
+when those directories exist. The file is private machine state: setup does not
+generate or copy it, and the portable repository contains only
+`templates/workspaces.example.json` with placeholders.
 
 ## Modes
 

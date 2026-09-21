@@ -33,6 +33,11 @@ The research pack's OpenCLI contract treats named X bookmark folders as an authe
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
 
+The portable workspace-navigation contract tells agents to consult an optional
+machine-local `~/.agent-os/workspaces.json` before broad discovery. The live
+registry's absolute paths and project names are intentionally excluded; only a
+placeholder schema lives in `templates/workspaces.example.json`.
+
 The live owner machine also has explicit inventory exclusions for `agent-inbox`,
 `epubcheck`, `pandoc`, `silicon`, `summarize`, `telgo`, and `vox`; these are
 either owner-specific or not yet covered by a reviewed portable tool contract.

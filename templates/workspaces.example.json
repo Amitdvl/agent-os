@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Private machine navigation hints for agents; do not commit a populated copy.",
+  "roots": {
+    "taskScratch": "<absolute-task-scratch-root>",
+    "localTools": "<absolute-local-tools-root>",
+    "globalSkills": "<absolute-global-skills-root>"
+  },
+  "conventions": {
+    "intermediateDirectory": "work",
+    "deliverableDirectory": "outputs",
+    "datedTaskDirectoriesAreTransient": true
+  },
+  "canonicalProjects": [
+    {
+      "id": "<stable-project-id>",
+      "label": "<human-readable-label>",
+      "path": "<absolute-project-path>",
+      "kind": "git-or-folder",
+      "status": "active"
+    }
+  ],
+  "protectedRoots": [
+    "<absolute-private-or-secret-root>"
+  ]
+}

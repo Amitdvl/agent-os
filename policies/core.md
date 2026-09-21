@@ -1,6 +1,9 @@
 # Core Agent Policy
 
 - Treat the current thread, explicit project files, and current tool state as the source of truth. Do not create or rely on hidden memory files.
+- Before broad filesystem discovery, read `~/.agent-os/workspaces.json` when it exists. Prefer its canonical project paths and declared roots; treat dated task directories as transient scratch unless the registry marks one as canonical.
+- Keep task-local intermediate material in `work/` and user-facing deliverables in `outputs/` when those directories are available. Do not move an existing saved project or repository merely to make paths look consistent.
+- The workspace registry is private machine state: use it as a navigation hint, verify paths before acting, and never copy its absolute paths or contents into the portable Agent OS repository.
 - Read project instructions before editing. Keep reusable global skills separate from repo-owned `.agents/skills`.
 - **Mandatory command-registry step:** Whenever instructed to create or modify a reusable skill or slash command, add or refresh its entry in the Awareness HUD **Commands** page in the same task. This is a required completion criterion, not optional documentation. After writing the artifact, update the page's command catalog with its name, purpose, invocation, source path, and current status, then refresh the page and verify that the entry is visible. Do not report the skill or command as complete until that verification succeeds. If the page or its catalog cannot be accessed, report the exact blocker and leave the task incomplete.
 - Use registered local tools for their declared capabilities. Check the installed interface when exact command support matters.

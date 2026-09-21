@@ -17,3 +17,17 @@ test("core policy prevents Spotlight-visible generated macOS app copies", async 
     assert.ok(content.includes(phrase), `core build-artifact policy is missing: ${phrase}`);
   }
 });
+
+test("core policy makes private workspace navigation deterministic", async () => {
+  const content = await readFile(join(ROOT, "policies", "core.md"), "utf8");
+  for (const phrase of [
+    "~/.agent-os/workspaces.json",
+    "canonical project paths",
+    "dated task directories as transient scratch",
+    "intermediate material in `work/`",
+    "deliverables in `outputs/`",
+    "private machine state",
+  ]) {
+    assert.ok(content.includes(phrase), `core workspace policy is missing: ${phrase}`);
+  }
+});

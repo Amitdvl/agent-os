@@ -263,6 +263,17 @@ test("twin inventory documents intentional live-tool exclusions", async () => {
   for (const item of dispositions.twin.excludedLiveTools) assert.ok(item.reason);
 });
 
+test("workspace registry is explicitly machine-local with a portable template", async () => {
+  const dispositions = await json("inventory-dispositions");
+  const excluded = dispositions.twin.excludedLiveConfiguration.find((item) => item.id === "workspace-registry");
+  assert.ok(excluded?.reason);
+  assert.ok(dispositions.policySurfaces.some((item) => item.id === "workspace-navigation" && item.disposition === "portable-core-contract"));
+  const template = JSON.parse(await readFile(join(ROOT, "templates", "workspaces.example.json"), "utf8"));
+  assert.equal(template.schemaVersion, 1);
+  assert.ok(Array.isArray(template.canonicalProjects));
+  assert.match(template.roots.taskScratch, /^<.+>$/);
+});
+
 
 test("Apple Suite includes guarded ASC with unresolved install and vault requirements", async () => {
   const [profiles, packs, tools, sources, secrets] = await Promise.all(["profiles", "packs", "tools", "sources", "secrets"].map(json));
