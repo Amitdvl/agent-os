@@ -117,7 +117,7 @@
   ],
   "referenceOnly": [
     {"id": "config-project-record", "disposition": "project-specific-reference-only"},
-    {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, and thread target; intentionally excluded from the portable distribution."}
+    {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, local post inventory, and thread target; intentionally excluded from the portable distribution."}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},
