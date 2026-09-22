@@ -17,7 +17,8 @@
     "excludedLiveConfiguration": [
       {"id": "codex-skill-path-enablements", "reason": "Exact absolute skill-path enablement belongs to the owner machine. Agent OS mirrors the collision policy and audit contract, never machine-specific paths."},
       {"id": "agent-vault-adapter-binding", "reason": "The vault root and helper location are machine-local. Agent OS mirrors only the versioned adapter schema and metadata-only behavior."},
-      {"id": "workspace-registry", "reason": "Canonical project paths and protected roots are private machine navigation state. Agent OS mirrors only the optional registry contract and placeholder template."}
+      {"id": "workspace-registry", "reason": "Canonical project paths and protected roots are private machine navigation state. Agent OS mirrors only the optional registry contract and placeholder template."},
+      {"id": "gmail-advertising-firewall-cloud", "reason": "Owner-specific cloud Gmail automation. Its account connection, mail classification policy, schedule, and run history are intentionally excluded; Agent OS never copies connected-account access or personal mail workflow state."}
     ]
   },
   "localTools": [
