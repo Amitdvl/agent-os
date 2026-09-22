@@ -113,8 +113,7 @@
     {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
     {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"},
     {"id": "agent-os-drift-guard", "path": "templates/automations/agent-os-drift-guard/automation.toml", "disposition": "portable-template-paused"},
-    {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"},
-    {"id": "remindctl-urgent-support-monitor", "path": "templates/automations/remindctl-urgent-support-monitor/automation.toml", "disposition": "portable-template-paused"}
+    {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
     {"id": "config-project-record", "disposition": "project-specific-reference-only"}
