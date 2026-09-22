@@ -130,6 +130,14 @@ test("portable drift guard is paused and cannot overwrite unowned or semantic su
   assert.match(content, /Stay quiet when every check is clean/);
 });
 
+test("portable remindctl Urgent monitor is paused and only acts on verified native support", async () => {
+  const content = await readFile(join(ROOT, "templates", "automations", "remindctl-urgent-support-monitor", "automation.toml"), "utf8");
+  assert.match(content, /status = "PAUSED"/);
+  assert.match(content, /Do not treat a closed issue, documentation-only change, alarm help improvement, bot activity/);
+  assert.match(content, /explicitly approve a supported native Urgent capability or when merged\/released upstream code provides it/);
+  assert.match(content, /validation, full tests, git diff --check, and twin audit/);
+});
+
 test("all external tools have explicit source pins or unresolved markers", async () => {
   const tools = await json("tools");
   const sources = await json("sources");
