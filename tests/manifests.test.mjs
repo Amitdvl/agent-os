@@ -130,6 +130,22 @@ test("portable drift guard is paused and cannot overwrite unowned or semantic su
   assert.match(content, /Stay quiet when every check is clean/);
 });
 
+test("portable local-tool updater upgrades only installed tools after the release window", async () => {
+  const content = await readFile(join(ROOT, "templates", "automations", "local-tool-updater", "automation.toml"), "utf8");
+
+  assert.match(content, /status = "PAUSED"/);
+  assert.match(content, /rrule = "\{\{rrule\}\}"/);
+  assert.match(content, /actual package manager/);
+  assert.match(content, /at least 48 hours/);
+  assert.match(content, /Never run `brew upgrade` without one explicit formula/);
+  assert.match(content, /Never install an absent tool/);
+  assert.match(content, /matching Agent OS contract/);
+  assert.match(content, /npm run validate/);
+  assert.match(content, /npm test/);
+  assert.match(content, /twin-audit/);
+  assert.match(content, /does not prevent upgrading an already-installed tool/);
+});
+
 test("all external tools have explicit source pins or unresolved markers", async () => {
   const tools = await json("tools");
   const sources = await json("sources");

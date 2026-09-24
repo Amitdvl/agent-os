@@ -1,0 +1,25 @@
+version = 1
+id = "{{automation_id}}"
+kind = "cron"
+name = "Local Tool Updater"
+prompt = """Run the local-tool update workflow for the tools registered in {{local_tool_registry}} and their matching Agent OS contracts in {{agent_os_root}}.
+
+For each registered tool:
+
+1. Read its installed version from its actual package manager. Use only an existing package-manager installation; do not infer one from a wrapper or install a missing tool.
+2. Check the official upstream for a newer version.
+3. Update only when that candidate has been publicly available for at least 48 hours. The upstream publication timestamp is the clock.
+4. Upgrade that individual installed tool with its actual package manager. Never run `brew upgrade` without one explicit formula. Never install an absent tool, add a tap, authenticate, or change provider configuration. A source record marked `automation = "disabled"` prevents automatic installation; it does not prevent upgrading an already-installed tool.
+5. Validate the upgraded tool using its documented command path, version command, help command, and smallest safe smoke test.
+6. Update and validate the matching Agent OS contract: refresh only the affected live local-tool metadata and matching portable manifest, contract, source metadata, documentation, and tests. Run `npm run validate`, `npm test`, `git diff --check`, and the configured `twin-audit` against the live registry and global instructions. Commit only those Agent OS changes on `tool-update-YYYY-MM-DD` and push that branch to `origin` without force-pushing.
+
+Do not create or use persistent automation memory. Skip manual, template-only, explicitly excluded, unavailable, or unresolvable tools. If no installed tool is eligible, finish silently. If an upgrade or validation fails, report the tool, old version, candidate version, and failure reason.
+
+For every successful upgrade, report old version -> new version, validation result, Agent OS commit, and pushed branch.
+"""
+status = "PAUSED"
+rrule = "{{rrule}}"
+model = "{{model}}"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["{{agent_os_root}}"]

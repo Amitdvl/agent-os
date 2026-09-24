@@ -114,6 +114,7 @@
     {"id": "skill-cleaner-audit", "path": "templates/automations/skill-cleaner-audit/automation.toml", "disposition": "portable-template-paused"},
     {"id": "reusable-agent-tooling", "path": "templates/automations/reusable-agent-tooling/automation.toml", "disposition": "portable-template-paused"},
     {"id": "agent-os-drift-guard", "path": "templates/automations/agent-os-drift-guard/automation.toml", "disposition": "portable-template-paused"},
+    {"id": "local-tool-updater", "path": "templates/automations/local-tool-updater/automation.toml", "disposition": "portable-template-paused"},
     {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
