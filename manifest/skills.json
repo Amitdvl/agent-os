@@ -10,6 +10,7 @@
     {"id": "orchestration", "path": "skills/orchestration/SKILL.md", "disposition": "portable-core"},
     {"id": "outcome-loop", "path": "skills/outcome-loop/SKILL.md", "disposition": "portable-core"},
     {"id": "pamphlet", "path": "skills/pamphlet/SKILL.md", "disposition": "portable-core", "includePackage": true},
+    {"id": "production-algorithm", "path": "skills/production-algorithm/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "production-repo-baseline", "path": "skills/production-repo-baseline/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "publication-safety", "path": "skills/publication-safety/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "half-bounce", "path": "skills/half-bounce/SKILL.md", "disposition": "portable-macos-workflow"},

@@ -7,7 +7,7 @@
       "tools": [],
       "commands": ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"],
       "optionalCommands": [],
-      "skills": ["agent-os", "agent-secrets", "book", "cli-for-agents", "fallacy-check", "goal-prompt", "orchestration", "outcome-loop", "pamphlet", "production-repo-baseline", "publication-safety", "skill-cleaner", "tool-routing"]
+      "skills": ["agent-os", "agent-secrets", "book", "cli-for-agents", "fallacy-check", "goal-prompt", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "skill-cleaner", "tool-routing"]
     },
     {
       "id": "local-productivity",

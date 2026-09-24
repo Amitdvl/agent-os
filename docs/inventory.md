@@ -13,6 +13,7 @@ The manifest is the source of truth for the portable inventory:
 - `skills/book/` — the explicitly invoked `$book` workflow, including its complete research, EPUB build, validation, and test package.
 - `skills/fallacy-check/` — a quiet conversational reasoning review that alerts only for clear, consequential inference errors.
 - `skills/outcome-loop/` — an evidence-driven feedback loop that owns iterative execution, verification, and durable reporting without expanding authority.
+- `skills/production-algorithm/` — the explicitly invoked `$production-algorithm` skill: remove unsupported workflow requirements, simplify the necessary remainder, tighten feedback cycles, and gate automation behind measured need.
 - `skills/production-repo-baseline/` — a preview-first repository foundation helper with its deterministic Go implementation and fixtures.
 - `commands/archive/` — `/archive <project name or path>` resolves an exact local project and moves it into the current user's `Documents/ArchivedProjects`; broad stale-project requests require a reviewed candidate list.
 - `commands/decision-queue/` — `/decision-queue <decision or uncertainty>` adds one unresolved record to a user-configured Notion Decision Queue. The database identifier is local configuration and is never distributed.

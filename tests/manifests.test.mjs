@@ -73,7 +73,7 @@ test("core installs all eight portable commands and every portable core skill by
   const selected = commands.commands.filter((command) => core.commands.includes(command.id));
   assert.equal(selected.length, 8);
   assert.ok(selected.every((command) => command.disposition === "portable-core" && command.selectedByDefault));
-  for (const id of ["book", "cli-for-agents", "fallacy-check", "outcome-loop", "pamphlet", "production-repo-baseline", "publication-safety"]) assert.ok(core.skills.includes(id), `${id} is not selected by core`);
+  for (const id of ["book", "cli-for-agents", "fallacy-check", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety"]) assert.ok(core.skills.includes(id), `${id} is not selected by core`);
 });
 
 test("CLI design guidance is portable and defaults custom CLIs to Go", async () => {
@@ -94,8 +94,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 96);
-  assert.equal(new Set(installedSkills).size, 96);
+  assert.equal(installedSkills.length, 97);
+  assert.equal(new Set(installedSkills).size, 97);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -211,7 +211,7 @@ test("restored core skills are declared, packaged, and behaviorally anchored", a
   const [skills, packs, dispositions, tools] = await Promise.all(["skills", "packs", "inventory-dispositions", "tools"].map(json));
   const core = packs.packs.find((pack) => pack.id === "core");
   const inventory = dispositions.skillGroups.find((group) => group.id === "agent-os-core-skills");
-  for (const id of ["book", "fallacy-check", "outcome-loop", "production-repo-baseline"]) {
+  for (const id of ["book", "fallacy-check", "outcome-loop", "production-algorithm", "production-repo-baseline"]) {
     const entry = skills.skills.find((skill) => skill.id === id);
     assert.ok(entry?.path, `${id} missing from skill manifest`);
     assert.ok(core.skills.includes(id), `${id} missing from core pack`);
@@ -242,6 +242,12 @@ test("every deployable skill is selected and live-only skills are explicitly exc
   const outcome = skills.skills.find((skill) => skill.id === "outcome-loop");
   assert.equal(outcome.path, "skills/outcome-loop/SKILL.md");
   assert.ok(selected.has("outcome-loop"));
+  const algorithm = skills.skills.find((skill) => skill.id === "production-algorithm");
+  assert.equal(algorithm.path, "skills/production-algorithm/SKILL.md");
+  assert.equal(algorithm.includePackage, true);
+  const algorithmPolicy = await readFile(join(ROOT, "skills/production-algorithm/agents/openai.yaml"), "utf8");
+  assert.match(algorithmPolicy, /allow_implicit_invocation: false/);
+  assert.match(algorithmPolicy, /\$production-algorithm/);
 });
 
 test("OpenAI aesthetic skill preserves directional light-field guidance and source references", async () => {

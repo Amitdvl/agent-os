@@ -1,0 +1,7 @@
+interface:
+  display_name: "Production Algorithm"
+  short_description: "Prune workflow waste before automation"
+  default_prompt: "Use $production-algorithm to redesign this workflow for a stated outcome."
+
+policy:
+  allow_implicit_invocation: false
