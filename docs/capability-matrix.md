@@ -12,7 +12,7 @@
 | Tool registry and templates | One rendered contract per selected tool, shared by both host symlinks | Selected packs and non-secret data-root placeholders | Review selected sources |
 | Local CLI | Reviewed install plan and broad binary allow rule | Verified upstream install | CLI install/version help check |
 | SOPS + age vault | Encrypted requirement placeholders and no-output crypto validation | New key/recipient and user-entered values | Key generation and secret entry |
-| Service login | Explicit auth boundary in every contract | OAuth/account consent/browser profile | Login/extension approval |
+| Service login | Verify the product's current browser/API/login capabilities before claiming limits; distinguish capability from configured permissions | OAuth/account consent/browser profile | Login/extension approval |
 | macOS privacy | Permission diagnosis and read-first fallback | Accessibility, Screen Recording, Reminders | System Settings approval |
 | Archive integrations | Tool-specific sync-before-answer rules | User-owned archive and explicit refresh | Archive/import availability |
 | External writes | Exact-intent, target, content, and verify-after-write rules | Requested target/content/action | User authorization |

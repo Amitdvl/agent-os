@@ -31,3 +31,15 @@ test("core policy makes private workspace navigation deterministic", async () =>
     assert.ok(content.includes(phrase), `core workspace policy is missing: ${phrase}`);
   }
 });
+
+test("core policy requires capability claims to be verified", async () => {
+  const content = await readFile(join(ROOT, "policies", "core.md"), "utf8");
+  for (const phrase of [
+    "verify the current installed interface and authoritative documentation",
+    "Distinguish what the product can do from what the current policy",
+    "If another agent product is named as a comparison",
+    "Never claim a capability is impossible from assumption alone",
+  ]) {
+    assert.ok(content.includes(phrase), `capability-verification policy is missing: ${phrase}`);
+  }
+});

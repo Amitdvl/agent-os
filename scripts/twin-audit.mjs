@@ -429,10 +429,13 @@ async function main() {
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
   const requiredCorePolicyPhrases = ["frequent small, coherent commits", "use `fallacy-check` quietly"];
+  const requiredCapabilityVerificationPhrases = ["verify the current installed interface and authoritative documentation", "distinguish what the product can do from what the current policy", "never claim a capability is impossible from assumption alone"];
   const normalizedPortableCore = portableCorePolicy.replace(/\s+/g, " ").toLowerCase();
   const missingLiveWorkflowSummaryPhrases = requiredWorkflowSummaryPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const missingLiveCorePolicyPhrases = requiredCorePolicyPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const missingPortableCorePolicyPhrases = requiredCorePolicyPhrases.filter((phrase) => !normalizedPortableCore.includes(phrase));
+  const missingLiveCapabilityVerificationPhrases = requiredCapabilityVerificationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
+  const missingPortableCapabilityVerificationPhrases = requiredCapabilityVerificationPhrases.filter((phrase) => !normalizedPortableCore.includes(phrase));
   const failures = [];
   if (missingTools.length) failures.push(`live tools missing from Agent OS: ${missingTools.join(", ")}`);
   if (extraTools.length) failures.push(`Agent OS tools absent from live registry: ${extraTools.join(", ")}`);
@@ -464,6 +467,8 @@ async function main() {
   if (missingLiveWorkflowSummaryPhrases.length) failures.push(`live global instructions are missing conditional workflow-summary phrases: ${missingLiveWorkflowSummaryPhrases.join(", ")}`);
   if (missingLiveCorePolicyPhrases.length) failures.push(`live global instructions are missing commit-hygiene phrases: ${missingLiveCorePolicyPhrases.join(", ")}`);
   if (missingPortableCorePolicyPhrases.length) failures.push(`portable core policy is missing commit-hygiene phrases: ${missingPortableCorePolicyPhrases.join(", ")}`);
+  if (missingLiveCapabilityVerificationPhrases.length) failures.push(`live global instructions are missing capability-verification phrases: ${missingLiveCapabilityVerificationPhrases.join(", ")}`);
+  if (missingPortableCapabilityVerificationPhrases.length) failures.push(`portable core policy is missing capability-verification phrases: ${missingPortableCapabilityVerificationPhrases.join(", ")}`);
   const report = {
     ok: failures.length === 0,
     platform: targetPlatform,
