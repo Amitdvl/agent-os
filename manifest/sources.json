@@ -9,7 +9,7 @@
     {"id": "notion-manual", "kind": "manual", "locator": "notion local CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "obsidian-manual", "kind": "manual", "locator": "obsidian CLI", "pin": "manual-unresolved", "automation": "disabled"},
     {"id": "opencap-manual", "kind": "manual", "locator": "OpenCap", "pin": "0.1.4-audited", "automation": "disabled"},
-    {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.7", "automation": "disabled"},
+    {"id": "opencli-npm", "kind": "npm", "locator": "@jackwener/opencli", "pin": "1.8.8", "automation": "disabled"},
     {"id": "peekaboo-audited", "kind": "homebrew", "locator": "peekaboo", "pin": "3.7.1-audited", "automation": "disabled"},
     {"id": "rdt-cli-git", "kind": "git", "locator": "https://github.com/public-clis/rdt-cli.git", "pin": "5e4fb3720d5c174e976cd425ccc3b879d52cac66", "automation": "disabled"},
     {"id": "remindctl-audited", "kind": "homebrew", "locator": "remindctl", "pin": "0.3.4-audited", "automation": "disabled", "review_notes": "Native Urgent is unsupported. Use a timed alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority."},
@@ -17,7 +17,7 @@
     {"id": "twitter-cli-uv", "kind": "python-package", "locator": "twitter-cli", "pin": "0.8.5-audited", "automation": "disabled"},
     {"id": "wacli-audited", "kind": "homebrew", "locator": "wacli", "pin": "0.11.2-audited", "automation": "disabled"},
     {"id": "wacrawl-audited", "kind": "homebrew", "locator": "wacrawl", "pin": "0.3.1-audited", "automation": "disabled"},
-    {"id": "xurl-npm", "kind": "npm", "locator": "@xdevplatform/xurl", "pin": "1.3.1", "automation": "disabled"},
+    {"id": "xurl-npm", "kind": "npm", "locator": "@xdevplatform/xurl", "pin": "1.3.2", "automation": "disabled"},
     {"id": "yt-dlp-brew", "kind": "homebrew", "locator": "yt-dlp", "pin": "2026.7.4-audited", "automation": "disabled"},
     {"id": "youtube-wrapper-agent-os", "kind": "agent-os-template", "locator": "templates/local-tools/youtube", "pin": "1.0.0", "automation": "disabled"},
     {
