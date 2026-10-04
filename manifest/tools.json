@@ -83,7 +83,7 @@
     },
     {
       "id": "xurl", "binary": "xurl", "purpose": "Authenticated X API transport and guarded live actions.",
-      "packs": ["research", "communication"], "source": "xurl-npm", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
+      "packs": ["research", "communication"], "source": "xurl-homebrew-cask", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
       "freshness": "Check auth status before live API work.", "safety": "Never inspect credential storage or use verbose auth; no inline secrets."
     },
     {
