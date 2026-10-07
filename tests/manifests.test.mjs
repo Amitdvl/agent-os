@@ -124,7 +124,8 @@ test("portable drift guard is paused and completes safe repairs without overwrit
   assert.match(content, /status = "PAUSED"/);
   assert.match(content, /agent-os update --adopt-existing --apply/);
   assert.match(content, /Mandatory completion rule: do not stop at diagnosis/);
-  assert.match(content, /Never overwrite non-matching unowned content/);
+  assert.match(content, /Escalate methodically/);
+  assert.match(content, /Never perform an irreversible, externally visible/);
   assert.match(content, /--live-symlink-root ~\/\.agents\/skills/);
   assert.match(content, /--live-ctx7-test ~\/\.codex\/hooks\/tests\/test_ctx7_guard\.py/);
   assert.match(content, /missing registered `routing\.md`/);
