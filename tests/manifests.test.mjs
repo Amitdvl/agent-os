@@ -119,11 +119,12 @@ test("portable automation, hook, and skill-cleaner assets have declared sources 
   }
 });
 
-test("portable drift guard is paused and cannot overwrite unowned or semantic surfaces", async () => {
+test("portable drift guard is paused and completes safe repairs without overwriting semantic surfaces", async () => {
   const content = await readFile(join(ROOT, "templates", "automations", "agent-os-drift-guard", "automation.toml"), "utf8");
   assert.match(content, /status = "PAUSED"/);
-  assert.match(content, /agent-os update --apply/);
-  assert.match(content, /Do not overwrite an unowned skill, tool adapter, hook, AGENTS policy, automation, registry, default\.rules, or source-version change/);
+  assert.match(content, /agent-os update --adopt-existing --apply/);
+  assert.match(content, /Mandatory completion rule: do not stop at diagnosis/);
+  assert.match(content, /Never overwrite non-matching unowned content/);
   assert.match(content, /--live-symlink-root ~\/\.agents\/skills/);
   assert.match(content, /--live-ctx7-test ~\/\.codex\/hooks\/tests\/test_ctx7_guard\.py/);
   assert.match(content, /missing registered `routing\.md`/);
