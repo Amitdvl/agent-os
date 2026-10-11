@@ -94,8 +94,8 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 97);
-  assert.equal(new Set(installedSkills).size, 97);
+  assert.equal(installedSkills.length, 96);
+  assert.equal(new Set(installedSkills).size, 96);
   for (const group of dispositions.skillGroups) assert.ok(group.disposition);
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
@@ -270,6 +270,24 @@ test("every deployable skill is selected and live-only skills are explicitly exc
   const algorithmPolicy = await readFile(join(ROOT, "skills/production-algorithm/agents/openai.yaml"), "utf8");
   assert.match(algorithmPolicy, /allow_implicit_invocation: false/);
   assert.match(algorithmPolicy, /\$production-algorithm/);
+});
+
+test("merged algorithm has one discoverable package and ships its source reference", async () => {
+  const [skills, packs, inventory] = await Promise.all(["skills", "packs", "inventory-dispositions"].map(json));
+  const algorithm = skills.skills.filter((skill) => /^(production|engineer)-algorithm$/.test(skill.id));
+  assert.equal(algorithm.length, 1);
+  assert.equal(algorithm[0].id, "production-algorithm");
+  assert.equal(algorithm[0].includePackage, true, "source reference must ship with the skill");
+  assert.ok(packs.packs.some((pack) => pack.skills.includes(algorithm[0].id)));
+  assert.ok(!packs.packs.some((pack) => pack.skills.includes("engineer-algorithm")));
+  assert.ok(!inventory.skillGroups.some((group) => group.skills.includes("engineer-algorithm")));
+  const entrypoint = await readFile(join(ROOT, algorithm[0].path), "utf8");
+  const sourceLink = entrypoint.match(/\]\((references\/sources\.md)\)/);
+  assert.ok(sourceLink, "entrypoint must make provenance discoverable");
+  const provenance = await readFile(join(dirname(join(ROOT, algorithm[0].path)), sourceLink[1]), "utf8");
+  const primary = provenance.split("## Supplementary application")[0];
+  assert.ok(primary.includes("https://www.youtube.com/watch?v=tdf3luOCNks"));
+  assert.ok(!primary.includes("ZTSI3DDP_4A"), "commentary must not replace the primary source");
 });
 
 test("OpenAI aesthetic skill preserves directional light-field guidance and source references", async () => {

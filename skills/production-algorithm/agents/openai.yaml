@@ -1,6 +1,6 @@
 interface:
   display_name: "Production Algorithm"
-  short_description: "Prune workflow waste before automation"
+  short_description: "Musk's method with metrics and technical safeguards"
   default_prompt: "Use $production-algorithm to redesign this workflow for a stated outcome."
 
 policy:
