@@ -46,6 +46,8 @@ test("core policy makes Awareness HUD command registration a mandatory completio
     "required completion criterion",
     "refresh the page and verify that the entry is visible",
     "leave the task incomplete",
+    "explicitly report `Awareness HUD: updated and verified` alongside Agent OS commit/push status",
+    "if registration or verification is blocked, report that blocker instead of success",
   ]) {
     assert.ok(content.includes(phrase), `core policy missing ${phrase}`);
   }
