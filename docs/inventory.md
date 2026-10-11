@@ -24,6 +24,8 @@ Every selected tool is rendered to a managed `SKILL.md` with a data-root placeho
 
 The `remindctl` contract reflects the native limitation: there is no Urgent toggle. Use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority.
 
+The audited Homebrew source records currently cover Birdclaw 0.15.0, Discrawl 0.15.6, Notcrawl 0.6.4, Peekaboo 4.5.0, Remindctl 0.3.8, Spogo 0.13.1, Wacli 0.20.0, Wacrawl 0.4.2, and yt-dlp 2026.8.19. These pins document reviewed releases; their `automation: disabled` setting continues to prohibit unattended installation.
+
 The portable core policy also makes reusable-workflow reporting conditional:
 completion summaries name local-tool, Agent OS, command, skill, automation, hook,
 or routing changes only when they occurred, and omit negative placeholder rows.
