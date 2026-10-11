@@ -284,6 +284,9 @@ test("merged algorithm has one discoverable package and ships its source referen
   const entrypoint = await readFile(join(ROOT, algorithm[0].path), "utf8");
   const sourceLink = entrypoint.match(/\]\((references\/sources\.md)\)/);
   assert.ok(sourceLink, "entrypoint must make provenance discoverable");
+  for (const [, reference] of entrypoint.matchAll(/\]\((references\/[^)]+\.md)\)/g)) {
+    assert.ok((await stat(join(dirname(join(ROOT, algorithm[0].path)), reference))).isFile(), `missing linked resource: ${reference}`);
+  }
   const provenance = await readFile(join(dirname(join(ROOT, algorithm[0].path)), sourceLink[1]), "utf8");
   const primary = provenance.split("## Supplementary application")[0];
   assert.ok(primary.includes("https://www.youtube.com/watch?v=tdf3luOCNks"));
