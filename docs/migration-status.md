@@ -85,12 +85,15 @@ identifier, or machine-specific absolute path.
 2. NoteBridge is a portable **contract**, not portable user data. New Macs may
    install it manually and grant their own permissions; Wispr Flow data, Apple
    Notes data, database files, and any export contents remain **archive-only**.
-   The reviewed extraction patch (`66f5424`) retains readable-body spacing,
-   blank lines, list markers, hyperlink destinations, and explicit image
-   references. Embedded image bytes remain in `raw_content`; the readable body
-   cannot replace original rich HTML for edits. Manual builds of the patch still
-   report version `1.0.0` until a release. The existing generated write contract
-   continues to require original HTML, explicit titles, and read-back checks.
+   Reviewed release `1.0.1` (`88d826a`) adds compact fresh metadata discovery,
+   rich/structured views, explicit raw HTML, real diff/hash previews and guarded
+   append/replace with read-back. Attachment and native list/table body edits fail
+   closed because preservation is unavailable; title-only edits retain those bodies.
+   Native checklist completion/history and atomic CAS are unavailable. Image
+   inspection exports explicit local files with bytes-derived metadata. The tool's
+   reusable `/notebridge` skill is registered in the Commands catalog with purpose,
+   invocation, portable source path, contract version and installed status.
+
 3. The same boundary applies to all secrets, encrypted-vault values/identities,
    OAuth/browser sessions, private message archives, recordings, host logs,
    account identifiers, and absolute machine paths. The portable repository

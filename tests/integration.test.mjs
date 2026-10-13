@@ -93,6 +93,9 @@ test("full deployment renders central registry, host symlinks, rules, status and
   if (PLATFORM_TOOL_IDS.includes("notebridge")) {
     const noteBridgeContract = await readFile(join(home, ".agent-os", "local-tools", "tools", "notebridge", "SKILL.md"), "utf8");
     assert.match(noteBridgeContract, /retrieve raw_content/i);
+    assert.match(noteBridgeContract, /create\/update\/append\/replace\/move\/delete require --if-match HASH/);
+    assert.match(noteBridgeContract, /--view structured/);
+    assert.match(noteBridgeContract, /checklist states unavailable/i);
     assert.match(noteBridgeContract, /existing title explicitly/i);
     assert.match(noteBridgeContract, /original-content prefix/i);
   }
@@ -134,6 +137,14 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.deepEqual(doctor.readinessSummary, status.readinessSummary);
   assert.match(doctor.nextActions[1], /install/);
   const catalogue = JSON.parse(run(["status", "--home", home, "--catalog", "--json"], 0, noTools).stdout);
+  if (!WINDOWS) {
+    const noteBridgeEntry = catalogue.classifiedCatalogue.find((item) => item.id === "notebridge" && item.group === "personal-slash-commands");
+    assert.equal(noteBridgeEntry.invocation, "/notebridge");
+    assert.equal(noteBridgeEntry.source, "manifest/tools.json");
+    assert.equal(noteBridgeEntry.sourcePath, "<CODEX_HOME>/skills/notebridge/SKILL.md");
+    assert.equal(noteBridgeEntry.status, "installed");
+    assert.match(noteBridgeEntry.description, /Contract 1.0.1/);
+  }
   assert.equal(catalogue.workflows.length, 6);
   assert.ok(catalogue.hostSkills.codex.includes(WINDOWS ? "opencli" : "birdclaw"));
   assert.deepEqual(catalogue.automations, []);

@@ -62,9 +62,9 @@ test("secret requirements use a guard-safe manifest filename", async () => {
 test("NoteBridge source review distinguishes readable references from original rich content", async () => {
   const sources = await json("sources");
   const source = sources.sources.find((item) => item.id === "notebridge-manual");
-  assert.equal(source.pin, "1.0.0");
+  assert.equal(source.pin, "1.0.1");
   assert.equal(source.automation, "disabled");
-  for (const phrase of ["66f5424", "spacing", "blank lines", "list markers", "link destinations", "image references", "raw_content", "whole-document replacements", "read-back"]) {
+  for (const phrase of ["88d826a", "spacing", "blank lines", "list markers", "link destinations", "image references", "raw_content", "Whole-document replacements", "read-back", "stale-write", "fail closed", "no atomic CAS"]) {
     assert.ok(source.review_notes.includes(phrase), `NoteBridge review missing ${phrase}`);
   }
 });
