@@ -1289,6 +1289,7 @@ function installCommand(source) {
   if (source.pin === "manual-unresolved") return null;
   if (platform() === "win32" && source.kind === "homebrew") return null;
   if (source.kind === "homebrew") return { command: "brew", args: ["install", source.locator] };
+  if (source.kind === "homebrew-cask") return platform() === "darwin" ? { command: "brew", args: ["install", "--cask", source.locator] } : null;
   if (source.kind === "npm") return { command: "npm", args: ["install", "--global", `${source.locator}@${source.pin}`] };
   if (source.kind === "python-package") return { command: "uv", args: ["tool", "install", `${source.locator}==${source.pin.replace(/-audited$/, "")}`] };
   if (source.kind === "git" && /^https:\/\//.test(source.locator)) return { command: "git", args: ["clone", "--depth", "1", source.locator, `<choose-destination-for-${source.id}>`] };

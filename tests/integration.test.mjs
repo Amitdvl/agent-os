@@ -320,6 +320,23 @@ test("install mode is separately invoked and remains a dry-run without reviewed 
   run(["install", "--home", join(root, "user"), "--tools", "yt-dlp", "--safe", "--apply", "--reviewed-install", "--json"], 1);
 });
 
+test("Xurl cask installation is a reviewed macOS preview without running brew", async (context) => {
+  const root = join(SANDBOX, "xurl-install-preview");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const plan = JSON.parse(run(["install", "--home", home, "--tools", "xurl", "--json"], 0, { PATH: join(root, "empty-bin") }).stdout);
+  assert.equal(plan.apply, false);
+  assert.equal(plan.installs[0].id, "xurl");
+  if (platform() === "darwin") {
+    assert.equal(plan.installs[0].status, "review-required");
+    assert.equal(plan.installs[0].command, "brew install --cask xurl");
+  } else {
+    assert.equal(plan.installs[0].status, "manual-required");
+    assert.equal(plan.installs[0].command, null);
+  }
+  assert.equal(await exists(home), false);
+});
+
 test("vault setup and validation use fixture binaries only and leave tmp clean", { skip: WINDOWS }, async (context) => {
   const root = join(SANDBOX, "vault");
   context.after(() => rm(root, { recursive: true, force: true }));
