@@ -54,6 +54,7 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await writeFile(unrelated, "---\nname: no-temptation-lockin\ndescription: private fixture\n---\n");
   }
   await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\n`/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Use one executor by default. Automatically use the `orchestration` skill only when justified. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal. Do not create user-visible tasks merely to split a goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones. Use `fallacy-check` quietly. When a task depends on a product or tool capability, verify the current installed interface and authoritative documentation before making a capability claim. Distinguish what the product can do from what the current policy allows. Never claim a capability is impossible from assumption alone.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
+  await writeFile(instructions, (await readFile(instructions, "utf8")) + "\nFor completed repository implementation work, merging into the repository's default branch and pushing that branch are mandatory completion steps. Apply `trunk-finish` automatically after verification; a pushed feature branch alone is not completion. This standing instruction authorizes the ordinary commit, merge, and push of intended task changes without another confirmation. Honor explicit draft, PR-only, local-only, or no-push requests. Use the required PR, review, and CI route for protected branches; never bypass protections, force-push, or include unrelated work. If verification, conflicts, access, authentication, or required approvals prevent completion, report the exact blocker and leave the work explicitly unfinished. Read-only and exploratory tasks do not require commits or merges.\n");
   return { registry, registryRoot, registryLinkRoot, commandRoot, goal, orchestration, instructions, commands, skills };
 }
 
@@ -205,4 +206,16 @@ test("twin audit rejects an unreadable absolute skill path in live instructions"
   await writeFile(fixture.instructions, `${content}\nRead \`${join(root, "missing", "skills", "declared", "SKILL.md")}\`.\n`);
   const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
   assert.match(report.failures.join("\n"), /live instruction skill path missing/);
+});
+
+test("twin audit rejects live instructions that drop mandatory default-branch completion", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-completion-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const before = JSON.parse(run(auditArgs(fixture)).stdout);
+  assert.equal(before.ok, true);
+  const content = await readFile(fixture.instructions, "utf8");
+  await writeFile(fixture.instructions, content.replace(/^For completed repository implementation work,.*$/m, ""));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /live global instructions are missing mandatory completion policy/);
 });

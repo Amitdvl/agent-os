@@ -55,7 +55,8 @@
       "path": "commands/trunk-finish/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Verify, commit, promote, push, and clean up trunk-based repository work using project-owned policy; invocation authorizes the normal finish sequence without another merge/push decision."
+      "purpose": "$trunk-finish: mandatory completion for repository implementation work: verify, commit intended changes, merge into the default branch, and push; respect explicit scope exceptions and required reviews.",
+      "invocation": "$trunk-finish"
     },
     {
       "id": "teach",

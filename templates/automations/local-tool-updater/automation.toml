@@ -11,11 +11,11 @@ For each registered tool:
 3. Update only when that candidate has been publicly available for at least 48 hours. The upstream publication timestamp is the clock.
 4. Upgrade that individual installed tool with its actual package manager. Never run `brew upgrade` without one explicit formula. Never install an absent tool, add a tap, authenticate, or change provider configuration. A source record marked `automation = "disabled"` prevents automatic installation; it does not prevent upgrading an already-installed tool.
 5. Validate the upgraded tool using its documented command path, version command, help command, and smallest safe smoke test.
-6. Update and validate the matching Agent OS contract: refresh only the affected live local-tool metadata and matching portable manifest, contract, source metadata, documentation, and tests. Run `npm run validate`, `npm test`, `git diff --check`, and the configured `twin-audit` against the live registry and global instructions. Commit only those Agent OS changes on `tool-update-YYYY-MM-DD` and push that branch to `origin` without force-pushing.
+6. Update and validate the matching Agent OS contract: refresh only the affected live local-tool metadata and matching portable manifest, contract, source metadata, documentation, and tests. Run `npm run validate`, `npm test`, `git diff --check`, and the configured `twin-audit` against the live registry and global instructions. Commit only those Agent OS changes; a temporary `tool-update-YYYY-MM-DD` branch is optional. Apply `trunk-finish`: merge the verified intended changes into the configured `origin` default branch and push that branch before reporting completion. Follow required PR, review, and CI protections; never force-push or include unrelated work. If merging or pushing is blocked, report the exact blocker and leave publication explicitly unfinished. A pushed feature branch alone is not completion.
 
 Do not create or use persistent automation memory. Skip manual, template-only, explicitly excluded, unavailable, or unresolvable tools. If no installed tool is eligible, finish silently. If an upgrade or validation fails, report the tool, old version, candidate version, and failure reason.
 
-For every successful upgrade, report old version -> new version, validation result, Agent OS commit, and pushed branch.
+For every successful upgrade, report old version -> new version, validation result, Agent OS commit, and merged/pushed default branch (or exact publication blocker).
 """
 status = "PAUSED"
 rrule = "{{rrule}}"

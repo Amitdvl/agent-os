@@ -43,3 +43,18 @@ test("core policy requires capability claims to be verified", async () => {
     assert.ok(content.includes(phrase), `capability-verification policy is missing: ${phrase}`);
   }
 });
+
+test("default completion requires publishing intended work without overriding scope or protections", async () => {
+  const core = await readFile(join(ROOT, "policies", "core.md"), "utf8");
+  for (const phrase of [
+    "merging into the repository's default branch and pushing that branch are mandatory completion steps",
+    "Apply `trunk-finish` automatically",
+    "Honor explicit draft, PR-only, local-only, or no-push requests",
+    "never bypass protections, force-push, or include unrelated work",
+    "leave the work explicitly unfinished",
+    "Read-only and exploratory tasks do not require commits or merges",
+  ]) assert.ok(core.includes(phrase), `default completion policy is missing: ${phrase}`);
+  const skill = await readFile(join(ROOT, "commands", "trunk-finish", "SKILL.md"), "utf8");
+  for (const phrase of ["even\nwithout an explicit finish invocation", "A pushed feature branch alone is not completion", "Verify the intended commits are included in the remote default branch", "Never promote unrelated commits"])
+    assert.ok(skill.includes(phrase), `finish skill is missing: ${phrase}`);
+});

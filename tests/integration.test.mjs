@@ -337,6 +337,22 @@ test("Xurl cask installation is a reviewed macOS preview without running brew", 
   assert.equal(await exists(home), false);
 });
 
+test("finish command catalog reports automatic completion policy and live installation status", async (context) => {
+  const root = join(SANDBOX, "finish-catalog");
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const home = join(root, "user");
+  const entry = () => JSON.parse(run(["status", "--home", home, "--catalog", "--json"]).stdout)
+    .classifiedCatalogue.find((item) => item.id === "trunk-finish" && item.source === "manifest/commands.json");
+  assert.equal(entry().status, "absent");
+  run(["setup", "--home", home, "--safe", "--apply", "--json"]);
+  const installed = entry();
+  assert.equal(installed.invocation, "$trunk-finish");
+  assert.equal(installed.sourcePath, "<CODEX_HOME>/skills/trunk-finish/SKILL.md");
+  assert.equal(installed.status, "installed");
+  assert.match(installed.description, /mandatory completion/);
+  assert.match(installed.description, /merge into the default branch, and push/);
+});
+
 test("vault setup and validation use fixture binaries only and leave tmp clean", { skip: WINDOWS }, async (context) => {
   const root = join(SANDBOX, "vault");
   context.after(() => rm(root, { recursive: true, force: true }));

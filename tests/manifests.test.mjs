@@ -158,6 +158,9 @@ test("portable local-tool updater upgrades only installed tools after the releas
   assert.match(content, /npm test/);
   assert.match(content, /twin-audit/);
   assert.match(content, /does not prevent upgrading an already-installed tool/);
+  assert.match(content, /default branch and push that branch before reporting completion/);
+  assert.match(content, /A pushed feature branch alone is not completion/);
+  assert.match(content, /required PR, review, and CI protections/);
 });
 
 test("all external tools have explicit source pins or unresolved markers", async () => {

@@ -1,15 +1,20 @@
 ---
 name: trunk-finish
-description: Use when the user asks to finish, verify, commit, merge, push, or clean up completed work in a trunk-based repository.
+description: Automatically finish completed repository implementation work by verifying, committing, merging into the default branch, and pushing; also use for explicit finish, merge, push, or cleanup requests.
 ---
 
 # Trunk Finish
 
-This command is a project-adapted finish flow for trunk-based repositories.
+This command is the mandatory default finish flow for completed repository
+implementation work. Apply it automatically before reporting completion, even
+without an explicit finish invocation. Read-only and exploratory tasks are exempt.
+Honor explicit draft, PR-only, local-only, or no-push requests; report the resulting
+scope accurately. A pushed feature branch alone is not completion.
 Invoking it is an instruction to finish the repository work, not a request for
-another merge/push decision. After verification, commit intended work, promote
-the verified branch to trunk, push trunk, and clean up safe merged branches and
-worktrees. Do not pause to ask whether to perform those ordinary finish actions.
+another merge/push decision. The standing completion rule provides the same
+authority when applying this skill automatically. After verification, commit
+intended work, promote the verified branch to trunk, push trunk, and clean up
+safe merged branches and worktrees. Do not pause to ask whether to perform those ordinary finish actions.
 
 It is recovery-first: when expected repo configuration is missing or stale, fix
 or bootstrap that configuration from the repository before deciding the task is
@@ -51,9 +56,11 @@ instead.
    - Sensitive surfaces: include auth, secrets, crypto, payments, migrations,
      data deletion, permissions, networking, CI/CD, release, and config files
      unless the repo declares a more specific list.
-   - Push/merge: prefer the repo's existing documented policy; otherwise commit
-     locally and push only when the current branch tracks a remote and pushing is
-     consistent with the user's request and repository state.
+   - Push/merge: follow the repo's required PR, review, and CI process. Unless the
+     user explicitly limits completion, commit intended changes, merge them into
+     the upstream default branch, and push that branch. Do not require a feature
+     branch to have an upstream first. Missing remote or authentication is a real
+     blocker; never invent a remote, bypass protections, or force-push.
    - Worktree tooling: if the repo policy names a worktree tool such as
      Worktrunk, use it for branch/worktree lifecycle and cleanup when available.
      Fall back to explicit git only when the tool is unavailable or unsuitable.
@@ -70,7 +77,13 @@ instead.
     and the verified branch diverge, use the repository's documented merge
     workflow; stop only for a real conflict, missing authority, or a policy
     requirement. Do not ask for confirmation for a normal merge or push when
-    this command was invoked.
+    this command was invoked or the standing completion rule applies. Use a PR
+    when required by branch protections, wait for required checks and reviews,
+    then merge through the supported route. If required approval is unavailable,
+    leave the task explicitly unfinished instead of claiming it shipped.
+    Verify the intended commits are included in the remote default branch before
+    reporting completion. Never promote unrelated commits bundled on a branch;
+    isolate the intended changes and rerun relevant verification first.
 11. After a successful push, delete only merged local branches and remove only
     temporary worktrees created for this finish run. Do not delete the trunk,
     unmerged branches, user-owned worktrees, or preserved untracked files.
@@ -84,8 +97,8 @@ instead.
   commands before running them.
 - If no test command exists, run the best available build or static validation
   and record that no dedicated test command exists.
-- If push/merge policy is absent, record a conservative policy and proceed as far
-  as safely possible under it.
+- If push/merge policy is absent, record the mandatory default completion flow
+  with protection and ownership safeguards, then proceed under it.
 - If generated config would overlap unrelated user-owned dirty changes, preserve
   the user changes and place the new config in a non-conflicting repo-local path.
 - If the intended work is already committed and trunk can be fast-forwarded,
@@ -99,7 +112,9 @@ instead.
 - Sensitive-surface review is incomplete after attempting to run it.
 - Unrelated dirty changes make ownership unclear and cannot be isolated.
 - Merge conflicts require product or architecture judgment.
-- The project policy requires approval that has not been granted.
+- Required review or approval has not been granted; an explicit draft, PR-only,
+  local-only, or no-push request limits the finish scope.
+- The remote, authentication, or access required to publish is unavailable.
 - The repository lacks enough structure to infer any safe verification command or
   finish policy, and no config can be created without guessing.
 
@@ -109,7 +124,8 @@ instead.
 - `Config repair`: not needed, created, updated, or blocked.
 - `Sensitive review`: not needed, done, or blocked.
 - `Commit`: hash and message, if created.
-- `Merge/push`: action taken or skipped.
+- `Merge/push`: default branch, remote, and verified published commit; otherwise
+  the explicit scope exception or exact blocker. Never call branch-only work shipped.
 - `Cleanup`: branches or worktrees removed.
 - `Blocked`: exact blocker and next action.
 

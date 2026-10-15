@@ -9,7 +9,9 @@ templates, generated behavior, documentation, and tests in the same task.
 Before completion, run Agent OS validation, its full tests, `git diff --check`,
 and the configured twin audit against the owner machine's declared live sources.
 Commit the intended Agent OS mirror change locally, then push it to the
-configured Agent OS `origin` before completion. Never force-push or push
+configured Agent OS `origin` default branch before completion. A pushed feature
+branch alone does not satisfy publishing: apply the mandatory default-branch
+completion rule and required review/CI process. Never force-push or push
 unrelated project work. If `origin`, authentication, or the push is unavailable,
 report the exact blocker rather than claiming the change is published. A
 machine-only item must be an explicit inventory exclusion with a reason, never

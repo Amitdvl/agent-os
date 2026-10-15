@@ -1233,8 +1233,15 @@ async function statusReport(context, catalogue = false) {
         invocation: skill.command.invocation,
         sourcePath: `<CODEX_HOME>/skills/${skill.id}/SKILL.md`, status: "installed" });
     }
+    const commandEntries = await Promise.all(report.commands.map(async (item) => {
+      const command = context.bundle.commands.commands.find((entry) => entry.id === item.id);
+      return { group: "personal-slash-commands", id: item.id, description: item.purpose,
+        source: "manifest/commands.json", invocation: command.invocation ?? `/${item.id}`,
+        sourcePath: `<CODEX_HOME>/skills/${item.id}/SKILL.md`,
+        status: await exists(join(context.codexHome, "skills", item.id, "SKILL.md")) ? "installed" : "absent" };
+    }));
     report.classifiedCatalogue = [
-      ...report.commands.map((item) => ({ group: "personal-slash-commands", id: item.id, description: item.purpose, source: "manifest/commands.json" })),
+      ...commandEntries,
       ...toolCommands,
       ...skillCommands,
       ...report.workflows.map((item) => ({ group: "workflows", id: item.id, description: item.description, source: "manifest/packs.json" })),
