@@ -1,0 +1,4 @@
+interface:
+  display_name: "Justification Audit"
+  short_description: "Test what earns its place before optimizing"
+  default_prompt: "Use $justification-audit to test whether this earns its place, compare feasible alternatives, and identify what could reverse the decision."

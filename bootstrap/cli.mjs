@@ -1225,9 +1225,18 @@ async function statusReport(context, catalogue = false) {
         source: "manifest/tools.json", invocation: tool.command.invocation,
         sourcePath: `<CODEX_HOME>/skills/${tool.id}/SKILL.md`, status: "installed" });
     }
+    const skillCommands = [];
+    for (const skill of selectedSkills(context)) {
+      if (!skill.command || !(await exists(join(context.codexHome, "skills", skill.id, "SKILL.md")))) continue;
+      skillCommands.push({ group: "personal-slash-commands", id: skill.id,
+        description: skill.command.purpose, source: "manifest/skills.json",
+        invocation: skill.command.invocation,
+        sourcePath: `<CODEX_HOME>/skills/${skill.id}/SKILL.md`, status: "installed" });
+    }
     report.classifiedCatalogue = [
       ...report.commands.map((item) => ({ group: "personal-slash-commands", id: item.id, description: item.purpose, source: "manifest/commands.json" })),
       ...toolCommands,
+      ...skillCommands,
       ...report.workflows.map((item) => ({ group: "workflows", id: item.id, description: item.description, source: "manifest/packs.json" })),
       ...report.automations.map((id) => ({ group: "active-automations", id, description: "directory entry", source: "host/state automations directory" })),
       ...tools.map((item) => ({ group: "local-tools", id: item.id, description: item.binary, source: "managed local-tools registry" })),

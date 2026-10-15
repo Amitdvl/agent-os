@@ -17,6 +17,8 @@ Reuse this plan throughout the review. Distinguish evidence from estimates; do n
 
 ## Apply the five steps in order
 
+When explicitly paired with `$justification-audit`, use one integrated review and the same measurement plan. Apply its purpose, premise, and causal checks while questioning requirements, and its counterfactual comparisons while considering deletion. Carry the results through the remaining steps and revisit them when the mechanism or dependencies change. Return one decision brief, including material assumptions and reversal conditions; do not require a separate audit or preliminary gate. Production Algorithm remains usable on its own.
+
 1. **Question requirements.** What does each requirement mean, who is responsible for it, what evidence supports it, and what happens if it changes? Challenge it regardless of the person's seniority or intelligence. A department is not an accountable person. Investigate historical authorship when it helps resolve the requirement; mark unknowns honestly.
 
 2. **Delete.** Try hard to remove unjustified work before improving it. Challenge duplicate steps and speculative “just in case” requirements. Prefer reversible trials with an add-back condition. Musk's roughly 10% add-back heuristic challenges excessive caution; it is not a deletion quota.
