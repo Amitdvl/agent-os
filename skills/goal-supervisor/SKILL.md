@@ -10,6 +10,23 @@ a separate worker chat with its own native goal. Review the actual result, then
 choose the next valuable pass. Stop when no important actionable gap remains.
 Do not configure cycle, time or token budgets unless the human requests them.
 
+## Define the outcome
+
+Before dispatching, draft a short outcome brief from the human's objective and
+the actual project. State who benefits, the main user journey, observable
+success, constraints and non-goals, and important assumptions. For visual work,
+use existing design conventions and supplied references; surface missing taste
+preferences only when they materially change the result. The human should not
+need to supply the technical task list.
+
+Include this brief in the initial approval proposal. One approval covers the
+brief and the run; avoid separate planning or phase gates. If the human has
+already explicitly approved a concrete supervisor run, reuse that authority
+and state any inferred details. Resolve material scope or product ambiguity
+before dependent work. Refine implementation details from evidence without
+silently replacing the approved outcome. Keep the brief in the existing run
+note, rather than creating another planning system.
+
 ## Offer before starting
 
 Once the human has defined an objective that benefits from iterative discovery,
@@ -52,9 +69,17 @@ chat and this inspectable artifact for recovery, never a hidden memory store.
 
 ## Supervise
 
-Inspect the project and intended behavior. Discover work from evidence; the
-human need not provide a complete task list. Pick the most valuable actionable
-gap and explain its expected improvement. Avoid speculative polish, repeated
+Inspect the project and intended behavior. Discover work from evidence. Before
+each pass, identify the current obstacle to the outcome, the observation or
+important uncertainty supporting it, the expected improvement, and how to check
+whether it helped. Compare plausible next moves and choose the one that best
+advances the whole outcome, accounting for dependencies and risk. Do not force
+numeric scores or a fixed research/code/design sequence.
+
+A pass may investigate an assumption, research alternatives, prototype, simplify,
+implement, design or verify. Choose the discipline from the obstacle. Research
+earns its place when its answer could change a consequential decision. Avoid
+speculative polish, local improvements that do not help the objective, repeated
 attempts without new evidence and tasks invented merely to keep running.
 
 Before launching, reconcile the run note against supported chat state. Follow
@@ -80,6 +105,34 @@ their own goals, never through a second app-server client. A worker's saved goal
 response is assistant-reported evidence; do not label it independent goal
 telemetry when the read interface omits native goal events.
 
+## Review the work and its contribution
+
+Use evidence appropriate to the assignment:
+
+- Research: verify consequential claims against relevant primary sources,
+  check applicability and freshness, consider credible alternatives and
+  counterevidence, and distinguish findings from assumptions.
+- Implementation: inspect the diff and exercise the relevant behavior,
+  including meaningful failure cases. Follow project test ownership rules.
+  Passing tests alone do not establish that the user's outcome improved.
+- Design and writing: inspect the actual rendered experience or finished
+  artifact against its intended audience, journey, references and project
+  conventions. Exercise changed interactions and applicable accessibility or
+  responsive behavior. Describe subjective judgments honestly; do not infer
+  visual quality from source code or fabricate a human preference.
+
+After each pass, explain what changed for the beneficiary and whether the
+expected improvement occurred. Check that research conclusions, implemented
+behavior, copy and appearance agree where they interact. Update assumptions
+that the evidence overturned. A worker's completion report is input to this
+review, not its conclusion.
+
+Use an independent challenge for a consequential disputed or weakly supported
+decision, with raw evidence and no desired verdict in the assignment. A
+separate chat is not a guarantee of independent judgment. Keep routine review
+with the supervisor; do not create standing specialist roles or a review
+ceremony for every pass.
+
 Reject a confident success claim if an acceptance check fails. Send specific
 in-scope correction to the same worker and verify again. If its goal is still
 active, observe its continuation; do not launch a competing writer. If its goal
@@ -91,12 +144,22 @@ and choose another worker only for an observed important gap. Keep the
 supervisor goal active across progress turns so native continuation can carry
 the review forward without another human nudge. Native usage limits, app
 lifecycle and ordinary permissions still apply; there is no background daemon.
+Keep human-facing updates focused on outcomes, consequential findings and the
+reason for the next move. Keep worker coordination in the run note.
 
 ## Finish, wait for decisions, or stop
 
-Complete the supervisor goal only after an overall review finds no remaining
-important actionable gap within scope. Record verification and the stopping
-reason; leave optional ideas alone. If important work needs access or a product
+Before completing, return to the outcome brief and exercise the main user
+journey or inspect the complete deliverable as a whole. Check for important
+omissions and contradictions between disciplines, and verify consequential
+assumptions that still govern the result. Make the comparison with the initial
+state explicit where evidence permits; mark an unknown baseline as unknown.
+
+Complete the supervisor goal only when that review supports the approved
+outcome and finds no remaining important actionable gap within scope. Record
+the evidence, residual limitations and why further work is unnecessary; leave
+optional ideas alone. An untested material requirement remains incomplete,
+even if every worker finished its assignment. If important work needs access or a product
 decision, report exactly what remains and ask once. Do not dispatch dependent
 work or claim completion while waiting. Use native blocked status only when
 its actual tool criteria are satisfied, and paused only on human instruction.

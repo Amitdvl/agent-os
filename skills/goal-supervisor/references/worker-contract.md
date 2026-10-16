@@ -3,7 +3,9 @@
 Send a focused assignment, adapted to the actual project:
 
 > You are a worker in a human-approved supervisor run. High-level objective:
-> [objective]. Your task: [observed gap and intended result]. Create your own
+> [objective]. Outcome brief: [beneficiary, main journey, success, constraints
+> and non-goals]. Your task: [current obstacle, supporting evidence or important
+> uncertainty, intended improvement, and why this pass is next]. Create your own
 > native goal in THIS chat for this focused task, without configuring budgets.
 > If native goal tools are unavailable or creation fails, report the exact
 > limitation and stop; do not pretend that a final turn is a completed goal.
@@ -15,9 +17,18 @@ Send a focused assignment, adapted to the actual project:
 > materially changing intended behavior. Do not create further user-visible
 > chats or message the supervisor; it will read this chat directly.
 >
+> Match evidence to the work. Research needs applicable primary sources and
+> credible alternatives; implementation needs observed behavior and meaningful
+> checks; design/copy needs inspection of the actual rendered experience or
+> finished deliverable against its audience, journey and references. Identify
+> assumptions, counterevidence and effects on neighboring parts of the result.
+> Do not invent evidence or taste preferences. A research or review assignment
+> must not be steered toward a predetermined conclusion.
+>
 > Inspect your goal with native tools and verify the actual result before
 > completing it. Return changed files, commands/checks and results, unresolved
-> limitations, and the actual native goal status/response with your chat ID in
+> limitations, what improved toward the outcome (or what failed to improve),
+> and the actual native goal status/response with your chat ID in
 > your final report. Never fabricate a tool response. Report an active/paused/
 > blocked goal honestly. If asked to stop, cease work at the next opportunity,
 > pause the goal under that human instruction, and acknowledge it here.
