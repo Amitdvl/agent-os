@@ -1,0 +1,6 @@
+interface:
+  display_name: "Goal Supervisor"
+  short_description: "Review worker goals and choose valuable follow-up work."
+  default_prompt: "Use $goal-supervisor to propose supervision of the objective we defined, and start only after my explicit approval."
+policy:
+  allow_implicit_invocation: true

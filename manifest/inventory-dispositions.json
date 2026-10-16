@@ -85,7 +85,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["book", "cli-for-agents", "cover-project", "fallacy-check", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire"]
+      "skills": ["book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire"]
     },
     {
       "id": "creator-art-direction",
