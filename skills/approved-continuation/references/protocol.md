@@ -11,7 +11,7 @@ native API or submits a prompt itself. The agent owns native tool integration.
 | `bind` | `question_id` from the actual question tool | Binds one question item once |
 | `authorize` | `source: native_user_input`, `role: user`, `question_id`, `thread_id`, `proposal_hash`, `answer: Approve` or `Decline` | Consumes exactly one matching human reply before expiry |
 | `goal` | none | Exact native `objective` and optional `token_budget` |
-| `activate` | `thread_id`, `native_goal` read from the native tool | Starts approved budgets and binds native Codex runtime identity |
+| `activate` | `thread_id`, `native_goal` read from the native tool | Starts approved budgets and verifies the proposal's native Codex runtime identity |
 | `begin` | Gate fields plus `action`, optional `input_evidence` | Charges one cycle and returns its unique `inflight.id`; one cycle at a time |
 | `checkpoint` | Gate fields plus `cycle_id` | Checks scope, runtime, native goal and time before another tool batch |
 | `finish` | Gate fields plus `cycle_id`, `outcome`, `evidence` | Records progress or ends the run |
@@ -34,7 +34,7 @@ otherwise finishing it ends the run with `cycle_budget`.
 The deadline starts at activation. Both elapsed monotonic time and wall time
 are checked; backwards clocks stop a run. The nearest `codex`/`codex.exe`
 executable ancestor's PID, executable path and process start timestamp bind the
-run to its native runtime. Missing identity, restart, or identity changes stop
+proposal and run to their native runtime. Missing identity, restart, or identity changes stop
 work. No caller-supplied runtime override is exposed by the CLI. The Python
 function's injectable clock/identity dependencies are solely for tests.
 

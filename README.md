@@ -75,3 +75,9 @@ installed automatically; each destination chooses and configures them locally.
 ## Reusable design kits
 
 [Monochrome Workspace](docs/design-kits.md) packages a clean white-and-black workspace aesthetic as reusable files and code. Use it directly in any project or discover it through `$monochrome-workspace` in the creator pack. Impeccable is optional.
+
+## Approved native continuation
+
+Use [`$approved-continuation`](docs/approved-native-continuation.md) to propose
+a bounded native Codex goal run. It requires an explicit native human-question
+reply before activation, with default limits of five work cycles and 20 minutes.

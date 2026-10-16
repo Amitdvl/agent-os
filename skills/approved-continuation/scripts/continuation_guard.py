@@ -159,6 +159,13 @@ def stop(state, reason, wall):
 
 def validate_state(state, path):
     require(isinstance(state, dict) and state.get("version") == VERSION, "invalid state version")
+    require(isinstance(state.get("proposal"), dict) and isinstance(state.get("events"), list)
+            and all(isinstance(event, dict) for event in state["events"])
+            and state.get("status") in TERMINAL | {"proposed", "authorized", "active"}
+            and type(state.get("cycles")) is int and state["cycles"] >= 0
+            and isinstance(state.get("runtime"), dict)
+            and (state.get("inflight") is None or isinstance(state["inflight"], dict)),
+            "invalid state shape")
     p = state["proposal"]
     require(p["state"] == str(path) and digest(p) == state["proposal_hash"], "proposal drift")
     native_objective(p)
@@ -178,7 +185,8 @@ def live_gate(state, request, wall, monotonic, identity):
     elif wall >= state["deadline"] or monotonic >= state["mono_deadline"]:
         reason = "time_budget"
     native = request.get("native_goal", {})
-    if not reason and (native.get("objective") != native_objective(p) or native.get("status") != "active"
+    if not reason and (not isinstance(native, dict)
+                       or native.get("objective") != native_objective(p) or native.get("status") != "active"
                        or native.get("tokenBudget") != p["token_budget"]):
         reason = "native_goal_changed"
     if reason:
@@ -251,7 +259,7 @@ def execute(command, state_path, request, *, wall=None, monotonic=None, identity
             require(p["created"] <= wall < p["expires"], "approval expired")
             runtime = identity()
             native = request.get("native_goal", {})
-            require(request.get("thread_id") == p["thread_id"] and native.get("objective") == native_objective(p)
+            require(isinstance(native, dict) and request.get("thread_id") == p["thread_id"] and native.get("objective") == native_objective(p)
                     and native.get("status") == "active" and native.get("tokenBudget") == p["token_budget"],
                     "native goal read-back mismatch")
             state.update(status="active", runtime=runtime, deadline=wall + p["max_seconds"],
