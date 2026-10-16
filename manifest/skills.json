@@ -1,7 +1,6 @@
 {
   "version": 1,
   "skills": [
-    {"id": "approved-continuation", "path": "skills/approved-continuation/SKILL.md", "source": "approved-continuation-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$approved-continuation", "purpose": "Use $approved-continuation for native Codex goal continuation after explicit native question approval, with five-cycle/20-minute defaults, evidence and stopping rules."}},
     {"id": "agent-os", "path": "skills/agent-os/SKILL.md", "disposition": "portable-core"},
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includePackage": true},

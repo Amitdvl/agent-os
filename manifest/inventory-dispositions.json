@@ -85,7 +85,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["approved-continuation", "book", "cli-for-agents", "cover-project", "fallacy-check", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety"]
+      "skills": ["book", "cli-for-agents", "cover-project", "fallacy-check", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety"]
     },
     {
       "id": "creator-art-direction",
@@ -128,7 +128,6 @@
     {"id": "transient-login-rules", "disposition": "private-transient-state"}
   ],
   "policySurfaces": [
-    {"id": "approved-native-continuation", "disposition": "portable-core"},
     {"id": "identity-tone", "disposition": "strict-portable-local-config"},
     {"id": "thread-naming", "disposition": "portable-core"},
     {"id": "local-automations", "disposition": "strict-portable"},
