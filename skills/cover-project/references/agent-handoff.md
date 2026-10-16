@@ -37,6 +37,13 @@ plausible duplicate-effect fault is detected. Run the payment suite. Report
 metrics for the declared source scope; no repository-wide percentage target.
 ```
 
+Record the routing decision in task notes: `delegate: <target, benefit, ownership>`
+or `direct: <concrete exception>`. If a stable source batch is needed, dispatch
+after that batch rather than treating temporary coupling as a permanent reason
+to skip the worker. The parent can review source/docs while the worker owns tests.
+An implementation subagent may be this parent when applicable instructions permit;
+an already assigned coverage worker must not recursively delegate.
+
 Choose file ownership before dispatch. A shared worktree is suitable only with
 disjoint writes and stable inputs; avoid editing source the worker is measuring.
 Use an isolated checkout for overlap or necessary production edits. Make intended
