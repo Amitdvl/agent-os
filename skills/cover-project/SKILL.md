@@ -1,6 +1,6 @@
 ---
 name: cover-project
-description: Close substantive testing gaps during implementation. Parents route separable or high-risk testing to a bounded cover-project subagent; workers add meaningful tests, scoped metrics and fault evidence. Keep routine single-test work direct.
+description: Delegate substantive testing to a bounded worker when separable. Use during implementation for state transitions, rejection, recovery, isolation, replay or persistence; workers deliver tests and fault evidence. Routine fixes stay direct.
 ---
 
 # Cover Project
@@ -13,33 +13,38 @@ implementation need not run this workflow; an explicit bounded assignment can.
 This skill is self-contained; it does not require Superpowers or another agent
 framework. Explicit invocation: `$cover-project`.
 
-## Parent routing: decide before expanding tests
+## Parent routing: assign before suite expansion
 
-For an implementation assignment, assess testing as its own deliverable before
-writing the expanded suite. When delegation is available/permitted and a worker
-can own tests and fixtures separately, **dispatch one coverage worker by default**
-if the gap spans separately testable components or material failure/recovery,
-isolation, replay, or persistence behavior. The benefit is independent
-contract-derived verification or useful parallel work, not a larger test count.
-Use the actual delegation tool and explicitly pass this skill; merely loading it
-or considering a worker does not perform the assignment. The human need not ask
-for coverage or delegation as a separate task.
+At implementation intake, choose test ownership; revisit it when scope grows.
+Before writing or substantially expanding tests, make one of these choices and
+record it briefly in existing task notes or a progress update:
 
-Give the worker a stable source target. If production edits are coupled, finish
-that source batch first, then assign tests while the parent reviews implementation
-or docs. Coupled source files and “one integrated feature” alone do not rule out
-separate test ownership. Do not let source and test writers race; coordinate a
-new revision and rerun evidence when the parent changes the measured target.
+- **Worker:** tests/fixtures can have a separate writer and the change spans
+  independently testable behaviors or material state transitions, rejection
+  without side effects, recovery, isolation, replay, or persistence. Actually
+  dispatch one bounded worker with this skill using the available delegation
+  tool. Loading the skill or promising to delegate does not assign the work.
+- **Direct:** routine label/config changes or one ordinary regression test,
+  already assigned as the coverage worker, an explicit single-agent constraint,
+  unavailable/disallowed delegation, or a concrete ownership/cost constraint.
+  State the specific reason; file count and “one integrated feature” alone are
+  not exceptions. A small task needs neither this full workflow nor a planning
+  document unless explicitly assigned.
 
-Direct execution remains appropriate for routine single-test work, a small gap
-where a worker's cost exceeds its verification benefit, an explicit single-agent
-request, unavailable delegation, or a concrete ownership constraint. Record the
-choice and concrete reason briefly in task notes. Do not infer an exception just
-from file count, feature unity, or being an implementation subagent. A worker
-already assigned this coverage role executes it without spawning more workers.
-This targeted assignment does not require a larger orchestration team or another
-agent framework. Read the full orchestration workflow only if additional roles
-or independent workstreams justify it.
+The human's implementation request authorizes the eligible testing assignment;
+no separate coverage/delegation request or larger orchestration team is needed.
+The benefit is independent contract-derived assertions and fault evidence, not
+agent creation or a larger test count. The parent owns integration and reruns.
+
+If production edits share state, finish that source batch first, then dispatch
+before suite expansion while the parent reviews implementation or docs. Give the
+worker a stable target and separate write ownership. Coordinate later source
+revisions and rerun evidence; do not let source and test writers race. If the
+parent already started tests, hand off the remaining substantive gap or
+independent fault verification rather than using that work as a direct-execution
+exception. An implementation subagent still makes this ownership decision; a
+worker assigned this testing role does not spawn more workers. Honor explicit
+single-agent, report-only, and runtime constraints.
 
 ## Agent entry point
 

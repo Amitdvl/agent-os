@@ -11,8 +11,10 @@ owns the outcome; workers own only bounded assignments.
 ## Activation
 
 Goal mode and orchestration are separate concerns. A `/goal` creates a durable,
-thread-scoped outcome; it does not by itself require orchestration. Use one
-executor by default, including for long-running or multi-file goals.
+thread-scoped outcome; it does not by itself require orchestration. For substantive
+implementation, apply the `cover-project` test-ownership checkpoint before
+choosing one executor. Otherwise use one executor by default, including for
+long-running or multi-file goals.
 
 Activate orchestration only when one of these conditions is clearly true:
 

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "sources": [
-    {"id": "cover-project-agent-os", "kind": "agent-os-skill", "locator": "skills/cover-project", "pin": "1.1.0", "automation": "disabled", "review_notes": "Independently authored, agent-callable coverage workflow with bounded worker handoff and parent acceptance. The measure/add/verify/report loop was informed by ECC commands/test-coverage.md; no ECC runtime or Superpowers dependency. Provenance and behavioral evaluation criteria live in references/fault-checks.md."},
+    {"id": "cover-project-agent-os", "kind": "agent-os-skill", "locator": "skills/cover-project", "pin": "1.2.0", "automation": "disabled", "review_notes": "Independently authored, agent-callable coverage workflow with bounded worker handoff and parent acceptance. The measure/add/verify/report loop was informed by ECC commands/test-coverage.md; no ECC runtime or Superpowers dependency. Provenance and behavioral evaluation criteria live in references/fault-checks.md."},
     {"id": "birdclaw-audited", "kind": "homebrew", "locator": "steipete/tap/birdclaw", "pin": "0.15.0-audited", "automation": "disabled"},
     {"id": "discrawl-audited", "kind": "homebrew", "locator": "openclaw/tap/discrawl", "pin": "0.15.6-audited", "automation": "disabled"},
     {"id": "instagram-cli-brew", "kind": "homebrew", "locator": "supreme-gg-gg/tap/instagram-cli", "pin": "2.0.1-audited", "automation": "disabled"},

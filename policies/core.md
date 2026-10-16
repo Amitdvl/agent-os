@@ -1,5 +1,36 @@
 # Core Agent Policy
 
+## Implementation test ownership
+
+Before substantive implementation, choose test ownership; revisit it when scope
+grows. Make this decision **before writing or substantially expanding the suite**.
+
+- **Delegate by default:** if tests can have a separate writer and the change
+  spans independently testable behaviors or material state transitions, rejection
+  without side effects, recovery, isolation, replay, or persistence, read
+  `cover-project` and actually dispatch one bounded worker using that skill.
+  Independent contract assertions and fault checks are the deliverable. The
+  implementation request itself authorizes this assignment; no separate human
+  request for coverage or delegation is needed.
+- **Keep it direct:** routine label/config changes or one ordinary regression
+  test, an assigned coverage-worker role, an explicit single-agent/no-delegation
+  constraint, unavailable agents, or a concrete ownership/cost constraint. Record
+  the choice and specific reason in existing task notes or a short progress
+  update; do not create a planning document for a tiny fix.
+- **Stabilize, then assign:** shared production files or one integrated feature
+  do not prevent test-only ownership. Finish the relevant source batch first
+  when necessary, then dispatch before suite expansion. Having already started
+  tests is not an exception: assign the remaining substantive gap or independent
+  fault verification. Pass the skill path, behavior contract, source state,
+  writable tests/fixtures, constraints, and acceptance checks. Coordinate later
+  source changes and independently rerun the integrated result.
+
+An implementation subagent still makes this decision; an assigned testing worker
+executes its bounded role without spawning more workers. One testing worker does
+not require a larger orchestration team. Honor report-only and explicit workflows.
+
+## General policy
+
 - Treat the current thread, explicit project files, and current tool state as the source of truth. Do not create or rely on hidden memory files.
 - Before broad filesystem discovery, read `~/.agent-os/workspaces.json` when it exists. Prefer its canonical project paths and declared roots; treat dated task directories as transient scratch unless the registry marks one as canonical.
 - Keep task-local intermediate material in `work/` and user-facing deliverables in `outputs/` when those directories are available. Do not move an existing saved project or repository merely to make paths look consistent.
@@ -11,7 +42,6 @@
 - Apple Reminders has no native Urgent priority. For a new reminder, use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority.
 - Prefer structured, bounded output and read-only inspection first.
 - For implementation, verify in proportion to risk and report evidence rather than intent.
-- Use `cover-project` by default for substantive testing gaps during implementation. Before expanding tests, decide test ownership: when the gap spans separately testable components or material failure/recovery, isolation, replay, or persistence behavior, and a worker can own tests/fixtures separately, assign one bounded `cover-project` subagent by default for independent verification or useful parallel work. This explicitly authorizes that testing assignment within the implementation scope without a separate human coverage/delegation request. Give the worker the skill path, behavior contract, stable source state, write ownership, constraints, and acceptance checks; it returns tests, scoped metrics, fault checks, and evidence. Stabilize source before dispatch if necessary; coupled production files alone do not rule out a test-only worker. The parent reviews and verifies the integrated result. Use direct execution for routine single-test work, an assigned coverage-worker role, an explicit single-agent request, unavailable delegation, or a concrete ownership/cost constraint; record the reason briefly in task notes. An implementation agent being a subagent is not itself a coverage-worker role or a ban on delegation. Honor report-only requests and explicit workflows.
 - During coding, make frequent small, coherent commits at safe, self-contained milestones. Keep each commit focused and verified when practical; never bundle unrelated work or stage unowned changes merely to create a commit.
 - For completed repository implementation work, merging into the repository's default branch and pushing that branch are mandatory completion steps. Apply `trunk-finish` automatically after verification; a pushed feature branch alone is not completion. This standing instruction authorizes the ordinary commit, merge, and push of intended task changes without another confirmation. Honor explicit draft, PR-only, local-only, or no-push requests. Use the required PR, review, and CI route for protected branches; never bypass protections, force-push, or include unrelated work. If verification, conflicts, access, authentication, or required approvals prevent completion, report the exact blocker and leave the work explicitly unfinished. Read-only and exploratory tasks do not require commits or merges.
 - Preserve unrelated user work. Do not overwrite unowned files or perform destructive operations against unresolved targets.

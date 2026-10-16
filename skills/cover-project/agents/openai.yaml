@@ -1,6 +1,6 @@
 interface:
   display_name: "Cover Project"
-  short_description: "Agent-callable coverage for a defined behavior or project"
+  short_description: "Bounded testing workers; routine fixes stay direct"
   default_prompt: "Use $cover-project to close the assigned testing gap with meaningful tests, scoped coverage, fault-detection evidence, and a clear handback."
 policy:
   allow_implicit_invocation: true

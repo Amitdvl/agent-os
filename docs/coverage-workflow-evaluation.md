@@ -180,6 +180,40 @@ maintained fixture subsequently corrected it as described below. Routine
 single-test and explicit single-agent exceptions remain policy choices; these
 two positive cases do not constitute negative-control tests for those choices.
 
+### Stricter neutral-session rerun and routing correction
+
+A later three-case rerun removed evaluator identities, inherited conversation,
+visible agent inventories, explicit instruction-read requests, and midrun
+coaching. Normal policy and skill discovery were still auto-loaded. Fresh CLI
+sessions used `gpt-6-sol`; the installed CLI rejected the configured desktop
+model before execution. These results therefore do not establish desktop-model
+behavior.
+
+| Task | Actual routing | Independent checks |
+| --- | --- | --- |
+| Stateful checkout | Parent wrote tests; no skill read or child | 7 maintained + 13 acceptance tests passed |
+| Access/CSV/durable queue toolkit | Parent and one child read the skill; bounded testing worker | 25 maintained + 14 acceptance tests and 3 assertion-detected faults passed |
+| Item-count label | Direct; no skill read or child | Maintained test and singular/plural/boundary checks passed |
+
+One of two larger tasks delegated; the small-task exception worked. The checkout
+miss occurred despite the core rule being loaded. Skill-description shortening
+was also observed; whether it contributed is unknown. These observations
+supersede any inference of consistent routing from the earlier positive cases.
+
+The correction moves test ownership to the start of core policy, places it before
+the single-executor default, and puts delegation in the discovery description's
+first sentence. It requires an actual assignment before substantive suite
+expansion, includes state transitions and rejection without side effects, and
+prevents already-started tests or shared source from becoming silent exceptions.
+Routine fixes, assigned coverage workers, explicit single-agent constraints and
+real runtime/ownership/cost limits stay direct.
+
+Distribution checks verify ordering, discovery metadata, and installation of the
+correct policy/skill package. They do **not** measure agent behavior. No new blind
+agent trial accompanies this correction: it was made in a side conversation that
+prohibits subagents. A fresh neutral-session checkout/toolkit rerun and a small
+negative control remain necessary before claiming behavioral improvement.
+
 ### Reproduce a blind implementation trial
 
 Run one of these preparers from the repository:

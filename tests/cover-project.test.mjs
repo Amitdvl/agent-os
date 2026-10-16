@@ -59,6 +59,12 @@ test("core setup distributes the complete coverage package and exposes accurate 
   const generated = await readFile(join(home, ".codex/AGENTS.md"), "utf8");
   assert.ok(generated.includes(core));
   assert.ok(generated.includes(orchestration));
+  // The ownership checkpoint must survive installation ahead of competing
+  // single-executor guidance; merely distributing the skill did not ensure it.
+  const ownership = generated.indexOf("## Implementation test ownership");
+  const defaultExecutor = generated.toLowerCase().indexOf("use one executor by default");
+  assert.ok(ownership >= 0 && defaultExecutor > ownership);
+  assert.ok(ownership < generated.indexOf("## General policy"));
   const coordination = run(["status", "--home", home, "--catalog", "--json"])
     .classifiedCatalogue.find((item) => item.id === "orchestration" && item.group === "personal-slash-commands");
   assert.equal(coordination.invocation, "$orchestration");
@@ -71,4 +77,15 @@ test("core setup distributes the complete coverage package and exposes accurate 
 
   await unlink(join(home, ".codex/skills/cover-project/SKILL.md"));
   assert.deepEqual(entry(run(["status", "--home", home, "--catalog", "--json"])), []);
+});
+
+test("coverage discovery keeps worker routing visible in a shortened description", async () => {
+  const skill = await readFile("skills/cover-project/SKILL.md", "utf8");
+  const description = skill.match(/^description: (.+)$/m)?.[1];
+  assert.ok(description);
+  // A deliberately small discovery budget: this tests prompt distribution,
+  // not a guarantee about the host's truncation algorithm or model behavior.
+  assert.match(description.slice(0, 64), /^Delegate\b.*\bworker\b.*\bseparable\b/);
+  const metadata = await readFile("skills/cover-project/agents/openai.yaml", "utf8");
+  assert.match(metadata, /allow_implicit_invocation: true/);
 });
