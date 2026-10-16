@@ -1,0 +1,6 @@
+interface:
+  display_name: "Sire, what can we do?"
+  short_description: "Research options, recommend a plan, then start a goal."
+  default_prompt: "Use $sire to investigate the situation we just discussed, recommend the best path, and propose a goal for my approval."
+policy:
+  allow_implicit_invocation: false

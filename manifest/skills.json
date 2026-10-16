@@ -20,6 +20,7 @@
     {"id": "monochrome-workspace", "path": "skills/monochrome-workspace/SKILL.md", "disposition": "portable-creator-design-kit", "includePackage": true, "command": {"invocation": "$monochrome-workspace", "purpose": "Use $monochrome-workspace to reuse the clean white-and-black workspace design kit; Impeccable is optional."}},
     {"id": "image-art-direction", "path": "skills/image-art-direction/SKILL.md", "disposition": "portable-creator-workflow", "includePackage": true},
     {"id": "openai-aesthetic-images", "path": "skills/openai-aesthetic-images/SKILL.md", "disposition": "portable-core"},
+    {"id": "sire", "path": "skills/sire/SKILL.md", "source": "sire-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$sire", "purpose": "Use $sire to research a blocker, compare solutions, recommend a plan, and start a native goal only after your approval."}},
     {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow"},
     {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core"},
     {"id": "gstack", "path": null, "disposition": "third-party-optional"},
