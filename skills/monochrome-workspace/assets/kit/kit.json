@@ -1,0 +1,29 @@
+{
+  "id": "monochrome-workspace",
+  "name": "Monochrome Workspace",
+  "version": "1.0.0",
+  "source": {
+    "repository": "https://github.com/Amitdvl/launch-video-studio",
+    "commit": "fa9ce2a77041edb823f810f79598ad56552a8637",
+    "stylesheet": "workspace/public/style.css",
+    "stylesheetSha256": "5856fa6f1c69b3096b1d345bcdcb70960e928af9259a3520ae2f7be2599480e7",
+    "direction": "Approved monochrome workspace; extracted without changing the source interface."
+  },
+  "entrypoint": "example.html",
+  "stylesheet": "workspace.css",
+  "designDocument": "DESIGN.md",
+  "impeccable": {
+    "optional": true,
+    "documentProfile": "six-section",
+    "sidecar": ".impeccable/design.json",
+    "schemaVersion": 2
+  },
+  "runtimeDependencies": [],
+  "distribution": "Self-contained UTF-8 package; no machine paths or private assets.",
+  "reference": {
+    "path": "reference.svg",
+    "width": 1440,
+    "height": 908,
+    "content": "Generic local specimen only"
+  }
+}

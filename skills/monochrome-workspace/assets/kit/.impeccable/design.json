@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:00:00Z",
+  "title": "Monochrome Workspace",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "Primary text, action, selection and keyboard focus",
+        "displayName": "Ink",
+        "canonical": "#17191c",
+        "tonalRamp": [
+          "#ffffff",
+          "#f5f6f8",
+          "#e1e4e8",
+          "#c7ccd3",
+          "#858d98",
+          "#626873",
+          "#34383e",
+          "#17191c"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "System sans",
+        "purpose": "Compact desktop controls and body text"
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "control-state",
+        "value": "120ms",
+        "purpose": "Brief background/border feedback; removed with reduced motion"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "1600px"
+      },
+      {
+        "name": "compact-desktop",
+        "value": "1100px"
+      },
+      {
+        "name": "tablet",
+        "value": "850px"
+      },
+      {
+        "name": "mobile",
+        "value": "540px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "primaryButton",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><button class=\"ds-monochrome-button ds-monochrome-button--primary\">Apply</button></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-button{min-height:36px;border:1px solid var(--mw-button-border);background:var(--mw-bg);color:var(--mw-text);padding:8px 12px;border-radius:var(--mw-radius);font:inherit;cursor:pointer;transition:background .12s,border-color .12s}\n.ds-monochrome-button:hover{background:var(--mw-hover);border-color:var(--mw-control)}\n.ds-monochrome-button:disabled{opacity:.45;cursor:default}\n.ds-monochrome-button--primary{background:var(--mw-text);border-color:var(--mw-text);color:#fff;font-weight:600}\n.ds-monochrome-button--primary:hover{background:var(--mw-primary-hover);border-color:var(--mw-primary-hover)}\n.ds-monochrome-button--quiet{border-color:transparent;background:transparent}\n.ds-monochrome-button--danger{color:var(--mw-danger)}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    },
+    {
+      "name": "Secondary action",
+      "kind": "button",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><button class=\"ds-monochrome-button\">Cancel</button></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-button{min-height:36px;border:1px solid var(--mw-button-border);background:var(--mw-bg);color:var(--mw-text);padding:8px 12px;border-radius:var(--mw-radius);font:inherit;cursor:pointer;transition:background .12s,border-color .12s}\n.ds-monochrome-button:hover{background:var(--mw-hover);border-color:var(--mw-control)}\n.ds-monochrome-button:disabled{opacity:.45;cursor:default}\n.ds-monochrome-button--primary{background:var(--mw-text);border-color:var(--mw-text);color:#fff;font-weight:600}\n.ds-monochrome-button--primary:hover{background:var(--mw-primary-hover);border-color:var(--mw-primary-hover)}\n.ds-monochrome-button--quiet{border-color:transparent;background:transparent}\n.ds-monochrome-button--danger{color:var(--mw-danger)}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><label class=\"ds-monochrome-field\">Title<input class=\"ds-monochrome-input\" value=\"Untitled\"></label></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-field{display:block;font-size:13px;line-height:1.5;margin-bottom:16px}\n.ds-monochrome-input{display:block;width:100%;min-width:0;min-height:36px;border:1px solid var(--mw-control);border-radius:5px;background:var(--mw-bg);color:var(--mw-text);padding:9px 10px;font:inherit;margin-top:6px}\ntextarea.ds-monochrome-input{resize:vertical;line-height:1.55}\n.ds-monochrome-input[aria-invalid=true]{border-color:var(--mw-danger)}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    },
+    {
+      "name": "Selected row",
+      "kind": "list",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><button class=\"ds-monochrome-row\" aria-current=\"true\"><span class=\"ds-monochrome-index\">01</span><span>Opening</span></button></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-row{display:flex;gap:10px;width:100%;padding:12px 8px;text-align:left;background:transparent;border:1px solid transparent;border-radius:6px;color:inherit;font:inherit;cursor:pointer}\n.ds-monochrome-row:hover{background:var(--mw-stage)}\n.ds-monochrome-row[aria-current=true]{background:var(--mw-text);color:#fff}\n.ds-monochrome-index{font:12px/1.5 ui-monospace,SFMono-Regular,monospace;color:var(--mw-muted)}\n.ds-monochrome-row[aria-current=true] .ds-monochrome-index{color:inherit}\n.ds-monochrome-row-copy{overflow-wrap:anywhere;line-height:1.5}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    },
+    {
+      "name": "Inspector tab",
+      "kind": "tab",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><button class=\"ds-monochrome-tab\" role=\"tab\" aria-selected=\"true\">Edit</button></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-tabs{display:flex;gap:20px;position:sticky;top:0;z-index:1;padding-top:14px;margin-bottom:24px;background:var(--mw-bg);border-bottom:1px solid var(--mw-line)}\n.ds-monochrome-tab{font:inherit;font-weight:500;padding:12px 0;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--mw-muted);cursor:pointer}\n.ds-monochrome-tab[aria-selected=true]{color:var(--mw-text);border-bottom-color:var(--mw-text)}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    },
+    {
+      "name": "Disclosure",
+      "kind": "disclosure",
+      "description": "Reuse the scoped kit primitive and preserve native semantics.",
+      "html": "<div class=\"ds-monochrome\"><details class=\"ds-monochrome-disclosure\"><summary>Advanced</summary><p>Additional settings.</p></details></div>",
+      "css": ".ds-monochrome{--mw-bg:#fff;--mw-stage:#f5f6f8;--mw-line:#e1e4e8;--mw-text:#17191c;--mw-muted:#626873;--mw-control:#858d98;--mw-button-border:#c7ccd3;--mw-hover:#f1f3f5;--mw-primary-hover:#34383e;--mw-danger:#b3261e;--mw-error-bg:#fff1f0;--mw-radius:6px;--mw-space-1:4px;--mw-space-2:8px;--mw-space-3:12px;--mw-space-4:16px;--mw-space-6:24px;--mw-space-8:32px;color-scheme:light;font:13px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--mw-text);background:var(--mw-bg);margin:0}\n.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{box-sizing:border-box}\n.ds-monochrome :focus-visible{outline:2px solid var(--mw-text);outline-offset:3px}\n@media(prefers-reduced-motion:reduce){.ds-monochrome *,.ds-monochrome *::before,.ds-monochrome *::after{transition:none!important;scroll-behavior:auto!important}}\n.ds-monochrome-disclosure{border-top:1px solid var(--mw-line);margin-top:24px;padding-top:12px}\n.ds-monochrome-disclosure summary{min-height:36px;padding:8px 0;font-weight:600;cursor:pointer}\n@media(max-width:850px){.ds-monochrome-button,.ds-monochrome-row,.ds-monochrome-tab,.ds-monochrome-input,.ds-monochrome-disclosure summary{min-height:44px}.ds-monochrome-input{font-size:16px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The work supplies expression; the interface supplies clarity.",
+    "overview": "White surfaces, black interaction states and content-led hierarchy.",
+    "keyCharacteristics": [
+      "Monochrome",
+      "System typography",
+      "Flat dividers",
+      "Visible keyboard focus"
+    ],
+    "rules": [
+      {
+        "name": "Preserve behavior",
+        "body": "Keep supported capabilities reachable; adapt layout to the host.",
+        "section": "Components"
+      }
+    ],
+    "dos": [
+      "Use scoped primitives",
+      "Honor reduced motion",
+      "Keep drafts across tabs"
+    ],
+    "donts": [
+      "No blue accents",
+      "No decorative shadows",
+      "Do not style authored media with workspace rules"
+    ]
+  }
+}

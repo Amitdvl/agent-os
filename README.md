@@ -71,3 +71,7 @@ Portable workflow sources include the read-only Skill Cleaner contract, the
 measured `half-bounce` workflow for native macOS app readiness, paused
 automation templates, and optional hook templates. They are not scheduled or
 installed automatically; each destination chooses and configures them locally.
+
+## Reusable design kits
+
+[Monochrome Workspace](docs/design-kits.md) packages a clean white-and-black workspace aesthetic as reusable files and code. Use it directly in any project or discover it through `$monochrome-workspace` in the creator pack. Impeccable is optional.

@@ -309,7 +309,11 @@ function selectedCommands(context) {
 async function packageFiles(root, prefix = "") {
   const files = [];
   for (const entry of await readdir(join(root, prefix), { withFileTypes: true })) {
-    if (entry.name.startsWith(".") || entry.name === "__pycache__") continue;
+    // Native design context is a portable package asset. Keep other hidden
+    // files/state excluded, and only distribute the known Impeccable sidecar.
+    if ((entry.name.startsWith(".") && entry.name !== ".impeccable") || entry.name === "__pycache__") continue;
+    if (entry.name === ".impeccable" && !entry.isDirectory()) continue;
+    if (prefix.split(sep).at(-1) === ".impeccable" && (entry.name !== "design.json" || !entry.isFile())) continue;
     const relativePath = join(prefix, entry.name);
     if (entry.isDirectory()) files.push(...await packageFiles(root, relativePath));
     else if (entry.isFile() && !entry.name.endsWith(".pyc")) files.push(relativePath);

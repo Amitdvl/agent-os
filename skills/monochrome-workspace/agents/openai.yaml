@@ -1,0 +1,6 @@
+interface:
+  display_name: "Monochrome Workspace"
+  short_description: "Reuse a clean white-and-black workspace design kit"
+  default_prompt: "Use $monochrome-workspace to apply the reusable workspace design kit while preserving the project's behavior."
+policy:
+  allow_implicit_invocation: true
