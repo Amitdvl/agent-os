@@ -5,6 +5,7 @@
     {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "cli-for-agents", "path": "skills/cli-for-agents/SKILL.md", "disposition": "portable-core"},
+    {"id": "cover-project", "path": "skills/cover-project/SKILL.md", "source": "cover-project-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$cover-project", "purpose": "Use $cover-project or say Cover this project to measure coverage, close risky testing gaps, and prove tests catch faults."}},
     {"id": "fallacy-check", "path": "skills/fallacy-check/SKILL.md", "disposition": "portable-core"},
     {"id": "goal-prompt", "path": "skills/goal-prompt/SKILL.md", "disposition": "portable-core"},
     {"id": "justification-audit", "path": "skills/justification-audit/SKILL.md", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$justification-audit", "purpose": "Use $justification-audit to test what earns its place before optimization, compare alternatives, and expose assumptions."}},
