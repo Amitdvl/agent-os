@@ -11,6 +11,12 @@ function run(args) {
   return JSON.parse(result.stdout);
 }
 
+function assertExplicitOnly(metadata, location) {
+  assert.match(metadata,
+    /^policy:[ \t]*\r?\n[ \t]+allow_implicit_invocation:[ \t]*false[ \t]*$/m,
+    `${location}: Sire policy must explicitly disable implicit invocation`);
+}
+
 test("core setup installs Sire's explicit-only package and accurate Commands metadata idempotently", async (context) => {
   const temporary = await mkdtemp(join(tmpdir(), "agent-os-sire-install-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));
@@ -28,7 +34,9 @@ test("core setup installs Sire's explicit-only package and accurate Commands met
       assert.equal(await readFile(join(home, host, "skills/sire", relative), "utf8"),
         await readFile(join("skills/sire", relative), "utf8"));
     }
+    assertExplicitOnly(await readFile(join(home, host, "skills/sire/agents/openai.yaml"), "utf8"), host);
   }
+  assertExplicitOnly(await readFile(join("skills/sire/agents/openai.yaml"), "utf8"), "source");
 
   const [installed] = entry(run(["status", "--home", home, "--catalog", "--json"]));
   assert.ok(installed);
