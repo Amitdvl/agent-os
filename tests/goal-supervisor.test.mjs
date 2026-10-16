@@ -76,45 +76,46 @@ test("core setup installs the complete supervisor package byte-for-byte for both
   assert.ok(packageOperations.every((item) => item.status === "unchanged"));
 });
 
-test("setup repairs a missing auditor contract on both hosts and refuses to overwrite a drifted contract", async (context) => {
-  const temporary = await mkdtemp(join(tmpdir(), "agent-os-supervisor-recovery-"));
-  context.after(() => rm(temporary, { recursive: true, force: true }));
-  const home = join(temporary, "user");
-  const reference = "references/auditor-contract.md";
-  run(["setup", "--home", home, "--safe", "--apply", "--json"]);
-  for (const host of [".codex", ".claude"]) {
-    await unlink(join(home, host, "skills", "goal-supervisor", reference));
-  }
+for (const reference of ["references/auditor-contract.md", "references/worker-contract.md"]) {
+  test(`setup repairs missing ${reference} on both hosts and refuses to overwrite a drifted contract`, async (context) => {
+    const temporary = await mkdtemp(join(tmpdir(), "agent-os-supervisor-recovery-"));
+    context.after(() => rm(temporary, { recursive: true, force: true }));
+    const home = join(temporary, "user");
+    run(["setup", "--home", home, "--safe", "--apply", "--json"]);
+    for (const host of [".codex", ".claude"]) {
+      await unlink(join(home, host, "skills", "goal-supervisor", reference));
+    }
 
-  const repair = run(["setup", "--home", home, "--safe", "--json"]);
-  const packageOperations = repair.operations.filter((item) => item.path.includes("/skills/goal-supervisor/"));
-  assert.equal(packageOperations.length, 8);
-  for (const host of ["codex", "claude-code"]) {
-    assert.equal(packageOperations.find((item) => item.id === `${host}:skill:goal-supervisor:${reference}`)?.status,
-      "create", `${host} missing contract must be repairable`);
-  }
-  assert.equal(packageOperations.filter((item) => item.status === "unchanged").length, 6);
-  run(["setup", "--home", home, "--safe", "--apply", "--json"]);
-  for (const host of [".codex", ".claude"]) {
-    assert.deepEqual(await readFile(join(home, host, "skills", "goal-supervisor", reference)),
-      await readFile(join(PACKAGE, reference)));
-  }
+    const repair = run(["setup", "--home", home, "--safe", "--json"]);
+    const packageOperations = repair.operations.filter((item) => item.path.includes("/skills/goal-supervisor/"));
+    assert.equal(packageOperations.length, 8);
+    for (const host of ["codex", "claude-code"]) {
+      assert.equal(packageOperations.find((item) => item.id === `${host}:skill:goal-supervisor:${reference}`)?.status,
+        "create", `${host} missing contract must be repairable`);
+    }
+    assert.equal(packageOperations.filter((item) => item.status === "unchanged").length, 6);
+    run(["setup", "--home", home, "--safe", "--apply", "--json"]);
+    for (const host of [".codex", ".claude"]) {
+      assert.deepEqual(await readFile(join(home, host, "skills", "goal-supervisor", reference)),
+        await readFile(join(PACKAGE, reference)));
+    }
 
-  const driftedPath = join(home, ".codex", "skills", "goal-supervisor", reference);
-  const changedContract = `${await readFile(driftedPath, "utf8")}\nLocal review instruction.\n`;
-  await writeFile(driftedPath, changedContract);
-  const preview = run(["setup", "--home", home, "--safe", "--json"]);
-  assert.equal(preview.conflicts, 1);
-  const conflict = preview.operations.find((item) => item.id === `codex:skill:goal-supervisor:${reference}`);
-  assert.equal(conflict?.status, "conflict");
-  assert.equal(conflict?.reason, "managed file drifted");
-  const refused = spawnSync(process.execPath,
-    [join(ROOT, "bootstrap", "cli.mjs"), "setup", "--home", home, "--safe", "--apply", "--json"],
-    { cwd: ROOT, encoding: "utf8" });
-  assert.equal(refused.status, 1, "drifted auditor instructions must not be silently replaced");
-  assert.match(refused.stderr, /refusing apply with 1 conflict/);
-  assert.equal(await readFile(driftedPath, "utf8"), changedContract, "refused apply changed the local contract");
-});
+    const driftedPath = join(home, ".codex", "skills", "goal-supervisor", reference);
+    const changedContract = `${await readFile(driftedPath, "utf8")}\nLocal review instruction.\n`;
+    await writeFile(driftedPath, changedContract);
+    const preview = run(["setup", "--home", home, "--safe", "--json"]);
+    assert.equal(preview.conflicts, 1);
+    const conflict = preview.operations.find((item) => item.id === `codex:skill:goal-supervisor:${reference}`);
+    assert.equal(conflict?.status, "conflict");
+    assert.equal(conflict?.reason, "managed file drifted");
+    const refused = spawnSync(process.execPath,
+      [join(ROOT, "bootstrap", "cli.mjs"), "setup", "--home", home, "--safe", "--apply", "--json"],
+      { cwd: ROOT, encoding: "utf8" });
+    assert.equal(refused.status, 1, "drifted role instructions must not be silently replaced");
+    assert.match(refused.stderr, /refusing apply with 1 conflict/);
+    assert.equal(await readFile(driftedPath, "utf8"), changedContract, "refused apply changed the local contract");
+  });
+}
 
 test("catalog distinguishes an installed supervisor skill from an absent one and exposes its actual invocation", async (context) => {
   const temporary = await mkdtemp(join(tmpdir(), "agent-os-supervisor-catalog-"));
@@ -147,11 +148,19 @@ test("installed discovery metadata asks for a proposal and generated host instru
   assert.match(prompt, /propose supervision/);
   assert.match(prompt, /start only after my explicit approval/);
 
+  const promptSource = await readFile(join(ROOT, "skills", "goal-prompt", "SKILL.md"));
+  for (const host of [".codex", ".claude"]) {
+    assert.deepEqual(await readFile(join(home, host, "skills", "goal-prompt", "SKILL.md")), promptSource,
+      `${host} goal drafting instructions differ from the portable source`);
+  }
+
   const policy = (await readFile(join(ROOT, "policies", "orchestration.md"), "utf8")).trim();
   assert.ok(policy.includes("proactively recommend `goal-supervisor`"), "source policy lost supervisor discovery");
   for (const [host, filename] of [[".codex", "AGENTS.md"], [".claude", "CLAUDE.md"]]) {
     const generated = await readFile(join(home, host, filename), "utf8");
     assert.ok(generated.includes(policy), `${host} did not receive the complete policy`);
+    const profile = (await readFile(join(ROOT, "policies", "strict-portable.md"), "utf8")).trim();
+    assert.ok(generated.includes(profile), `${host} did not receive the autonomy/authority profile`);
   }
   // These assertions verify actual package/policy distribution. They do not
   // demonstrate model compliance, human approval authenticity, native goal

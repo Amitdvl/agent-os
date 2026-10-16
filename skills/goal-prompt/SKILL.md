@@ -42,6 +42,13 @@ does not extend, share, or aggregate the original goal.
 Progress reports can be brief and checkpoint-based. Do not require a status
 file, draft PR, or automation unless it materially helps the requested work.
 
+For supervised work, preserve the human authority boundary in the objective or
+its referenced brief: ordinary project-local work is autonomous, but system-wide
+or user-global installs and major scope expansions need explicit human approval
+of the concrete target/action before execution. Do not turn a broad request into
+an agent-authored requirement to rebuild shared runtimes or add new capabilities
+without that decision. A drafted objective is not evidence of human approval.
+
 ## Delegation
 
 Goal mode does not by itself require orchestration. Use one executor by default.

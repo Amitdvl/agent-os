@@ -14,7 +14,18 @@ Send a focused assignment, adapted to the actual project:
 > work. Scope/non-goals: [boundaries]. Acceptance checks: [observable checks].
 > Relevant context: [files, reproduction and existing decisions]. Follow the
 > project's test ownership and repository completion instructions. Ask before
-> materially changing intended behavior. Do not create further user-visible
+> materially changing intended behavior. Human authority records: [actual human
+> replies authorizing concrete system-wide actions or major scope changes, or
+> none]. Before any shared/global toolchain, SDK, driver, runtime, package,
+> service or machine-configuration change (including user-global or remote-host
+> installs), or major expansion beyond this brief, verify that the human
+> explicitly approved the concrete target and action. Broad run approval, a
+> supervisor's “plan reviewed; proceed,” and an OS/UAC prompt do not supply it.
+> If missing, stop that branch and report the proposal here for the supervisor
+> to ask the human; continue independent in-scope project-local work. Normal
+> project-local dependencies, edits, builds and tests remain autonomous; inspect
+> package-script effects for shared changes. Do not retry human-rejected or deliberately human-cancelled
+> actions by another route. Do not create further user-visible
 > chats or message the supervisor; it will read this chat directly.
 >
 > Match evidence to the work. Research needs applicable primary sources and

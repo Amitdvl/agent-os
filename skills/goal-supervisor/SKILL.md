@@ -21,8 +21,8 @@ preferences only when they materially change the result. The human should not
 need to supply the technical task list.
 
 Include this brief in the initial approval proposal. One approval covers the
-brief and the run; avoid separate planning or phase gates. If the human has
-already explicitly approved a concrete supervisor run, reuse that authority
+brief and the run within the authority boundary below; avoid routine planning
+or phase gates. If the human has already explicitly approved a concrete supervisor run, reuse that authority
 and state any inferred details. Resolve material scope or product ambiguity
 before dependent work. Refine implementation details from evidence without
 silently replacing the approved outcome. Keep the brief in the existing run
@@ -47,8 +47,55 @@ the concrete supervisor proposal already given covers the run; do not ask again.
 
 One approval covers creating and messaging workers and a final auditor for the
 agreed objective.
-Ask before materially changing intended product behavior or expanding scope.
-Do not turn that approval into permission for unrelated external actions.
+Apply the human authority boundary below throughout the run.
+Do not turn run approval into permission for unrelated external actions.
+
+## Human authority boundary
+
+Before dispatching each pass, authorizing a worker's proposed next step, or
+executing it yourself, classify its actual effects against the approved brief.
+Ask the human and wait for an explicit reply before either of these changes,
+unless that human already explicitly approved the concrete target and action:
+
+- **System-wide changes:** installing, updating, replacing or removing shared
+  toolchains, SDKs, drivers, runtimes, global packages or services; changing
+  global PATH, security settings or other machine configuration. This includes
+  user-global installs that affect other projects and changes on remote hosts.
+  Lack of administrator privileges does not make a shared install project-local.
+- **Major scope expansions:** adding a material feature, integration, platform,
+  workflow or operating commitment beyond the approved outcome/non-goals, or
+  materially increasing its resource use, cost or risk. Implementation discovery
+  within that outcome is routine; a new deliverable is not silently in scope.
+
+A broad objective such as “migrate everything” or “make it work,” an
+agent-drafted goal, supervisor technical review, worker recommendation or final
+auditor acceptance does not supply this human approval. An OS/UAC prompt is
+not a substitute for the supervisor asking before launching an installer.
+
+Prepare a concrete, reviewable proposal first using read-only inspection,
+metadata, dry runs or project-local prototypes. Explain the target host, exact
+components/action and scope, why it is needed, expected impact (including
+size, reboot, cost or persistence when known), and viable project-local or
+reduced-scope alternatives. Use the native human question box when available;
+otherwise ask in ordinary text. Do not run the install, dispatch the expanded
+implementation or perform dependent mutations while waiting. Continue useful
+independent work within the approved scope. Record the actual human reply and
+what it authorizes in the run note, and pass that reference to the worker.
+Recheck if the proposed action materially changes; do not ask again for the
+same already-approved action. A human rejection or deliberate human
+cancellation is not authority to retry through another installer, privilege path or worker.
+
+Keep ordinary project-local work autonomous: source edits, local dependency
+installs inside the project or its isolated environment, tests, builds and
+reversible implementation choices within the approved outcome need no new
+approval. Classify commands by effects, not names: a package script that changes
+shared tools still crosses the boundary. This narrow human checkpoint takes
+precedence over general local-work autonomy; it creates no routine phase gates.
+
+Workers must stop the gated branch and report a concrete proposal to the
+supervisor if authority is missing, even if a supervisor says “plan reviewed;
+proceed.” The supervisor asks the human; an agent cannot approve for them. This
+is an instruction-level safeguard, not a tool-enforced installation lock.
 
 ## Establish the supervisor
 
@@ -72,8 +119,10 @@ pause requires human resume authority; context recovery does not grant it.
 Keep a short, explicit run note in the project, for example
 `work/goal-supervisor.json`: objective, scope, actual human approval reference,
 supervisor identity, active worker or pending dispatch, accepted results,
-review evidence, remaining gaps and final reason for stopping. Include auditor
-identity or pending dispatch, the reviewed state, verdicts, findings, corrections
+review evidence, remaining gaps and final reason for stopping. Track proposed
+system-wide changes or major scope expansions, the actual human approval or
+rejection references, and pending decisions separately from agent reviews.
+Include auditor identity or pending dispatch, the reviewed state, verdicts, findings, corrections
 and re-audit evidence; retain earlier findings and their resolution. Use the current
 chat and this inspectable artifact for recovery, never a hidden memory store.
 
@@ -170,7 +219,8 @@ must not delegate further. If no independent reviewer is available, leave the
 goal incomplete and report the missing capability; self-review is insufficient.
 
 Give the auditor the original outcome brief, worker identities and actual
-outcomes, raw artifacts/diff, verification records, outstanding decisions and
+outcomes, raw artifacts/diff, verification records, human authority records for
+system-wide changes and scope expansions, outstanding decisions and
 the supervisor's proposed completion summary. Supply evidence locations and
 access, not just a reassuring narrative or a requested verdict. Let it inspect
 worker chats through supported readers where available; disclose omitted

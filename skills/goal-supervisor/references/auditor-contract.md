@@ -47,6 +47,12 @@ No model override or configured time/cycle/token budget is required.
   Check material requirements, the main journey and consequential assumptions.
   Choose relevant independent checks, reproductions or artifact inspection;
   use the discipline-specific evidence rules in the main skill.
+- Inspect system-wide changes and major scope expansions against actual human
+  replies authorizing their concrete targets/actions. Agent technical review,
+  run approval and OS prompts are not substitutes. Report missing authority as
+  a material finding, including intermediate changes even if the final result
+  passes. Audit acceptance cannot retroactively authorize an action; refer any
+  recovery or expansion decision to the human through the supervisor.
 - Check that claimed worker achievements exist, the supervisor actually
   inspected/verified them, failures received a disposition, and follow-up work
   advanced observed gaps. Worker requests and confident reports are not proof.
