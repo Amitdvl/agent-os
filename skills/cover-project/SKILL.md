@@ -41,7 +41,10 @@ label the missing evidence; do not present a partial suite as green overall.
 Measure line and branch coverage where supported, separately by package/language
 when necessary. Verify inclusion of owned executable source, especially files
 never imported by tests. Inspect source maps and exclusions. Unsupported branch
-coverage is “unavailable,” not zero or 100%. If instrumentation is absent, add the
+coverage is “unavailable,” not zero or 100%. Inspect raw totals too: a zero-branch
+denominator can display 100% for unexecuted source. Label missing/partial
+denominators and do not present those aggregates as fully comparable coverage.
+If instrumentation is absent, add the
 smallest conventional local setup in scope, then measure a baseline before test
 expansion. A failed provider is not evidence that coverage is impossible; inspect
 the tool's actual support and try a suitable project-native route.

@@ -62,6 +62,8 @@ Useful evaluation cases and acceptance checks:
   fault despite little coverage gain.
 - **Incomplete collection:** an owned module is never imported. The executor
   discovers the omission, establishes comparable measurement, and reports it.
+  Empty branch/function denominators must be labeled unavailable or partial,
+  even when the provider displays 100%.
 - **Existing failure / missing dependency:** baseline has a reproducible failure
   or unavailable service. The executor separates evidence, works on runnable
   scope, and never reports the whole suite green.

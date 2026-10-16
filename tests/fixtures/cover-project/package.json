@@ -1,0 +1,9 @@
+{
+  "name": "coverage-workflow-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "coverage": "node --experimental-test-coverage --test --test-coverage-include=src/** test/*.test.mjs"
+  }
+}
