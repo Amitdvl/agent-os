@@ -131,6 +131,55 @@ Routine work, explicit single-agent requests, an existing coverage-worker role,
 unavailable delegation, and concrete cost/ownership constraints stay direct.
 The parent still owns integration and final verification.
 
+### Routing rerun results
+
+After the routing change, both fresh implementation executors actually launched
+one bounded `cover-project` child without that instruction in their feature
+requests. The requests named neither coverage, the skill, nor delegation. Before
+the change both comparable cases had used the workflow directly with zero
+children; afterwards both used a testing worker. This is an observed two-case
+result, not a measured general success rate.
+
+| Parent-verified outcome | Stateful checkout | Modular access/CSV/queue toolkit |
+| --- | --- | --- |
+| Actual bounded testing child | One | One |
+| Maintained final tests | 21 passed | 30 passed |
+| Separate acceptance checks | 13 passed | 14 passed |
+| Selected assertion-detected faults, independently rerun | 3/3 | 7/7 |
+| Final line coverage | 335/335 | 369/369 |
+| Final observed V8 branches | 253/254 | 375/387 |
+
+Both workers reported reading the skill and its handoff/fault references before
+completion, returned tests and scoped evidence, stayed within test/report/evidence
+ownership, and spawned no further workers. Parents reviewed failures, fixed
+production defects, coordinated stable source revisions, and independently ran
+integrated tests. The toolkit parent could not establish that its own coverage
+run followed the final strengthened worker assertions; the worker and outer
+evaluator measured the final suite. The evaluator archived artifacts before
+revealing the expected selection outcome, inspected actual assertions and fault
+harnesses, and independently reran all suite/acceptance/measurement/fault checks.
+Final measured source hashes matched; fault checks left production unchanged.
+
+Both workers reproduced three parent-suspected defects each with failing
+regressions; these were not independent bug discoveries. The toolkit worker
+independently strengthened bulk-expiration and cross-job token checks. A toolkit
+token-collision fault initially survived because another guard masked it; a better cross-job collision
+assertion caught it on rerun. This is evidence of useful testing work beyond
+agent creation or percentage growth.
+
+Limits: these runs used fresh native subagents and explicit reads of normal
+global instructions, not fresh top-level App chats. Canonical executor labels
+included a blind-test label, and completed reviewer names were visible in the
+agent inventory; therefore experimental purpose was not perfectly concealed by
+the runtime even though prompts and expected routing stayed withheld. Exact
+handoffs/skill reads were corroborated by pre-audit artifacts and retrospective
+parent/worker audits rather than a complete native tool-event trace. An early
+interrupted run observed a child but is excluded from these completed results.
+The comparative toolkit run retained the original export-count assertion; the
+maintained fixture subsequently corrected it as described below. Routine
+single-test and explicit single-agent exceptions remain policy choices; these
+two positive cases do not constitute negative-control tests for those choices.
+
 ### Reproduce a blind implementation trial
 
 Run one of these preparers from the repository:
@@ -143,8 +192,9 @@ node scripts/prepare-implementation-eval.mjs toolkit
 The preparer writes a dependency-free project beneath the operating system's
 temporary directory and returns a project path plus a neutral `launch` message.
 It neither invokes an agent nor modifies installed instructions. Give only that
-message to a fresh executor with no evaluator history. Do not pass this report,
-expected routing, worker criteria, or any coverage/delegation hint. The request
+message to a fresh executor with no evaluator history. Use neutral executor names
+and keep evaluator role labels out of its visible context when the runtime
+allows. Do not pass this report, expected routing, worker criteria, or any coverage/delegation hint. The request
 asks the executor to read its normal installed global instructions and preserve
 project-local constraints. A toolkit legacy assertion now checks the original
 named exports instead of an exact export count, allowing additive API changes.
