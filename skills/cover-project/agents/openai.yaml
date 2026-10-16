@@ -1,6 +1,6 @@
 interface:
   display_name: "Cover Project"
-  short_description: "Close risky testing gaps and prove tests catch faults"
-  default_prompt: "Use $cover-project to cover this project with meaningful tests, verified fault detection, and an honest before/after coverage report."
+  short_description: "Agent-callable coverage for a defined behavior or project"
+  default_prompt: "Use $cover-project to close the assigned testing gap with meaningful tests, scoped coverage, fault-detection evidence, and a clear handback."
 policy:
   allow_implicit_invocation: true

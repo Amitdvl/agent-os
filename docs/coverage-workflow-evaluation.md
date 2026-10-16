@@ -2,7 +2,8 @@
 
 The default `$cover-project` skill is distributed in the core pack. It remains
 self-contained and normally eligible for automatic invocation. Core policy routes
-broad coverage requests to it while preserving narrower tasks and explicit choices.
+substantive testing gaps to it, including bounded assignments during implementation,
+while keeping routine single-test work lightweight and honoring explicit choices.
 
 ## Initial forward test
 

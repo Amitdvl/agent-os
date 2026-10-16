@@ -1,20 +1,45 @@
 ---
 name: cover-project
-description: Default workflow for covering an existing project or module, improving test coverage, and closing testing gaps. Measure coverage, prioritize risky behavior, add meaningful tests, and verify fault detection. Not for a single regression test or report-only QA unless requested.
+description: Agent-callable workflow for closing a defined testing gap in a behavior, file, module, or project. Use directly or assign a coverage subagent a steering target during implementation. Measure relevant coverage, add meaningful tests, and verify fault detection; routine single-test work stays lightweight.
 ---
 
 # Cover Project
 
-Turn “Cover this project” into a maintained safety net with evidence of what it
-protects. Work within the requested project/module and existing conventions.
+Give an agent a coverage target and receive maintained tests plus evidence of
+what they protect. Targets range from one behavior to “Cover this project.”
+Use this during implementation whenever a testing gap merits focused coverage
+work, as well as for a user-requested coverage campaign. Ordinary single-test
+implementation need not run this workflow; an explicit bounded assignment can.
 This skill is self-contained; it does not require Superpowers or another agent
 framework. Explicit invocation: `$cover-project`.
 
+## Agent entry point
+
+The parent agent owns the product task, scope, integration, and final verification.
+When delegation is useful, available, and permitted, assign one coverage worker
+a clear steering target using [agent-handoff.md](references/agent-handoff.md).
+Pass the skill's accessible path, project location, intended behavior and source
+of truth, writable files, constraints, and acceptance checks. Do not assume a
+worker inherits this skill, repository state, or the parent's context.
+
+The worker reads this skill and the handoff reference, executes the workflow
+within that assignment, and returns changed files and reproducible evidence.
+It does not broaden the product task, spawn further workers, or commit/merge/push
+unless those actions are explicitly assigned. Shared files need one writer;
+use an isolated checkout when ownership cannot be separated. The parent reviews
+the actual diff, integrates it, and verifies against the final source state.
+
+Direct invocation uses the same workflow without creating a subagent. If a
+delegation tool is unavailable or disallowed, execute locally within scope and
+report that fact; do not claim delegation. No framework or fixed model is needed.
+
 ## Decide the scope and completion criteria
 
-For a broad coverage request, implement and verify improvements; do not stop at
-an audit or proposed test plan. Honor report-only, time, file, and no-production-
-change limits. Resolve the repository from the current context; ask only if the
+For an implementation assignment, add and verify tests; do not stop at an audit
+or proposed test plan. A named behavior is a valid complete scope: do not expand
+it to every test gap in its containing file, module, or repository. Honor
+report-only, time, file, and no-production-change limits. Resolve the repository
+from the current context; ask only if the
 target or intended behavior is genuinely ambiguous. Routine local setup and
 testing do not need a phase-approval gate.
 
@@ -27,26 +52,33 @@ do not install an agent framework to run this workflow.
 
 ## Establish an honest baseline
 
-Read project instructions, manifests, CI, test configuration, and representative
-tests. Map owned source, public entry points, key dependencies, and existing test
+Read project instructions, manifests, relevant CI/test configuration, and
+representative tests. Map owned source, public entry points, key dependencies, and existing test
 layers. In a monorepo, inventory relevant packages before selecting commands;
 do not treat one package's results as whole-project coverage.
 
-Run the existing suite and coverage commands before modifying tests. Record
-commands, exit status, passing/failing/skipped counts, runtime, and source revision
+Run the relevant existing tests and coverage before modifying tests. A bounded
+worker runs the affected suite; a repo-wide assignment establishes the broader
+baseline. Use an existing parent baseline only when its commands, scope, and
+source state are recorded and still applicable. Record commands, exit status,
+passing/failing/skipped counts, runtime, and source revision
 or relevant dirty-state details. Separate pre-existing failures from regressions.
 If a full baseline is blocked, keep working on independently runnable scope and
 label the missing evidence; do not present a partial suite as green overall.
 
-Measure line and branch coverage where supported, separately by package/language
-when necessary. Verify inclusion of owned executable source, especially files
+Measure line and branch coverage for the declared target where supported,
+separately by package/language when necessary. Verify inclusion of in-scope
+owned executable source, especially files
 never imported by tests. Inspect source maps and exclusions. Unsupported branch
 coverage is “unavailable,” not zero or 100%. Inspect raw totals too: a zero-branch
 denominator can display 100% for unexecuted source. Label missing/partial
 denominators and do not present those aggregates as fully comparable coverage.
-If instrumentation is absent, add the
-smallest conventional local setup in scope, then measure a baseline before test
-expansion. A failed provider is not evidence that coverage is impossible; inspect
+If instrumentation is absent, add the smallest conventional local setup in
+scope, then measure a baseline before test
+expansion. A focused assignment need not add repository-wide instrumentation;
+if setup falls outside write ownership, use available evidence and return the
+measurement limitation or request the smallest specific ownership change.
+A failed provider is not evidence that coverage is impossible; inspect
 the tool's actual support and try a suitable project-native route.
 
 Keep baseline and final measurement scopes comparable: same source set,
@@ -58,7 +90,8 @@ removing production code just to shrink the denominator.
 ## Choose what deserves protection
 
 Create a compact behavior map in the repository's existing test documentation,
-or a task-local report when no maintained location exists. For each material gap,
+or a task-local report when no maintained location exists. Keep it proportional:
+a bounded worker may use a short handback table. For each material in-scope gap,
 record: behavior and its source of truth, plausible failure, impact/likelihood,
 current evidence, chosen test boundary, and status. Use public contracts, specs,
 callers, and established examples to derive expected results. Reading today's
@@ -124,9 +157,11 @@ benefit and applicable authority.
 
 ## Verify and leave maintainable evidence
 
-After the last edit, run the relevant full suite, regenerate coverage, and run
-required repository checks. Repeat a new test only when nondeterminism, a failure,
-or a later edit warrants it. Check that no temporary fault, debug hook, unexpected
+After the last edit, run the full affected suite, regenerate relevant coverage,
+and run required checks within the assignment. The parent owns broader repository
+checks after integration; a worker identifies those it has not run. Repeat a new
+test only when nondeterminism, a failure, or a later edit warrants it. Check that
+no temporary fault, debug hook, unexpected
 snapshot update, or unrelated change remains. Preserve original test commands;
 add a reproducible coverage command and lightweight regression guard to existing
 CI when in scope and supported. New thresholds must come from measured results
@@ -138,7 +173,9 @@ access, runtime, ambiguity, budget, or diminishing returns force an earlier stop
 deliver the useful verified work and mark the remaining scope unfinished. Do not
 call a project “fully covered” from an aggregate percentage.
 
-Report concisely, linking to detailed evidence when useful:
+Report concisely, using the handback contract in
+[agent-handoff.md](references/agent-handoff.md) for delegated work and linking to
+detailed evidence when useful:
 
 - Scope and result: completed criteria versus unfinished or blocked items.
 - Comparable before/after line and branch coverage, with source scope, exclusions,

@@ -71,6 +71,10 @@ Useful evaluation cases and acceptance checks:
   package boundaries instead of reporting one package as the whole repository.
 - **Strict scope:** report-only or no-production-change instructions are honored;
   discovered production bugs remain reproducible and explicitly unresolved.
+- **Bounded agent handoff:** give a worker one behavior target, disjoint writable
+  files, an independent contract, and acceptance checks. It implements tests and
+  scoped evidence without editing other modules/config, delegating again, or
+  claiming whole-project coverage. The parent reviews and reruns the result.
 - **Routing negatives:** a one-line bug regression, report-only QA, or unrelated
   request does not expand into a project-wide coverage campaign.
 

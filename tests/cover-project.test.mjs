@@ -30,7 +30,9 @@ test("core setup distributes the complete coverage package and exposes accurate 
 
   assert.deepEqual(entry(run(["status", "--home", home, "--catalog", "--json"])), []);
   const preview = run(["setup", "--home", home, "--safe", "--json"]);
-  assert.ok(preview.operations.some((item) => item.id === "codex:skill:cover-project:references/fault-checks.md"));
+  for (const reference of ["fault-checks.md", "agent-handoff.md"]) {
+    assert.ok(preview.operations.some((item) => item.id === `codex:skill:cover-project:references/${reference}`));
+  }
   run(["setup", "--home", home, "--safe", "--apply", "--json"]);
 
   const source = "skills/cover-project";
