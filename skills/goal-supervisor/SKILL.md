@@ -52,6 +52,11 @@ Do not turn that approval into permission for unrelated external actions.
 
 ## Establish the supervisor
 
+At the start or resumption of an approved supervisor run, use the supported
+`set_thread_title` tool to name this chat `#SV <short outcome title>`. Keep exactly
+one `#SV ` prefix on later renames and retain it after completion so supervisor
+chats remain identifiable. Apply it to the supervisor, not its workers or auditor.
+
 Verify native goal tools and supported app tools for creating, waiting for,
 reading and messaging chats are available. Use their installed schemas. If a
 required capability is missing, report it and leave supervision unstarted;
