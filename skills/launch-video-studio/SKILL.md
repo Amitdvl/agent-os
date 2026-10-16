@@ -14,9 +14,9 @@ Run `scripts/resolve-studio.mjs` from this skill with Node. It resolves `LAUNCH_
 Read that repository's `AGENTS.md`, then query the live catalog:
 
 ```sh
-npm run studio -- formats --json
-npm run studio -- formats "<requested format or description>" --json
-npm run studio -- format imessage --json
+npm --silent run studio -- formats --json
+npm --silent run studio -- formats "<requested format or description>" --json
+npm --silent run studio -- format imessage --json
 ```
 
 For an explicitly named format, resolve its canonical entry and read its returned guide before creating anything. For an open request, choose the matching format from catalog evidence. If the requested format is absent, explain the nearest available option or the missing capability; never silently treat an unknown name as the generic starter. Do not maintain another fixed format list in this skill.
@@ -26,7 +26,7 @@ For an explicitly named format, resolve its canonical entry and read its returne
 Create through the harness, for example:
 
 ```sh
-npm run studio -- create <project-name> --format imessage
+npm --silent run studio -- create <project-name> --format imessage
 ```
 
 `--template` is a synonym for `--format`. Follow the format guide for its inputs and shape. Adapt the copied project to the user's product, story, assets, and reading time; sample content is demonstration material, not product truth. Existing videos are editable projects, not templates to overwrite. Native HTML and timelines remain the editable master; use the repository's source ownership, preview, check, snapshot, and render commands rather than inventing another editor or driving the UI for ordinary authoring.

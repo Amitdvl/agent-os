@@ -29,7 +29,7 @@ export async function resolveStudio({ environment = process.env, home = homedir(
   return root;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(await realpath(resolve(process.argv[1]))).href) {
   try { console.log(await resolveStudio()); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }

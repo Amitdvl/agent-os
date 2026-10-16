@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { mkdtemp, mkdir, readFile, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -44,4 +45,13 @@ test('creator pack distributes the complete automatically invoked studio discove
   assert.ok(packs.find(p => p.id === 'creator').skills.includes(entry.id));
   const policy = await readFile(new URL('../skills/launch-video-studio/agents/openai.yaml', import.meta.url), 'utf8');
   assert.match(policy, /allow_implicit_invocation: true/);
+});
+
+
+test('studio resolver executes through a global skill symlink', async (t) => {
+  const f = await fixture(t);
+  const launcher = join(f.home, 'resolve-studio.mjs');
+  await symlink(new URL('../skills/launch-video-studio/scripts/resolve-studio.mjs', import.meta.url), launcher);
+  const output = execFileSync(process.execPath, [launcher], { env: {...process.env, LAUNCH_VIDEO_STUDIO_ROOT:f.studio}, encoding:'utf8' });
+  assert.equal(output.trim(), await realpath(f.studio));
 });
