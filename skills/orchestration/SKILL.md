@@ -29,6 +29,18 @@ several steps, is lengthy, or could theoretically be divided. When the
 activation decision is genuinely uncertain, ask the human whether to
 orchestrate. Never claim a model or delegation occurred when it did not.
 
+## Testing as a separate deliverable
+
+Before choosing one executor for substantive implementation, apply the
+`cover-project` parent-routing rule. A worker owning contract tests, scoped
+measurement, and fault evidence can be an independently valuable workstream even
+when the production feature shares state. Stabilize source first if needed and
+give tests/fixtures a separate writer. Eligible work should actually dispatch a
+bounded coverage worker; routine tests and concrete ownership/cost exceptions
+remain direct. One such worker is sufficient unless more roles earn their cost.
+An implementation subagent can own this decision; an assigned coverage worker
+must not spawn more workers. Do not expand the human's product scope.
+
 ## Lead Contract
 
 1. Define the outcome, scope, non-goals, risks, and acceptance checks before delegation.

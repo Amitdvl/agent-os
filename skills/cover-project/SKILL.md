@@ -1,6 +1,6 @@
 ---
 name: cover-project
-description: Agent-callable workflow for closing a defined testing gap in a behavior, file, module, or project. Use directly or assign a coverage subagent a steering target during implementation. Measure relevant coverage, add meaningful tests, and verify fault detection; routine single-test work stays lightweight.
+description: Close substantive testing gaps during implementation. Parents route separable or high-risk testing to a bounded cover-project subagent; workers add meaningful tests, scoped metrics and fault evidence. Keep routine single-test work direct.
 ---
 
 # Cover Project
@@ -12,6 +12,34 @@ work, as well as for a user-requested coverage campaign. Ordinary single-test
 implementation need not run this workflow; an explicit bounded assignment can.
 This skill is self-contained; it does not require Superpowers or another agent
 framework. Explicit invocation: `$cover-project`.
+
+## Parent routing: decide before expanding tests
+
+For an implementation assignment, assess testing as its own deliverable before
+writing the expanded suite. When delegation is available/permitted and a worker
+can own tests and fixtures separately, **dispatch one coverage worker by default**
+if the gap spans separately testable components or material failure/recovery,
+isolation, replay, or persistence behavior. The benefit is independent
+contract-derived verification or useful parallel work, not a larger test count.
+Use the actual delegation tool and explicitly pass this skill; merely loading it
+or considering a worker does not perform the assignment. The human need not ask
+for coverage or delegation as a separate task.
+
+Give the worker a stable source target. If production edits are coupled, finish
+that source batch first, then assign tests while the parent reviews implementation
+or docs. Coupled source files and “one integrated feature” alone do not rule out
+separate test ownership. Do not let source and test writers race; coordinate a
+new revision and rerun evidence when the parent changes the measured target.
+
+Direct execution remains appropriate for routine single-test work, a small gap
+where a worker's cost exceeds its verification benefit, an explicit single-agent
+request, unavailable delegation, or a concrete ownership constraint. Record the
+choice and concrete reason briefly in task notes. Do not infer an exception just
+from file count, feature unity, or being an implementation subagent. A worker
+already assigned this coverage role executes it without spawning more workers.
+This targeted assignment does not require a larger orchestration team or another
+agent framework. Read the full orchestration workflow only if additional roles
+or independent workstreams justify it.
 
 ## Agent entry point
 

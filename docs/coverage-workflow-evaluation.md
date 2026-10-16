@@ -112,3 +112,55 @@ project with no tests, a monorepo, and explicit report-only/no-production-change
 tasks. Those cases are evaluation criteria, not claimed completed evaluations.
 One small JavaScript fixture does not establish effectiveness across every stack
 or guarantee automatic selection on every natural-language prompt.
+
+## Implicit implementation routing
+
+Earlier blind implementation trials selected `cover-project` directly but did
+not launch a worker: zero child agents across a stateful checkout service and a
+modular access/CSV/queue toolkit. Both implementations passed independent
+contract checks. This identified a routing gap rather than a lack of workflow
+selection: a generic single-executor preference left the testing ownership
+decision implicit.
+
+The revised core policy, orchestration policy, and skill entry point require
+that decision before test expansion. Separately testable components or material
+failure/recovery, isolation, replay, or persistence behavior default to one
+bounded coverage worker when tests/fixtures can have separate ownership. Source
+can be stabilized first; shared production state alone is not an exception.
+Routine work, explicit single-agent requests, an existing coverage-worker role,
+unavailable delegation, and concrete cost/ownership constraints stay direct.
+The parent still owns integration and final verification.
+
+### Reproduce a blind implementation trial
+
+Run one of these preparers from the repository:
+
+```sh
+node scripts/prepare-implementation-eval.mjs checkout
+node scripts/prepare-implementation-eval.mjs toolkit
+```
+
+The preparer writes a dependency-free project beneath the operating system's
+temporary directory and returns a project path plus a neutral `launch` message.
+It neither invokes an agent nor modifies installed instructions. Give only that
+message to a fresh executor with no evaluator history. Do not pass this report,
+expected routing, worker criteria, or any coverage/delegation hint. The request
+asks the executor to read its normal installed global instructions and preserve
+project-local constraints. A toolkit legacy assertion now checks the original
+named exports instead of an exact export count, allowing additive API changes.
+
+Keep the implementation request and initial source fixed when comparing policy
+versions. Observe actual child-agent creation, not just a stated intention. Only
+after completion, inspect the assignment, skill reads, stable source target,
+separate write ownership, worker artifacts, fault evidence, parent review, and
+integrated rerun. Independently verify the product contract and selected faults;
+a delegated but incomplete implementation is not a successful outcome. Preserve
+logs before revealing evaluation criteria. Run trials sequentially if parallel
+trials would consume the worker slots being evaluated.
+
+These are synthetic behavioral evaluations. Automatic selection is probabilistic
+and depends on installed instructions, tools, context, and resources. Results
+from fresh native subagents do not establish identical behavior in a fresh
+top-level App chat or another stack. Selected fault checks are not exhaustive
+mutation scores, and source expansion makes final coverage percentages
+incomparable to the tiny baseline denominators.

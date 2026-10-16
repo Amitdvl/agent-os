@@ -52,6 +52,19 @@ test("core setup distributes the complete coverage package and exposes accurate 
   assert.equal(installed.status, "installed");
   assert.ok(installed.description.includes(installed.invocation));
 
+  // Verify that the harness actually receives the routing policies, not just
+  // the skill package. Implicit selection depends on these generated rules.
+  const core = (await readFile("policies/core.md", "utf8")).trim();
+  const orchestration = (await readFile("policies/orchestration.md", "utf8")).trim();
+  const generated = await readFile(join(home, ".codex/AGENTS.md"), "utf8");
+  assert.ok(generated.includes(core));
+  assert.ok(generated.includes(orchestration));
+  const coordination = run(["status", "--home", home, "--catalog", "--json"])
+    .classifiedCatalogue.find((item) => item.id === "orchestration" && item.group === "personal-slash-commands");
+  assert.equal(coordination.invocation, "$orchestration");
+  assert.equal(coordination.status, "installed");
+  assert.equal(coordination.sourcePath, "<CODEX_HOME>/skills/orchestration/SKILL.md");
+
   const repeat = run(["setup", "--home", home, "--safe", "--json"]);
   assert.equal(repeat.conflicts, 0);
   assert.ok(repeat.operations.filter((item) => item.path.includes("/skills/cover-project/")).every((item) => item.status === "unchanged"));
