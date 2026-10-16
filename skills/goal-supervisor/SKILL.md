@@ -7,7 +7,8 @@ description: Recommend and, after explicit human approval, run a native goal sup
 
 Keep the high-level objective in the supervisor chat. Give each concrete pass to
 a separate worker chat with its own native goal. Review the actual result, then
-choose the next valuable pass. Stop when no important actionable gap remains.
+choose the next valuable pass. Finish only after an independent final auditor
+accepts the current result with no important actionable gap remaining.
 Do not configure cycle, time or token budgets unless the human requests them.
 
 ## Define the outcome
@@ -32,8 +33,8 @@ note, rather than creating another planning system.
 Once the human has defined an objective that benefits from iterative discovery,
 proactively recommend this workflow in the native human question box. State the
 objective and ask whether to start a supervisor that may create and message
-separate worker chats, review their results, and choose further in-scope work
-until important work is complete. Offer “Start supervisor” and “Keep normal
+separate worker chats, review their results, choose further in-scope work, and
+obtain an independent final audit with corrections before completion. Offer “Start supervisor” and “Keep normal
 execution.” Leave the run off until the human explicitly approves.
 
 Loading this skill, defining an objective, ordinary implementation approval,
@@ -44,7 +45,8 @@ or dispatch workers while awaiting an answer. Do not repeat a declined offer
 without a material scope change or a human request. A clear human approval of
 the concrete supervisor proposal already given covers the run; do not ask again.
 
-One approval covers creating and messaging workers for the agreed objective.
+One approval covers creating and messaging workers and a final auditor for the
+agreed objective.
 Ask before materially changing intended product behavior or expanding scope.
 Do not turn that approval into permission for unrelated external actions.
 
@@ -53,7 +55,8 @@ Do not turn that approval into permission for unrelated external actions.
 Verify native goal tools and supported app tools for creating, waiting for,
 reading and messaging chats are available. Use their installed schemas. If a
 required capability is missing, report it and leave supervision unstarted;
-never substitute a private app bridge or a claimed native goal.
+never substitute a private app bridge or a claimed native goal. Verify that an
+independent agent can inspect the result before promising audited completion.
 
 Use `get_goal` in this chat. Reuse a matching active objective; create the
 approved high-level goal with `create_goal` if none is unfinished. Preserve an
@@ -64,7 +67,9 @@ pause requires human resume authority; context recovery does not grant it.
 Keep a short, explicit run note in the project, for example
 `work/goal-supervisor.json`: objective, scope, actual human approval reference,
 supervisor identity, active worker or pending dispatch, accepted results,
-review evidence, remaining gaps and final reason for stopping. Use the current
+review evidence, remaining gaps and final reason for stopping. Include auditor
+identity or pending dispatch, the reviewed state, verdicts, findings, corrections
+and re-audit evidence; retain earlier findings and their resolution. Use the current
 chat and this inspectable artifact for recovery, never a hidden memory store.
 
 ## Supervise
@@ -131,7 +136,8 @@ Use an independent challenge for a consequential disputed or weakly supported
 decision, with raw evidence and no desired verdict in the assignment. A
 separate chat is not a guarantee of independent judgment. Keep routine review
 with the supervisor; do not create standing specialist roles or a review
-ceremony for every pass.
+ceremony for every pass. The final audit below is required for every completed
+supervisor run.
 
 Reject a confident success claim if an acceptance check fails. Send specific
 in-scope correction to the same worker and verify again. If its goal is still
@@ -147,6 +153,55 @@ lifecycle and ordinary permissions still apply; there is no background daemon.
 Keep human-facing updates focused on outcomes, consequential findings and the
 reason for the next move. Keep worker coordination in the run note.
 
+## Final audit and correction loop
+
+After the supervisor's whole-result review and before calling `update_goal`
+with `status: complete`, obtain an independent final audit. Read
+[the auditor contract](references/auditor-contract.md) when assigning or
+correcting this review. Use a fresh internal subagent with bounded read-only
+scope where supported; otherwise use a separate auditor chat under the approved
+chat authority. It must not be the supervisor or an implementation worker, and
+must not delegate further. If no independent reviewer is available, leave the
+goal incomplete and report the missing capability; self-review is insufficient.
+
+Give the auditor the original outcome brief, worker identities and actual
+outcomes, raw artifacts/diff, verification records, outstanding decisions and
+the supervisor's proposed completion summary. Supply evidence locations and
+access, not just a reassuring narrative or a requested verdict. Let it inspect
+worker chats through supported readers where available; disclose omitted
+records or access limits. Record the actual state being reviewed, including
+uncommitted changes and relevant artifact identities. Wait until writers have
+stopped and keep that state stable while the auditor reviews it.
+
+The auditor returns `accept`, `revise` or `incomplete`, with checks performed,
+material findings, optional observations and evidence limits. Record its actual
+response. Missing, failed, interrupted or unverifiable communication leaves the
+audit pending or incomplete; a finished turn alone is not acceptance. Follow the
+same dispatch-reconciliation and deliberate-pause rules as for workers; do not
+launch a duplicate reviewer while a launch or review remains unresolved.
+
+For `revise`, the supervisor triages each material finding against the objective,
+sends concrete corrections to the existing worker where possible, and verifies
+the changed result itself. Evidence or report defects may be corrected by the
+supervisor. A disputed finding goes back to the auditor with counterevidence;
+the supervisor cannot silently dismiss it or substitute its own acceptance.
+Return the changed state and resolution evidence to the same auditor for
+re-audit, including affected neighboring behavior. If that auditor is
+unavailable, reconcile its state before assigning a replacement, and give the
+replacement the original evidence and unresolved findings. An `incomplete`
+review requires the missing evidence, access or decision before acceptance.
+
+Keep this loop in scope. Optional polish does not block acceptance. If a material
+finding cannot be resolved, report it and leave the goal incomplete; ask the
+human only for a genuine decision or access need. Do not repeat unchanged work
+or add a budget unless requested. Preserve stop and pause instructions.
+
+Only an explicit auditor `accept` for the current outcome and result, with no
+unresolved material finding and the supervisor's own checks satisfied, permits
+completion. Any subsequent material artifact, scope or evidence change makes
+that acceptance stale and requires re-audit. This is a required workflow
+checkpoint, not an application-enforced lock on native goal tools.
+
 ## Finish, wait for decisions, or stop
 
 Before completing, return to the outcome brief and exercise the main user
@@ -156,7 +211,8 @@ assumptions that still govern the result. Make the comparison with the initial
 state explicit where evidence permits; mark an unknown baseline as unknown.
 
 Complete the supervisor goal only when that review supports the approved
-outcome and finds no remaining important actionable gap within scope. Record
+outcome, finds no remaining important actionable gap within scope, and the
+final auditor has accepted the current result under the checkpoint above. Record
 the evidence, residual limitations and why further work is unnecessary; leave
 optional ideas alone. An untested material requirement remains incomplete,
 even if every worker finished its assignment. If important work needs access or a product
@@ -167,12 +223,16 @@ its actual tool criteria are satisfied, and paused only on human instruction.
 On a human stop, launch nothing further. Send the active worker an explicit
 stop-and-pause instruction through the supported messaging tool, inspect its
 acknowledgment/state, and pause this goal too when authorized by that stop.
-Record a pending stop if delivery or worker acknowledgment is unresolved.
+Stop an active auditor too through its supported agent/chat controls and
+inspect its acknowledgment or state; an internal auditor has no shared native
+goal. Record a pending stop if delivery or acknowledgment is unresolved.
 Messaging is cooperative and may wait for the current tool call to finish;
 pausing the supervisor alone does not pause another chat. Provide the active
 worker link/control if immediate manual intervention is needed. Never promise
 an atomic global kill switch or silently undo a human pause.
 
-Report the accepted changes, meaningful verification, remaining decisions or
-limitations, and why further work is unnecessary. This is a discoverable Codex
-workflow, not a guaranteed application hook or an enforcement boundary.
+Report the accepted worker outcomes, meaningful verification, final auditor
+verdict and material corrections, remaining decisions or limitations, and why
+further work is unnecessary. Do not describe pending or stale review as passed.
+This is a discoverable Codex workflow, not a guaranteed application hook or an
+enforcement boundary.
