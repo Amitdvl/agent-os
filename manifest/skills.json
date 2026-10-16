@@ -15,6 +15,7 @@
     {"id": "production-repo-baseline", "path": "skills/production-repo-baseline/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "publication-safety", "path": "skills/publication-safety/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "half-bounce", "path": "skills/half-bounce/SKILL.md", "disposition": "portable-macos-workflow"},
+    {"id": "launch-video-studio", "path": "skills/launch-video-studio/SKILL.md", "disposition": "portable-creator-workflow", "includePackage": true, "command": {"invocation": "$launch-video-studio", "purpose": "Use $launch-video-studio to discover reusable video formats and create or edit launch videos, including the imessage format."}},
     {"id": "image-art-direction", "path": "skills/image-art-direction/SKILL.md", "disposition": "portable-creator-workflow", "includePackage": true},
     {"id": "openai-aesthetic-images", "path": "skills/openai-aesthetic-images/SKILL.md", "disposition": "portable-core"},
     {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow"},

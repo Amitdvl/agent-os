@@ -8,6 +8,7 @@ The manifest is the source of truth for the portable inventory:
 - `manifest/packs.json` — core, local productivity, research, communication, creator, and macOS development packs.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.
+- `skills/launch-video-studio/` — automatically discover named launch-video formats through a registered studio checkout, with `$launch-video-studio` as an explicit invocation. The repository catalog owns format names, aliases, guides, and verification status; the portable resolver contains no machine paths or private film assets. Install this skill through the creator pack and configure the checkout using `LAUNCH_VIDEO_STUDIO_ROOT` or the private workspace registry.
 - `skills/openai-aesthetic-images/` — portable art direction for abstract campaign artwork, based on documented reference links rather than a generic gradient preset.
 - `skills/pamphlet/` — the `$pamphlet` skill: researched 300–1,000-word explanations, delivered as verified PDF and Markdown pairs. Codex custom slash commands are no longer supported; invoke this skill with `$pamphlet`.
 - `skills/book/` — the explicitly invoked `$book` workflow, including its complete research, EPUB build, validation, and test package.

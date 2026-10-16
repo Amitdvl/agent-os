@@ -90,7 +90,7 @@
     {
       "id": "creator-art-direction",
       "disposition": "portable-core",
-      "skills": ["openai-aesthetic-images"]
+      "skills": ["openai-aesthetic-images", "launch-video-studio"]
     },
     {
       "id": "macos-development",

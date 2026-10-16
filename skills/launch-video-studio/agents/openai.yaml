@@ -1,0 +1,6 @@
+interface:
+  display_name: "Launch Video Studio"
+  short_description: "Discover formats and create editable launch videos"
+  default_prompt: "Use $launch-video-studio to make a launch video with the appropriate reusable format."
+policy:
+  allow_implicit_invocation: true
