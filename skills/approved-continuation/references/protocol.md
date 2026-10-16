@@ -44,6 +44,10 @@ These protect cooperating local processes from races and accidental reuse.
 They do not protect against a malicious user with filesystem access, and are
 not a security boundary around Codex's executor. Do not extend this into
 unsupported app introspection or credential access.
+There is no background native-event subscription. Known stop/interruption
+events must be passed to `stop`; a UI pause/resume entirely between snapshots
+is not independently observable by this guard. Native pause prevents native
+work while paused, but the skill must require fresh approval on known resume.
 
 The question's conditional pause instruction is part of the human-approved
 scope. Native `paused` is requested on a non-success stop only under that

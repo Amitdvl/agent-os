@@ -39,6 +39,9 @@ tool call, authenticate a human cryptographically, independently assess
 semantic progress, or constrain an assistant that ignores the skill. The
 optional token cap uses native Codex enforcement. This implementation does not
 claim a platform-enforced wall-clock or cycle limit.
+It has no background event subscription: the assistant must record known
+stops/interruption events. A native UI pause and resume entirely between
+checks cannot be identified from an unchanged active-goal snapshot alone.
 
 The host's native goal tools are the preferred integration. An existing goal
 can require the human's native Edit/Clear control when the current host lacks
@@ -61,3 +64,11 @@ The command catalog records the supported `$approved-continuation` invocation,
 purpose, source and installed status. The legacy Awareness HUD may render its
 row as `/approved-continuation`; its description states the supported dollar
 invocation. Refresh and inspect the actual row after installation.
+
+Verified on macOS during development: a real native approval activated a
+disposable run; three guarded cycles executed across three distinct turns,
+including two automatic native continuations. Marker files and the terminal
+ledger were checked. Live failure/pause cases were not exercised. The automated
+suite passed 115 Node tests (including 35 Python guard contracts), 14 hook
+tests, and seven scoped assertion-checked faults. Those results do not convert
+cooperative limits or assistant attestations into platform enforcement.

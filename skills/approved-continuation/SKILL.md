@@ -108,3 +108,8 @@ cancel an in-flight tool call or prevent an assistant that ignores the skill
 from working. Optional native token caps use Codex's own enforcement. Local
 records contain the explicit proposal and concise evidence, not full chat,
 credentials or hidden memory. Keep private run state out of portable packages.
+The helper has no background event subscription: the assistant must process
+human stop/interruption events and record a terminal stop. A native UI pause
+and resume that both happen between checks cannot be detected from an unchanged
+active-goal snapshot alone. Never present this protocol as an executor sandbox
+or a guarantee against unobserved UI events.
