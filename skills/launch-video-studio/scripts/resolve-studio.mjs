@@ -10,6 +10,17 @@ export async function resolveStudio({ environment = process.env, home = homedir(
     let registry;
     try { registry = JSON.parse(await readFile(join(home, '.agent-os', 'workspaces.json'), 'utf8')); }
     catch { throw new Error('Register an active canonical project with id launch-video-studio in ~/.agent-os/workspaces.json, or set LAUNCH_VIDEO_STUDIO_ROOT.'); }
+    if (registry.remotePrimaryProjects !== undefined && (!Array.isArray(registry.remotePrimaryProjects) || registry.remotePrimaryProjects.some(entry => !entry || typeof entry !== 'object' || Array.isArray(entry)))) {
+      throw new Error('The workspace registry remotePrimaryProjects must be an array of project records.');
+    }
+    const remote = (registry.remotePrimaryProjects ?? [])
+      .filter((entry) => entry.id === 'launch-video-studio');
+    if (remote.length) {
+      if (remote.length !== 1 || !['hostLabel', 'projectLabel'].every(key => typeof remote[0][key] === 'string' && remote[0][key].trim())) {
+        throw new Error('The workspace registry must contain exactly one remote launch-video-studio primary with hostLabel and projectLabel.');
+      }
+      throw new Error(`The primary Launch Video Studio is on ${remote[0].hostLabel}. Open its saved Codex project “${remote[0].projectLabel}” there. This machine retains a backup; set LAUNCH_VIDEO_STUDIO_ROOT only when deliberately using that local copy.`);
+    }
     const matches = (Array.isArray(registry.canonicalProjects) ? registry.canonicalProjects : [])
       .filter((entry) => entry.id === 'launch-video-studio' && entry.status === 'active');
     if (matches.length !== 1 || typeof matches[0].path !== 'string' || !matches[0].path.trim()) {

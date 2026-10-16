@@ -22,5 +22,7 @@
   ],
   "protectedRoots": [
     "<absolute-private-or-secret-root>"
-  ]
+  ],
+  "remotePrimaryProjects": [],
+  "remotePrimaryProjectsHelp": "Optional entries {id, hostLabel, projectLabel} name a primary on another machine. The launch-video-studio resolver stops with that destination instead of using a retained local copy. Populate only in private machine state; omit the matching remote entry on the primary host."
 }
