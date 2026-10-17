@@ -5,7 +5,7 @@ The manifest is the source of truth for the portable inventory:
 - `manifest/tools.json` — 20 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secret-requirements.json` — requirement names and access classes only; it contains no values.
-- `manifest/packs.json` — core, local productivity, research, communication, creator, and macOS development packs.
+- `manifest/packs.json` — core, local productivity, research, communication, creator, macOS development, and web development packs.
 - `skills/orchestration/` and `policies/orchestration.md` — default lead/worker workflow for substantial tasks.
 - `skills/half-bounce/` — measured cold-start readiness workflow for native macOS apps, including a physical Dock-based acceptance gate.
 - `skills/launch-video-studio/` — automatically discover named launch-video formats through a registered studio checkout, with `$launch-video-studio` as an explicit invocation. The repository catalog owns format names, aliases, guides, and verification status; the portable resolver contains no machine paths or private film assets. Install this skill through the creator pack and configure the checkout using `LAUNCH_VIDEO_STUDIO_ROOT` or the private workspace registry. A private `remotePrimaryProjects` entry can name the destination host/project; the resolver then refuses silent backup authoring. Explicit environment overrides remain available for deliberate local work. Routing labels, paths and host state never belong in this portable source.
@@ -84,3 +84,18 @@ Development guidance is consolidated in `skills/systematic-debugging/`,
 `skills/react-best-practices/`, and `skills/frontend-design/`. Each complete package
 is selected by its core/creator pack and registered in the command catalog.
 See [skill consolidation](skill-consolidation.md) for retirement and host routing.
+
+## Approved development cleanup
+
+The web-development pack ships `cloudflare` (shared platform/deployment/auth
+references) and provider-scoped `agents-sdk`. Creator ships canonical
+`frontend-testing-debugging` with multi-server helper/examples; core ships
+`current-limiting-factor`. Commands owns installed-first discovery and delegates
+selected installs to the host installer. Outcome Loop retains retry/reconciliation
+and requested reporting without making ordinary work depend on Notion.
+
+Reviewed optional OpenAI/eve/frontend plugin entrypoint overlays, exact version
+hashes, local verification and update recovery are documented in
+[approved-skill-consolidation.md](approved-skill-consolidation.md). They do not
+copy vendor reference trees or account state, install plugins, or choose an agent
+provider for generic requests.

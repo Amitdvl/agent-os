@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloudflare"
+  short_description: "Build and deploy with shared Cloudflare references"
+  default_prompt: "Use $cloudflare to build or deploy this Cloudflare project."

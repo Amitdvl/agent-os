@@ -1230,7 +1230,7 @@ async function statusReport(context, catalogue = false) {
         sourcePath: `<CODEX_HOME>/skills/${tool.id}/SKILL.md`, status: "installed" });
     }
     const skillCommands = [];
-    for (const skill of selectedSkills(context)) {
+    for (const skill of context.bundle.skills.skills.filter((item) => item.path)) {
       if (!skill.command || !(await exists(join(context.codexHome, "skills", skill.id, "SKILL.md")))) continue;
       skillCommands.push({ group: "personal-slash-commands", id: skill.id,
         description: skill.command.purpose, source: "manifest/skills.json",

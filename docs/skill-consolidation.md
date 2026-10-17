@@ -55,3 +55,10 @@ the explicitly authorized local changes directly, then verify the source twin.
 The frontend package resolves helper paths from its own skill root while preserving
 existing .impeccable project data formats. Upstream automatic update instructions
 must not overwrite the combined package.
+
+## Subsequent approved cleanup
+
+See [approved-skill-consolidation.md](approved-skill-consolidation.md) for shared
+Cloudflare deployment references, canonical frontend QA, installed-first skill
+discovery, scoped provider triggers and focused outcome/bottleneck contracts.
+The original three canonical development packages above remain active.

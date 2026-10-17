@@ -73,7 +73,7 @@ test("Windows Suite selects every pack while platform filtering owns its exclusi
   const profiles = JSON.parse(await readFile(join(ROOT, "manifest", "profiles.json"), "utf8"));
   const windows = profiles.profiles.find((profile) => profile.id === "windows-suite");
   assert.ok(windows);
-  assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator"]);
+  assert.deepEqual(windows.packs, ["core", "local-productivity", "research", "communication", "creator", "web-development"]);
 });
 
 test("core installs all eight portable commands and every portable core skill by default", async () => {
@@ -271,7 +271,7 @@ test("restored core skills are declared, packaged, and behaviorally anchored", a
   const fallacy = await readFile(join(ROOT, "skills/fallacy-check/SKILL.md"), "utf8");
   assert.ok(fallacy.includes("## Intervention threshold"));
   const outcome = await readFile(join(ROOT, "skills/outcome-loop/SKILL.md"), "utf8");
-  for (const phrase of ["## Establish the target", "## Close the loop", "Do not replace the objective with an easier metric", "## Leave the result in Notion"]) assert.ok(outcome.includes(phrase), `outcome-loop missing ${phrase}`);
+  for (const phrase of ["## Establish the target", "## Close the loop", "Do not replace the objective with an easier metric", "## Report to the requested destination"]) assert.ok(outcome.includes(phrase), `outcome-loop missing ${phrase}`);
   const baseline = await readFile(join(ROOT, "skills/production-repo-baseline/SKILL.md"), "utf8");
   for (const phrase of ["# Production Repo Baseline", "second things", "initialize Git with `main`", "no fake application CI", "Do **not** scaffold Bun", "Dependabot"]) assert.ok(baseline.includes(phrase), `production-repo-baseline missing ${phrase}`);
   await stat(join(ROOT, "skills/production-repo-baseline/scripts/main.go"));

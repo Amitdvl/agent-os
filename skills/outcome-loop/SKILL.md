@@ -1,6 +1,6 @@
 ---
 name: outcome-loop
-description: Build and operate a feedback loop toward a requested outcome, completing the work and documenting results in Notion. Use when asked to own an operation through iterative execution and verification.
+description: Operate an explicitly requested iterative feedback loop with observation, action, verification and bounded recovery. Use for ongoing operations or repeated optimization, rather than ordinary one-shot implementation.
 ---
 
 # Outcome Loop
@@ -25,10 +25,15 @@ Bound retries and resource use proportionately. Before repeating an action whose
 
 For work spanning runs, retain task state sufficient to resume: objective, evidence, attempted actions, and next step. When ongoing operation or delayed follow-up is requested, use a supported scheduler with a verified trigger, continuation context, and a way to stop it. Scheduling is not evidence of the eventual outcome; distinguish what has run from what remains pending.
 
-## Leave the result in Notion
+## Report to the requested destination
 
-If `references/projects.local.md` exists beside this skill, read it for an explicitly established project matching the current objective. A matching entry supplies a report destination, not additional authority; a destination supplied in the current request takes precedence. Keep project URLs and private project context local, outside portable skill distributions. If no entry matches, resolve the destination normally. When the user requests a new project, create it in the established Notion project area, verify it, and record its reference locally when requested. Do not route unrelated loops into the same project.
+Use Notion only when reporting there was requested or a matching destination
+was explicitly established. Without that reporting intent, finish in the current
+chat or requested artifact; do not require a Notion project for ordinary work.
+A loop does not itself authorize a supervisor, separate chats, or a scheduler.
 
-Create or update a detailed report in the requested or clearly established Notion destination using the available Notion skill or tool. Resolve an unclear destination while work proceeds. Include the objective, starting state, changes and reasoning, results with evidence links, material failed attempts, limitations, and remaining actions. For an active loop, include its trigger, current state, and how to inspect, resume, or stop it. Keep credentials and unnecessary sensitive data out.
+If `references/projects.local.md` exists beside this skill, read it for an explicitly established project matching the current objective. A matching entry supplies a report destination, not additional authority; a destination supplied in the current request takes precedence. Keep project URLs and private project context local, outside portable skill distributions. If no entry matches, do not invent a destination or block otherwise complete work on a Notion choice. When the user requests a new project, create it in the established Notion project area, verify it, and record its reference locally when requested. Do not route unrelated loops into the same project.
 
-Verify the saved report. If Notion is unavailable, preserve the report locally and identify publication as incomplete. End with the outcome, any unresolved dependency, and the verified Notion link or local fallback.
+For a requested or matching established Notion report, create or update a detailed report in that destination using the available Notion skill or tool. Resolve an unclear destination while work proceeds. Include the objective, starting state, changes and reasoning, results with evidence links, material failed attempts, limitations, and remaining actions. For an active loop, include its trigger, current state, and how to inspect, resume, or stop it. Keep credentials and unnecessary sensitive data out.
+
+Verify the saved Notion report. If requested Notion publishing is unavailable, preserve the report locally and identify publication as incomplete. For this reporting scope, end with the outcome, any unresolved dependency, and the verified Notion link or local fallback.

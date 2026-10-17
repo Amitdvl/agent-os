@@ -5,9 +5,40 @@
       "id": "core",
       "description": "Agent policy, portable commands, first-party skills, guard templates, status, and diagnostics.",
       "tools": [],
-      "commands": ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"],
+      "commands": [
+        "add",
+        "archive",
+        "commands",
+        "ground",
+        "pre-publication",
+        "teach",
+        "trashness",
+        "trunk-finish"
+      ],
       "optionalCommands": [],
-      "skills": ["agent-os", "agent-secrets", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "goal-prompt", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire", "skill-cleaner", "tool-routing", "systematic-debugging", "react-best-practices"]
+      "skills": [
+        "agent-os",
+        "agent-secrets",
+        "book",
+        "cli-for-agents",
+        "cover-project",
+        "fallacy-check",
+        "goal-supervisor",
+        "goal-prompt",
+        "justification-audit",
+        "orchestration",
+        "outcome-loop",
+        "pamphlet",
+        "production-algorithm",
+        "production-repo-baseline",
+        "publication-safety",
+        "sire",
+        "skill-cleaner",
+        "tool-routing",
+        "systematic-debugging",
+        "react-best-practices",
+        "current-limiting-factor"
+      ]
     },
     {
       "id": "local-productivity",
@@ -36,10 +67,21 @@
     {
       "id": "creator",
       "description": "Recording, playback, and public-media production helpers.",
-      "tools": ["opencap", "spogo", "yt-dlp"],
+      "tools": [
+        "opencap",
+        "spogo",
+        "yt-dlp"
+      ],
       "commands": [],
       "optionalCommands": [],
-      "skills": ["image-art-direction", "openai-aesthetic-images", "launch-video-studio", "monochrome-workspace", "frontend-design"]
+      "skills": [
+        "image-art-direction",
+        "openai-aesthetic-images",
+        "launch-video-studio",
+        "monochrome-workspace",
+        "frontend-design",
+        "frontend-testing-debugging"
+      ]
     },
     {
       "id": "macos-development",
@@ -48,6 +90,7 @@
       "commands": [],
       "optionalCommands": [],
       "skills": ["half-bounce"]
-    }
+    },
+    {"id": "web-development", "description": "Shared Cloudflare platform/deployment and provider-scoped Agents SDK references.", "tools": [], "commands": [], "optionalCommands": [], "skills": ["cloudflare", "agents-sdk"]}
   ]
 }

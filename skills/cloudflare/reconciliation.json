@@ -1,0 +1,266 @@
+[
+  {
+    "path": "SKILL.md",
+    "platformSha256": "99be50a67ea1dbae086af3f2bac668c38dd57f71b25ed11f754827a7f206a89d",
+    "deploymentSha256": "d7632537cf19be17cf33d2c696b9d9c2ea3ee51026030e9b203d5b9255e75b15",
+    "resolution": "platform router plus focused deployment workflow"
+  },
+  {
+    "path": "references/agents-sdk/README.md",
+    "platformSha256": "b8bbf95920b105cc587b93280209bca95104cd32d944b6e7344cffd0a751e6c2",
+    "deploymentSha256": "fbe8e1611f991966dcde842d0281beb76e354e8196b19437ad8fdd672539f277",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/agents-sdk/api.md",
+    "platformSha256": "3c5b0816e92ff702a851bf071ddf2f2e814c4f841d5313fc86d3f7bdfa64ab8f",
+    "deploymentSha256": "38f9799af72977ac6c344de172dfcc1c55a7a343d8e450786bde4672a30afe97",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/agents-sdk/configuration.md",
+    "platformSha256": "4a24fc6be3cbc5578fa58d6ded8495fed77831909af599000c7f9849e9282afd",
+    "deploymentSha256": "85216db38cb5eb54889605ed89ca322a320bc3082c20da31a78a35c3dcc9f764",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/agents-sdk/patterns.md",
+    "platformSha256": "7cb1997c0fa2f66b00aa5c2a128d00bf788ec485eb86bff38e83a2ae02762b46",
+    "deploymentSha256": "891353f30bba3a69c66cd43f4ac1a86884d8c6abc26420ddbc73e6cf65cafaac",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/analytics-engine/README.md",
+    "platformSha256": "d60bb6b6bb29c836886637ee584485ba9145ca1b326ee8ea55d86a4f62bb2c6f",
+    "deploymentSha256": "123cb825f034688e3603b5a5fb6b372bbd9d82cabaa047bf787631ecb2026702",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/api/README.md",
+    "platformSha256": "f5c1e63c45d540fae02993c8c665d908bb5ae12a2953e3750839a352d2295f84",
+    "deploymentSha256": "7e5a0b6c299554eb58914d25a0fe98e016229d1c664cc9703e170e89b696a0a5",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/cron-triggers/README.md",
+    "platformSha256": "e2283e3de4e8c32b9700dfa4c714e4639c3da2ef1fbc5a2703082bf7f5d4b839",
+    "deploymentSha256": "97cd7899f085cb1f28b10c7508062a3a614bccfe2e78ea8457d654ff0cc1be4f",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/cron-triggers/gotchas.md",
+    "platformSha256": "d9204a25d6f22f970eb38dea053d2ba365c6cdb9e6b33591d83a6b62b835b016",
+    "deploymentSha256": "eb66b7b1186d07279cbf1a0b0a477898b32b04a5eca283aa9e8669ddca5e0bd2",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/d1/README.md",
+    "platformSha256": "a8374574ff4963e39014ca1228dbf651f36fe8c6355187687c2609ae1f7633d4",
+    "deploymentSha256": "61b28faa4348cc80cd1296bc562fcba8205a131e73c9dc19a7da32e5c4b5f724",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/d1/configuration.md",
+    "platformSha256": "94d31fee923ac3c9859f5741692ec843101463bc72dd8ead1fd3b086bb48a834",
+    "deploymentSha256": "06bc8baec2affc1d2cb12a0e2b3b3ea766527abd97c2ecf05460822f36feed2d",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/do-storage/patterns.md",
+    "platformSha256": "dc5118f06ac3fbf05323e17794bffa2e38e105e47d71f483b5545cae5f12a64c",
+    "deploymentSha256": "a60c80f45d7b13b161a93b5c14771161cf95c4876224a699ba74816207de54ea",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/email-routing/gotchas.md",
+    "platformSha256": "7d16c6d42eef4ca6aa2b6d677d4c87d8f614c85c41e7eac032e2bde5a0e3e77f",
+    "deploymentSha256": "8298b63f8e644b5b9de02cf61f031e403c5a363901ec2b470b936ea57f390ea7",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/email-workers/README.md",
+    "platformSha256": "54bce4cafacbb335d111f5a6de5463b6f33f4f8db5bb52d22f85ae0487cd1311",
+    "deploymentSha256": "a0bc3bf064ca3c2352e92a16bf81fbdc30691b4afac6503e2b212ee2f336efe4",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/email-workers/gotchas.md",
+    "platformSha256": "d1eccc06d83dce5ac8b0fab47bad9694e5b067752ebad52b51bd8f32fcde45bb",
+    "deploymentSha256": "135434634be61d82d5567dc20e779e9a807693d9d83ba2a49184d62ec551cb76",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/kv/gotchas.md",
+    "platformSha256": "f535fbf107435b03c72967a6505b279a1e3a34c1c0cfb76f6fddc081fd7db3d1",
+    "deploymentSha256": "60f1e7577a90acd2e44c65602b25f1f7cbb2cc6321c2fc501bf623484cb1115b",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/observability/README.md",
+    "platformSha256": "3c33e551008c5862bb09373b6d2b7fbaec300facf4fa70030f6e16598feb595e",
+    "deploymentSha256": "5b6085ff9ff70483e47af484f554ed6a0214886bfbb74add0a146d9454514635",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/pages/configuration.md",
+    "platformSha256": "65142ffa10de9517c126311d8d94a0c401447277df034123fca33ef48d03b3dd",
+    "deploymentSha256": "98607a16fb561f374609bb638a5d05e94c55ebcad29cdec1058cd25800799b85",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/pages/gotchas.md",
+    "platformSha256": "9a38076368f938dfc34bc1fa797f00a4d1b1bd2d0b0284595f2081cfd05ef182",
+    "deploymentSha256": "5c66190d3a5aaa5864044431811afc31524dec856442504a2bd5caa0640c4af2",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/pages-functions/gotchas.md",
+    "platformSha256": "407b5630e9489ea6aaf55e93ac03c61068d193bf9b300b7f2eb2b67cc77070b6",
+    "deploymentSha256": "c623392e07ba0b90d90a7b30408081f792e5c74faa8fbb7cf799adc4fd4d16b5",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/pulumi/gotchas.md",
+    "platformSha256": "f05c3e92c94f3fe24aab6072aa2a10a050a1df9d2ef56059d568150f6e6bb0a4",
+    "deploymentSha256": "f78cb1104200a53a2bd7c7807189fc59b59f6296c83f998054db1509ed3148ce",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/sandbox/README.md",
+    "platformSha256": "200282c2cfee1d30145949ce77eeab61c9cd7b0fbc0123cf3d8302e27ad865e6",
+    "deploymentSha256": "daef5eaf1d88b2980c8d6053134e991d6b762c8969b3100a3ee4c5c79f43fa26",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/sandbox/api.md",
+    "platformSha256": "252af5ad0f10d80f221a325b8cd12d7a277f9b15edc9ee7642e35663b385672d",
+    "deploymentSha256": "816b4a3b589a0403ec22b11eef5f68d5fe571661744f844f76f966d4e6724c8b",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/sandbox/configuration.md",
+    "platformSha256": "685b16622abef8faca88401b0cab758f2b1e9498403a84ed3183aac8abe6c314",
+    "deploymentSha256": "71a892941829a103444fa5dc591da2c6a16ff25c24ace1cdc30e190068922ea4",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/sandbox/gotchas.md",
+    "platformSha256": "56b1e74e0ad0ec803bb096dd1a9fcabf043a92078a0aa5b82a4b42d896c84d84",
+    "deploymentSha256": "abca00f4f9b66ac7c34ed3ed6decf2b0cb5455e17b35d4316bee60446b4c52f9",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/sandbox/patterns.md",
+    "platformSha256": "f99ef6dbf0a9833235c536b5bc4366930a76e57ecb4d9f90a45fdfe68ef641a7",
+    "deploymentSha256": "85a3929971f06e5ebe3e8d93256fffd54231002ed5959dff0e78ca398f16de2d",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/tail-workers/configuration.md",
+    "platformSha256": "e30b9d4e0846c61563696e2db6d645491dedb2dc07172f98ae3ffe51b2e8d126",
+    "deploymentSha256": "8efac4877ad572f631f78643712a9c1e151661d4efedd728ee23fe2877669845",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/vectorize/api.md",
+    "platformSha256": "1a9eb04dc17cd4c346fdca49f10b8059a8897e3cbc28ea5ec6ca898874b86318",
+    "deploymentSha256": "c0aab15c2d7fc72b875b26e9a96a32bb2f899bd64ff3db33107208aacbf7347b",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/vectorize/gotchas.md",
+    "platformSha256": "ed128e78cb088cd62d3a4a4ada65aa7729e09b0bc9ecde1066fb38d00906fdaf",
+    "deploymentSha256": "41368d07e71f80db6d649b07ed871b9ac463bcc8db8d53563e07d24634fd5633",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/web-analytics/README.md",
+    "platformSha256": "f284cbfd425e0d2c53f79c79187287d7c0c74e6d84259294f2ca5b996834857c",
+    "deploymentSha256": "bff5f576b9fc55ee7f3c448a7e5aff30e653bcc214d4040f476f392a69213218",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers/configuration.md",
+    "platformSha256": "e7c5fb85f60a8e79d1e84225e3282797850ce5edd31c4d09d70969c0c325878e",
+    "deploymentSha256": "76a1086028fbda8218306771af0c15c53774c40279c5a40a74057e6e9f2b10b4",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers/gotchas.md",
+    "platformSha256": "5dc63ee4570e2c4ed3817a5f9318454caf3a1602c91cd1ae334e98486fe3b2c1",
+    "deploymentSha256": "f9430e9fe0462c5749fb6478f5d29eea18838d71bcb73366c9479ff865dc597f",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers-playground/README.md",
+    "platformSha256": "88428c57b687c3c6ca23ce95559d0217dcc218a806172ddd70d0c86db0ed5231",
+    "deploymentSha256": "5429f6fbb3300f1e190e8024ae8fd63f5e345ea22ecdaea4e405766351177496",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers-playground/api.md",
+    "platformSha256": "10ca3f561c09227408451ead3809331429e5deb29d3eb2af48ce984dae8959fd",
+    "deploymentSha256": "bf8f93589789b19c0834815dd498d09a0eaf526502d66691c4797b6c2906ad49",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers-playground/configuration.md",
+    "platformSha256": "ce0183c32a0df67ae263f8fbbe459b0dfb6247adff5e869c0b1b4d06ae1f6300",
+    "deploymentSha256": "eee7eeb85e60ee4a2b9d91f445448dc93c3d2875a80b35888f93847e990d128f",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workers-playground/gotchas.md",
+    "platformSha256": "478b65b6a1827a2c95789dfe6038c16837a7dd463b6b943c630afea63a7454bd",
+    "deploymentSha256": "85e262f98373f1631dcef3f44a57b6d9e30f8e930e013dc8667fa5993bb6dfae",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workflows/README.md",
+    "platformSha256": "46e74e07cd72d650f100c0360bc060da94c899948e8e89f2d5eac215cc2cc615",
+    "deploymentSha256": "c0a6be8e49bc081474ad24ec4c1f6ec190c2e431c2d30869e0b5a047b4a25c3f",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workflows/api.md",
+    "platformSha256": "a91d6cd8713c0a472c560fcfb7c308b2e3883594b1dcb77442769eb06c5716e5",
+    "deploymentSha256": "f9daa528ae883afcab07036e1b7c5e341b1b10d579fadaa782553243c41881ee",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workflows/configuration.md",
+    "platformSha256": "3b6b44ded7b2c065658726f55bea95068aa06184b2cf2c1c1929d80e14b316ad",
+    "deploymentSha256": "3701f2702b265c517668e24e2dd63417a277e7f601cb52623a9a4e1677553756",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workflows/gotchas.md",
+    "platformSha256": "2e810201a6f5b4e96451926abb92ecbdfee8c30650745fdc3d7dd0933b4cc4cb",
+    "deploymentSha256": "21ddf3bdb1987bfbdfc1796e49643bf0f2ef247ccf01a78c03f77e5dc50d695d",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/workflows/patterns.md",
+    "platformSha256": "7b39cce4fbe3a7363add0e299276ee9fd68e58855a1c099ad8ae20ffec54ae5b",
+    "deploymentSha256": "eca20d1dadcf97e7a415603793aec1dbb3a252eb5abf27a35e0b99e242ebe593",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/wrangler/README.md",
+    "platformSha256": "67bab7fd889e3296fa48f88398f52b44e0e52f159ab1442ecd594059f3f741f1",
+    "deploymentSha256": "a30d1890034e40e50a6f974a6dde4a8337293372aff91d4b79bbe4ecddc69e36",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/wrangler/configuration.md",
+    "platformSha256": "25a61168938f398eac23e686ff0558c3b82fc03e4bda43e9a8b856dd02ca2791",
+    "deploymentSha256": "a8e042ffe9e399167816920a58c8ce909b6cd784507615e3431729884e1334b2",
+    "resolution": "platform-reference; deployment auth restored separately"
+  },
+  {
+    "path": "references/wrangler/gotchas.md",
+    "platformSha256": "6a77032704538305c87afc98f8e7296b145141c322a1f401b99c5b2024caebaa",
+    "deploymentSha256": "bb24bd86adaacf3f1f2e359e6e02ee72e1342e6156ffa3bb8b6d25aa28aba5c6",
+    "resolution": "platform-reference; deployment auth restored separately"
+  }
+]

@@ -20,7 +20,7 @@
       "path": "commands/commands/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Show the current capability catalogue derived from manifests and installed state."
+      "purpose": "Show installed capabilities first; discover additional skills on explicit request and route chosen installs through the host skill-installer."
     },
     {
       "id": "decision-queue",

@@ -17,7 +17,7 @@
       "id": "windows-suite",
       "displayName": "Windows Suite",
       "description": "The complete Agent OS workflow with every documented Windows-compatible capability, while explicitly excluding macOS-only tools.",
-      "packs": ["core", "local-productivity", "research", "communication", "creator"],
+      "packs": ["core", "local-productivity", "research", "communication", "creator", "web-development"],
       "policies": ["core", "external-actions", "secrets", "freshness", "focus", "orchestration", "twin-sync", "strict-portable"],
       "identityMode": "local-config",
       "memory": "disabled",
@@ -34,7 +34,8 @@
         "research",
         "communication",
         "creator",
-        "macos-development"
+        "macos-development",
+        "web-development"
       ],
       "policies": [
         "core",

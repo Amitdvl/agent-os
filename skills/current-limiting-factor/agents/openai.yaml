@@ -1,0 +1,4 @@
+interface:
+  display_name: "Current Limiting Factor"
+  short_description: "Find the single bottleneck now"
+  default_prompt: "Use $current-limiting-factor to identify the main constraint slowing this objective right now."

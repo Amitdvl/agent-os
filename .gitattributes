@@ -1,0 +1,4 @@
+# Preserve imported reference bytes, including Markdown hard breaks and EOF spacing.
+# Keep normal whitespace checks for maintained workflows, helpers and overlays.
+skills/cloudflare/references/** whitespace=-blank-at-eol,-blank-at-eof
+skills/agents-sdk/references/** whitespace=-blank-at-eol,-blank-at-eof

@@ -95,8 +95,36 @@
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "durable-objects", "gh-address-comments", "gh-fix-ci", "goal-prompt", "hatch-pet", "imagegen", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
-    }
+      "skills": [
+        ".system",
+        "agent-secrets",
+        "chatgpt-apps",
+        "cloudflare-email-service",
+        "cloudflare-one",
+        "cloudflare-one-migrations",
+        "codex-primary-runtime",
+        "durable-objects",
+        "gh-address-comments",
+        "gh-fix-ci",
+        "goal-prompt",
+        "hatch-pet",
+        "imagegen",
+        "mentor",
+        "playwright",
+        "render-deploy",
+        "sandbox-sdk",
+        "screenshot",
+        "security-best-practices",
+        "security-threat-model",
+        "speech",
+        "turnstile-spin",
+        "viral-sense",
+        "web-perf",
+        "workers-best-practices",
+        "wrangler"
+      ]
+    },
+    {"id": "consolidated-development", "disposition": "portable-development-workflow", "skills": ["cloudflare", "agents-sdk", "frontend-testing-debugging", "current-limiting-factor"]}
   ],
   "hooks": [
     {"id": "commit-push-watcher", "path": "templates/hooks/commit-push-watcher/codex_commit_push_watcher.py", "disposition": "strict-portable-optional-disabled"},
@@ -118,7 +146,11 @@
     {"id": "plugin-owned-supabase-rules", "disposition": "host-or-third-party", "reason": "Keep the installed Supabase plugin guidance; disable the older Build Web Apps duplicate by namespaced selector. Vendor versions and caches remain host-owned, not copied into Agent OS."},
     {"id": "retired-gstack", "disposition": "retired", "reason": "Removed by explicit user request. No gstack install, runtime, updater or linked skill is active. Investigation uses systematic-debugging; browser/review/finish use independent installed tools and project policy."},
     {"id": "config-project-record", "disposition": "project-specific-reference-only"},
-    {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, local post inventory, and thread target; intentionally excluded from the portable distribution."}
+    {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, local post inventory, and thread target; intentionally excluded from the portable distribution."},
+    {"id": "retired-cloudflare-deploy", "disposition": "retired", "reason": "Consolidated into cloudflare: shared platform tree, restored auth and focused deployment checks; per-file reconciliation records retained."},
+    {"id": "retired-webapp-testing", "disposition": "retired", "reason": "Canonical frontend-testing-debugging retains helper, examples/license and rendered QA; browser adapters remain independent."},
+    {"id": "retired-find-skills", "disposition": "retired", "reason": "Commands owns installed-first and explicit external discovery; host skill-installer remains the installation executor."},
+    {"id": "provider-and-frontend-overlays", "disposition": "reviewed-plugin-overlay", "reason": "manifest/skill-overlays.json records exact reviewed versions/source hashes and portable replacement contracts; scripts/skill-overlays.mjs checks/applies only those entrypoints. Plugin reference trees stay vendor-owned; re-review after updates."}
   ],
   "rules": [
     {"id": "tool-allow-prefixes", "disposition": "strict-portable-generated"},

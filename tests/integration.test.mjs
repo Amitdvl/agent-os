@@ -145,11 +145,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
     assert.equal(noteBridgeEntry.status, "installed");
     assert.match(noteBridgeEntry.description, /Contract 1.0.1/);
   }
-  assert.equal(catalogue.workflows.length, 6);
+  assert.equal(catalogue.workflows.length, 7);
   assert.ok(catalogue.hostSkills.codex.includes(WINDOWS ? "opencli" : "birdclaw"));
   assert.deepEqual(catalogue.automations, []);
   assert.deepEqual(catalogue.plugins, []);
-  assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator", "macos-development"]);
+  assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator", "macos-development", "web-development"]);
   assert.deepEqual(catalogue.classifiedCatalogue.map((item) => item.group).filter((item, index, all) => index === all.indexOf(item)), ["personal-slash-commands", "workflows", "local-tools", "standalone-skills"]);
   assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === (WINDOWS ? "opencli" : "birdclaw")).source, "managed local-tools registry");
 

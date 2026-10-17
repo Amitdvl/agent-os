@@ -1,0 +1,1 @@
+Cloudflare Agents SDK installed reference package retained unchanged except scoped activation and provider-selection guidance in SKILL.md. Agent OS does not install a provider or authenticate from this contract.
