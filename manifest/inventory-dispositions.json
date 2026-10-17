@@ -85,7 +85,7 @@
     {
       "id": "creator-art-direction",
       "disposition": "portable-core",
-      "skills": ["openai-aesthetic-images", "launch-video-studio", "frontend-design"]
+      "skills": ["image-art-direction", "launch-video-studio", "frontend-design"]
     },
     {
       "id": "macos-development",
@@ -147,6 +147,7 @@
     {"id": "retired-gstack", "disposition": "retired", "reason": "Removed by explicit user request. No gstack install, runtime, updater or linked skill is active. Investigation uses systematic-debugging; browser/review/finish use independent installed tools and project policy."},
     {"id": "config-project-record", "disposition": "project-specific-reference-only"},
     {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, local post inventory, and thread target; intentionally excluded from the portable distribution."},
+    {"id": "retired-openai-aesthetic-images", "disposition": "retired", "reason": "Preserved in full as the opt-in references/styles/openai-aesthetic-images.md style reference within image-art-direction; no standalone skill or default aesthetic."},
     {"id": "retired-cloudflare-deploy", "disposition": "retired", "reason": "Consolidated into cloudflare: shared platform tree, restored auth and focused deployment checks; per-file reconciliation records retained."},
     {"id": "retired-webapp-testing", "disposition": "retired", "reason": "Canonical frontend-testing-debugging retains helper, examples/license and rendered QA; browser adapters remain independent."},
     {"id": "retired-find-skills", "disposition": "retired", "reason": "Commands owns installed-first and explicit external discovery; host skill-installer remains the installation executor."},

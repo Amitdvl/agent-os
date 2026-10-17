@@ -1,6 +1,6 @@
 ---
 name: image-art-direction
-description: "Develop and preserve detailed art direction for image generation or editing, especially multi-step iterations, exact visual invariants, and API batch workflows. Use the native imagegen skill for routine generation; use this companion when the brief or production control is the hard part."
+description: "Develop and preserve detailed art direction for image generation or editing, especially multi-step iterations, exact visual invariants, requested OpenAI-style color-field artwork, and API batch workflows. Use the native imagegen skill for routine generation; use this companion when the brief or production control is the hard part."
 ---
 
 # Image Art Direction
@@ -16,6 +16,17 @@ Collaborate like an art director and translate ordinary language into precise vi
 Input images and explicit edit verbs take precedence. An image supplied only as inspiration remains a generation reference, not automatically an edit target.
 
 Do not start art-direction intake for education, critique, comparison, or explanation without generation/edit intent. Answer those requests directly.
+
+## Named visual styles
+
+For a request naming OpenAI Aesthetic Images, OpenAI-style color-field campaign
+art, or a supplied reference showing that look, read
+[OpenAI Aesthetic Images](references/styles/openai-aesthetic-images.md).
+It preserves the full composition, lighting, palette, prompt, editing and visual
+acceptance guidance from the former standalone skill. Apply it within the shared
+brief-and-iteration workflow; the user's colors, subjects, text and locked choices
+take precedence. Other image requests do not load or inherit this style. A mention
+of OpenAI alone does not call for an abstract background.
 
 ## Conversation contract
 
@@ -112,6 +123,7 @@ Live CLI calls require `OPENAI_API_KEY`. Never ask the user to paste a key in ch
 
 ## Reference routing
 
+- [styles/openai-aesthetic-images.md](references/styles/openai-aesthetic-images.md): requested OpenAI-style color-field campaign art; load only for this named look or a matching supplied reference.
 - [conversation-and-state.md](references/conversation-and-state.md): specificity gate, compact questions, recommendations, visual state, locks.
 - [photography-direction.md](references/photography-direction.md): composition, camera, light, color, materials, portraits, products, environments, realism.
 - [design-illustration-typography.md](references/design-illustration-typography.md): illustration, 3D, graphic design, UI, diagrams, typography, aspect-ratio consequences.

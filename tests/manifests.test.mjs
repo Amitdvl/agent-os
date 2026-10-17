@@ -318,13 +318,19 @@ test("merged algorithm has one discoverable package and ships its source referen
   assert.ok(!primary.includes("ZTSI3DDP_4A"), "commentary must not replace the primary source");
 });
 
-test("OpenAI aesthetic skill preserves directional light-field guidance and source references", async () => {
+test("Image Art Direction owns the complete OpenAI style reference without a standalone skill", async () => {
   const skills = await json("skills");
-  const entry = skills.skills.find((item) => item.id === "openai-aesthetic-images");
-  assert.deepEqual(entry, { id: "openai-aesthetic-images", path: "skills/openai-aesthetic-images/SKILL.md", disposition: "portable-core" });
+  assert.ok(!skills.skills.some((item) => item.id === "openai-aesthetic-images"));
+  const entry = skills.skills.find((item) => item.id === "image-art-direction");
+  assert.ok(entry.includePackage, "named style must travel with its parent package");
+  assert.equal(entry.command.invocation, "$image-art-direction");
   const creator = (await json("packs")).packs.find((pack) => pack.id === "creator");
-  assert.ok(creator.skills.includes("openai-aesthetic-images"));
-  const content = await readFile(join(ROOT, entry.path), "utf8");
+  assert.ok(creator.skills.includes("image-art-direction"));
+  assert.ok(!creator.skills.includes("openai-aesthetic-images"));
+  const parent = await readFile(join(ROOT, entry.path), "utf8");
+  const link = parent.match(/\]\((references\/styles\/openai-aesthetic-images\.md)\)/);
+  assert.ok(link, "style reference must be reachable from the parent skill");
+  const content = await readFile(join(dirname(join(ROOT, entry.path)), link[1]), "utf8");
   for (const phrase of ["Gradient Labs", "New funding to build towards AGI", "large-scale directional color flow", "isolated orange bloom", "3:1 X profile banner", "Visual acceptance check"]) {
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), `missing ${phrase}`);
   }

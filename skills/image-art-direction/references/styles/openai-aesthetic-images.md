@@ -1,10 +1,3 @@
----
-name: openai-aesthetic-images
-description: Create or refine abstract campaign art, social banners, and editorial backgrounds using the warm, directional color-field language seen in selected OpenAI site artwork. Use for requests that name this look or provide an OpenAI color-field reference; not for generic gradients or ordinary product imagery.
-metadata:
-  short-description: Direct OpenAI-style campaign artwork
----
-
 # OpenAI Aesthetic Images
 
 Treat this as an art-direction system, not a palette preset. The result should feel like a decisive, soft-lit visual event—never a collection of blurred blobs or a generic “AI gradient.”
