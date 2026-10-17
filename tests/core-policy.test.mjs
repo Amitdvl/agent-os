@@ -12,7 +12,9 @@ test("core policy prevents Spotlight-visible generated macOS app copies", async 
     "ending in `.noindex`",
     "indexable generated app copy remains",
     "unregister and remove task-created disposable products",
-    "fresh exact approval manifest",
+    "fresh exact manifest",
+    "explicit Codex or other AI agent deletion requests need no separate human approval",
+    "otherwise remove only user-approved targets",
   ]) {
     assert.ok(content.includes(phrase), `core build-artifact policy is missing: ${phrase}`);
   }

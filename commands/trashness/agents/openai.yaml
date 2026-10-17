@@ -1,4 +1,4 @@
 interface:
   display_name: "Trashness"
-  short_description: "Approve and delete high-confidence Mac trash"
-  default_prompt: "Scan this Mac for high-confidence disposable files, show the exact deletion set, wait for my approval, then delete and verify only what I approved."
+  short_description: "Authorize, delete, and verify disposable Mac files"
+  default_prompt: "Scan this Mac for high-confidence disposable files and show the exact deletion set. For an explicit Codex or other AI agent deletion request, proceed without separate human approval; otherwise ask me to approve. Delete only authorized targets and verify every result."

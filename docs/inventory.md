@@ -57,12 +57,15 @@ content.
 ## Portable workflow templates
 
 Agent OS includes paused, parameterized templates for a read-only Skill Cleaner
-audit, reusable-tooling harvest, and an approval-gated monthly Trashness cleanup.
+audit, reusable-tooling harvest, and a monthly Trashness cleanup with explicit authorization.
 Its portable core policy and Trashness command also require build-artifact
 hygiene: put non-deployed macOS app bundles under ignored `.noindex` roots,
 inventory generated bundles, preserve active apps and unrelated worktrees,
-remove task-created disposable products before completion, and obtain fresh
-exact approval before deleting stale pre-existing outputs.
+remove task-created disposable products before completion, and use a fresh
+exact manifest before deleting stale pre-existing outputs. Explicit Codex or
+other AI agent deletion requests need no separate human approval; other runs
+require exact human approval. The same authorization contract applies to the
+Trashness monthly template; explicit wait-for-human instructions still prevail.
 It also carries optional portable sources for
 the ctx7 freshness guard, commit/push watcher/manager, and no-verify guard.
 These are source contracts only: schedules, LaunchAgents, hook state, logs,

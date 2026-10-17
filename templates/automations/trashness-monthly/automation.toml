@@ -4,18 +4,21 @@ kind = "cron"
 name = "Monthly Trashness cleanup"
 prompt = """Use the `trashness` command package to run the complete monthly Mac cleanup workflow.
 
-Discover only high-confidence disposable files, present the exact Trashness
-manifest, and wait in this task for explicit approval. After approval, continue
-in the same task: permanently delete only the approved set, verify every result,
-and report reclaimed space.
+Discover only high-confidence disposable files and present the exact Trashness
+manifest. An explicit Codex or other AI agent deletion request in this run
+needs no separate human approval. Otherwise wait in this task for exact human
+approval. Once authorized, continue in the same task: permanently delete only
+the authorized set, verify every result, and report reclaimed space.
 
 Hard rules:
-- Invocation or scheduling is not approval.
-- Never auto-approve, fabricate a reply, or delete before explicit approval.
-- Enforce the machine-local Trashness protected-name list.
+- Invocation, scheduling, or an agent merely executing the run is not approval
+  or an explicit agent deletion request.
+- Honor explicit scan-only or wait-for-human-approval instructions.
+- Never fabricate approval or delete while required approval is pending.
+- Enforce the machine-local Trashness protected-name list and all exclusions.
 - Do not use Mole or another broad cleaner.
-- Do not use sudo, empty Trash wholesale, or widen the approved manifest.
-- If approval never arrives, delete nothing.
+- Do not use sudo, empty Trash wholesale, or widen the authorized scope.
+- If required human approval never arrives, delete nothing.
 """
 status = "PAUSED"
 rrule = "{{rrule}}"

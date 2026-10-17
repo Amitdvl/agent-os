@@ -48,7 +48,8 @@
       "path": "commands/trashness/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Scan for high-confidence disposable Mac files, require exact approval, then permanently delete and verify only the approved set."
+      "purpose": "Use /trashness to scan disposable Mac files, show the exact manifest, then delete and verify authorized targets. Explicit Codex or other AI agent deletion requests need no separate human approval; other runs require exact human approval.",
+      "invocation": "/trashness"
     },
     {
       "id": "trunk-finish",
