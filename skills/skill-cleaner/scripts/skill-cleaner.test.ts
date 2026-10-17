@@ -131,3 +131,40 @@ test("counts command-like plain-log reads but ignores rendered listings", () => 
     ["demo"],
   );
 });
+
+test("namespaced disable selectors isolate a plugin from canonical and other plugin skills", (context) => {
+  const home = mkdtempSync(join(tmpdir(), "skill-cleaner-named-selector-"));
+  context.after(() => rmSync(home, { recursive: true, force: true }));
+  const canonical = join(home, ".codex/skills/react-best-practices/SKILL.md");
+  const duplicate = join(home, ".codex/plugins/cache/openai-curated-remote/build-web-apps/1.0.0/skills/react-best-practices/SKILL.md");
+  const other = join(home, ".codex/plugins/cache/openai-curated-remote/specialist/1.0.0/skills/react-best-practices/SKILL.md");
+  const sibling = join(home, ".codex/plugins/cache/openai-curated-remote/build-web-apps/1.0.0/skills/shadcn/SKILL.md");
+  for (const [file, name] of [[canonical, "react-best-practices"], [duplicate, "react-best-practices"], [other, "react-best-practices"], [sibling, "shadcn"]]) {
+    mkdirSync(resolve(file, ".."), { recursive: true });
+    writeFileSync(file, `---\nname: ${name}\ndescription: isolated fixture\n---\nFixture ${file}\n`);
+  }
+  const run = (config: string) => {
+    writeFileSync(join(home, ".codex/config.toml"), config);
+    const result = spawnSync(process.execPath, ["--experimental-strip-types", new URL("./skill-cleaner.ts", import.meta.url).pathname, "--no-live", "--no-logs", "--json"], {
+      cwd: home, encoding: "utf8", env: { ...process.env, HOME: home },
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    return JSON.parse(result.stdout);
+  };
+  for (const config of [
+    '[[skills.config]]\nname = "build-web-apps:react-best-practices"\nenabled = false\n',
+    '[[skills.config]]\nenabled = false\nname = "build-web-apps:react-best-practices"\n',
+    '[[skills.config]]\nname = "build-web-apps:react-best-practices"\nenabled = false\n[[skills.config]]\nname = "react-best-practices"\nenabled = true\n',
+  ]) {
+    const report = run(config);
+    const fixture = (file: string) => report.skills.find((skill: { path: string }) => skill.path === file);
+    assert.equal(fixture(duplicate)?.enabled, false, "The exact namespaced target must be disabled");
+    for (const file of [canonical, other, sibling]) {
+      assert.equal(fixture(file)?.enabled, true, `Disabling a plugin skill changed ${file}`);
+      assert.ok(report.selectedSkills.some((skill: { path: string }) => skill.path === file));
+    }
+    assert.ok(!report.selectedSkills.some((skill: { path: string }) => skill.path === duplicate));
+  }
+  const restored = run('[[skills.config]]\nname = "build-web-apps:react-best-practices"\nenabled = true\n');
+  assert.equal(restored.skills.find((skill: { path: string }) => skill.path === duplicate)?.enabled, true);
+});

@@ -34,6 +34,12 @@ be observed, when enabled live names collide, when configured skills are absent
 from the live prompt despite allowing implicit invocation, when skills are omitted by the modeled budget, or when a skill entrypoint is broken. Explicit-only skills are excluded from that comparison. Description truncation alone is
 reported but is not a failure because Codex applies that degradation deliberately.
 
+Plugin skill overrides use namespaced names; local overrides use file paths.
+Interpret each override as a complete TOML table, independent of key order. A
+CLI prompt scan does not prove that the desktop loaded the same remote plugin
+catalog. For desktop-specific cleanup, verify its configuration API's effective
+state and explicitly distinguish that from a visually observed catalog.
+
 ## Decision rules
 
 - Keep the loaded or policy-owning copy when duplicate names exist.

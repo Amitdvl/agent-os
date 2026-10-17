@@ -82,3 +82,14 @@ review the final diff, and check for residual risk. Report:
 - what each role did and its evidence;
 - the final acceptance-check results;
 - `Done` only when every required condition holds, otherwise `Not Done` with the remaining gap and next action.
+
+## Focused references
+
+Read only what the current assignment needs:
+
+- [planning.md](references/planning.md): scope, assumptions, coherent steps and evidence.
+- [delegation.md](references/delegation.md): bounded workers and independent acceptance.
+- [code-review.md](references/code-review.md): actionable findings and verified corrections.
+
+These references retain useful guidance from retired workflow packs without
+requiring those packs or adding another activation/approval process.

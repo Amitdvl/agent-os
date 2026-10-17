@@ -481,13 +481,22 @@ function configState(): {
   let block = "";
   let currentPath = "";
   let currentName = "";
-  for (const line of lines) {
+  let currentEnabled: boolean | undefined;
+  function finishSkillBlock() {
+    if (block !== "skill" || currentEnabled !== false) return;
+    if (currentPath) disabledPaths.add(currentPath);
+    if (currentName) disabledNames.add(currentName);
+  }
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (line.startsWith("[")) finishSkillBlock();
     const skillBlock = /^\[\[skills\.config\]\]/.test(line);
     const pluginBlock = /^\[plugins\."([^"]+)"\]/.exec(line);
     if (skillBlock) {
       block = "skill";
       currentPath = "";
       currentName = "";
+      currentEnabled = undefined;
       continue;
     }
     if (pluginBlock) {
@@ -505,14 +514,13 @@ function configState(): {
       const nameMatch = /^name\s*=\s*"([^"]+)"/.exec(line);
       if (pathMatch) currentPath = expandHome(pathMatch[1] ?? "");
       if (nameMatch) currentName = nameMatch[1] ?? "";
-      if (/^enabled\s*=\s*false/.test(line)) {
-        if (currentPath) disabledPaths.add(currentPath);
-        if (currentName) disabledNames.add(currentName);
-      }
+      const enabledMatch = /^enabled\s*=\s*(true|false)\b/.exec(line);
+      if (enabledMatch) currentEnabled = enabledMatch[1] === "true";
     } else if (block.startsWith("plugin:") && /^enabled\s*=\s*false/.test(line)) {
       disabledPlugins.add(block.slice("plugin:".length));
     }
   }
+  finishSkillBlock();
   return { disabledPaths, disabledNames, disabledPlugins };
 }
 

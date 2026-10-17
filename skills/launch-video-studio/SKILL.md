@@ -7,6 +7,15 @@ description: Create or edit launch videos and product demo videos using the regi
 
 Use the installed studio's format catalog to discover reusable video starting points. A request for an “iMessage video,” “imessage template,” or “imessage format” selects the same canonical format; the current catalog owns aliases, capabilities, defaults, and verification limits. Do not require the user to invoke this skill explicitly or remember a repository path.
 
+## Explicit Remotion projects
+
+When the user explicitly selects an existing Remotion project or asks for Remotion,
+use the installed Remotion plugin and that project's instructions. Consult the
+optional [Remotion supplement](references/remotion-supplement/index.md) for retained
+map, text, caption and trim concepts. This branch does not resolve or create a
+studio, change the chosen stack, or authorize an installation. General studio
+requests continue through the registered-primary route below.
+
 ## Locate and discover
 
 Run `scripts/resolve-studio.mjs` from this skill with Node. It resolves `LAUNCH_VIDEO_STUDIO_ROOT` when supplied, otherwise the active `launch-video-studio` canonical project in the private `~/.agent-os/workspaces.json`, and verifies the repository's package identity and harness. Use the returned directory as the working directory. If neither configuration exists, report that the studio checkout needs to be registered; do not substitute a similarly named scratch directory or create a new studio.

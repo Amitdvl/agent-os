@@ -146,6 +146,13 @@ Choose the cheapest reliable test boundary that can expose the actual failure:
 - A small number of end-to-end journeys when real user wiring is a material
   risk. A library or CLI may need no browser tests at all.
 
+## Focused test references
+
+Use [regression-design.md](references/regression-design.md) to choose a useful
+red/green sequence, and [writing-good-tests.md](references/writing-good-tests.md)
+when deriving assertions, choosing mocks or adding test helpers. These references
+support the scoped workflow; they impose no separate approval or framework.
+
 ## Improve in coherent batches
 
 Add high-value tests using existing fixtures, naming, runner, and conventions.
