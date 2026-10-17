@@ -79,3 +79,8 @@ Select `--profile apple-suite` for the complete macOS workflow. The local-produc
 The upstream installation route is `brew install asc`, but Agent OS does not install it or authenticate automatically. The source remains `manual-unresolved` until a release is deliberately reviewed and pinned. The contract starts with `asc version`, help, auth status/doctor, and current JSON app reads. Releases, uploads, pricing, invitations, submissions, and deletion require exact targets and action intent, followed by verification.
 
 API credential names follow upstream [authentication documentation](https://github.com/rorkai/App-Store-Connect-CLI/blob/main/commands/auth.mdx). Team keys need an issuer ID; individual keys do not. Private key alternatives belong only in Agent Vault or user-owned supported credential storage. No account state, private keys, or web sessions are distributed. Upstream telemetry is enabled by default; `ASC_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` opts out.
+
+Development guidance is consolidated in `skills/systematic-debugging/`,
+`skills/react-best-practices/`, and `skills/frontend-design/`. Each complete package
+is selected by its core/creator pack and registered in the command catalog.
+See [skill consolidation](skill-consolidation.md) for retirement and host routing.

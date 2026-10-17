@@ -73,11 +73,6 @@
       "skills": ["decision-queue"]
     },
     {
-      "id": "gstack",
-      "disposition": "third-party-optional",
-      "skills": ["browse", "careful", "codex", "design-consultation", "design-review", "document-release", "freeze", "gstack-upgrade", "guard", "investigate", "office-hours", "plan-ceo-review", "plan-design-review", "plan-eng-review", "qa", "qa-only", "retro", "review", "setup-browser-cookies", "ship", "unfreeze"]
-    },
-    {
       "id": "other-symlinks",
       "disposition": "third-party-optional",
       "skills": ["last30days", "remotion-best-practices"]
@@ -85,12 +80,12 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire"]
+      "skills": ["systematic-debugging", "react-best-practices", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire"]
     },
     {
       "id": "creator-art-direction",
       "disposition": "portable-core",
-      "skills": ["openai-aesthetic-images", "launch-video-studio"]
+      "skills": ["openai-aesthetic-images", "launch-video-studio", "frontend-design"]
     },
     {
       "id": "macos-development",
@@ -100,7 +95,7 @@
     {
       "id": "real-directories",
       "disposition": "portable-contract-or-external-by-inventory",
-      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "durable-objects", "gh-address-comments", "gh-fix-ci", "goal-prompt", "gstack", "hatch-pet", "imagegen", "make-interfaces-feel-better", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
+      "skills": [".system", "agent-secrets", "agents-sdk", "chatgpt-apps", "cloudflare", "cloudflare-deploy", "cloudflare-email-service", "cloudflare-one", "cloudflare-one-migrations", "codex-primary-runtime", "current-limiting-factor", "durable-objects", "gh-address-comments", "gh-fix-ci", "goal-prompt", "hatch-pet", "imagegen", "mentor", "playwright", "render-deploy", "sandbox-sdk", "screenshot", "security-best-practices", "security-threat-model", "sentry", "speech", "turnstile-spin", "viral-sense", "web-perf", "workers-best-practices", "wrangler"]
     }
   ],
   "hooks": [
@@ -118,6 +113,7 @@
     {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
+    {"id": "retired-gstack", "disposition": "retired", "reason": "Removed by explicit user request. No gstack install, runtime, updater or linked skill is active. Investigation uses systematic-debugging; browser/review/finish use independent installed tools and project policy."},
     {"id": "config-project-record", "disposition": "project-specific-reference-only"},
     {"id": "marketplace-buyer-monitor", "disposition": "private-machine-only", "reason": "Owner-specific Facebook account, listings, contact details, local post inventory, and thread target; intentionally excluded from the portable distribution."}
   ],

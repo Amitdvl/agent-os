@@ -7,7 +7,7 @@
       "tools": [],
       "commands": ["add", "archive", "commands", "ground", "pre-publication", "teach", "trashness", "trunk-finish"],
       "optionalCommands": [],
-      "skills": ["agent-os", "agent-secrets", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "goal-prompt", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire", "skill-cleaner", "tool-routing"]
+      "skills": ["agent-os", "agent-secrets", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "goal-prompt", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire", "skill-cleaner", "tool-routing", "systematic-debugging", "react-best-practices"]
     },
     {
       "id": "local-productivity",
@@ -39,7 +39,7 @@
       "tools": ["opencap", "spogo", "yt-dlp"],
       "commands": [],
       "optionalCommands": [],
-      "skills": ["image-art-direction", "openai-aesthetic-images", "launch-video-studio", "monochrome-workspace"]
+      "skills": ["image-art-direction", "openai-aesthetic-images", "launch-video-studio", "monochrome-workspace", "frontend-design"]
     },
     {
       "id": "macos-development",

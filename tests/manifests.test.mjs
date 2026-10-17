@@ -106,9 +106,19 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);
-  assert.equal(installedSkills.length, 101);
-  assert.equal(new Set(installedSkills).size, 101);
-  for (const group of dispositions.skillGroups) assert.ok(group.disposition);
+  assert.equal(new Set(installedSkills).size, installedSkills.length, "A skill is classified in multiple inventory groups");
+  assert.equal(new Set(dispositions.skillGroups.map((group) => group.id)).size, dispositions.skillGroups.length, "Inventory group IDs must be unique");
+  for (const group of dispositions.skillGroups) {
+    assert.ok(group.disposition);
+    assert.ok(group.skills.length > 0, `Inventory group ${group.id} has no classified skills`);
+  }
+  for (const id of tools.tools.map((item) => item.id)) assert.ok(installedSkills.includes(id), `Tool skill ${id} lacks an inventory group`);
+  for (const id of ["systematic-debugging", "react-best-practices", "frontend-design"]) {
+    assert.ok(installedSkills.includes(id), `Canonical skill ${id} lacks an inventory group`);
+  }
+  for (const id of ["gstack", "browse", "investigate", "impeccable", "make-interfaces-feel-better", "vercel-react-best-practices"]) {
+    assert.ok(!installedSkills.includes(id), `Retired skill ${id} is still classified as installed`);
+  }
   for (const item of [...dispositions.hooks, ...dispositions.rules, ...dispositions.policySurfaces]) assert.ok(item.disposition);
   for (const item of [...dispositions.automationTemplates, ...dispositions.referenceOnly]) assert.ok(item.disposition);
 });

@@ -24,9 +24,11 @@
     {"id": "sire", "path": "skills/sire/SKILL.md", "source": "sire-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$sire", "purpose": "Use $sire to research a blocker, compare solutions, recommend a plan, and start a native goal only after your approval."}},
     {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow"},
     {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core"},
-    {"id": "gstack", "path": null, "disposition": "third-party-optional"},
     {"id": "last30days", "path": null, "disposition": "third-party-optional"},
     {"id": "remotion-best-practices", "path": null, "disposition": "third-party-optional"},
+    {"id": "systematic-debugging", "path": "skills/systematic-debugging/SKILL.md", "source": "systematic-debugging-consolidated", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$systematic-debugging", "purpose": "Use $systematic-debugging to investigate failures, bound edits, test a cause and verify a focused fix."}},
+    {"id": "react-best-practices", "path": "skills/react-best-practices/SKILL.md", "source": "react-best-practices-consolidated", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$react-best-practices", "purpose": "Use $react-best-practices for canonical React/Next.js rules and a focused correctness, accessibility and performance review."}},
+    {"id": "frontend-design", "path": "skills/frontend-design/SKILL.md", "source": "frontend-design-consolidated", "disposition": "portable-creator-workflow", "includePackage": true, "command": {"invocation": "$frontend-design", "purpose": "Use $frontend-design to create, critique or polish interfaces with focused design references and existing project identity."}},
     {"id": "system-and-platform-skills", "path": null, "disposition": "host-or-third-party"}
   ]
 }
