@@ -37,12 +37,17 @@ installation ledger; missing skills still do not appear installed.
 
 ## Reviewed vendor overlays
 
-Vendor reference trees remain vendor-owned. Three narrowly scoped entrypoint
+Vendor reference trees remain vendor-owned. Active narrowly scoped entrypoint
 replacements live in `templates/skill-overlays`, with exact version-relative paths
 and before/after SHA-256 in `manifest/skill-overlays.json`. Provider overlays keep
 the vendor's reference links and API instructions, but remove generic selection
 signals/default architecture mandates. The frontend plugin entry routes to the
 canonical local QA package, avoiding a second full policy.
+
+The OpenAI Agents template is retained as a reference, but its absent pinned
+plugin version is no longer in the active manifest. Reintroducing that overlay
+requires reviewing the installed version, target path and content hashes; the
+checker still rejects missing active targets rather than silently skipping them.
 
 ```sh
 node scripts/skill-overlays.mjs --plugin-root <installed-plugin-cache-root>

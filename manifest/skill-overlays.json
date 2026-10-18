@@ -2,13 +2,6 @@
   "version": 1,
   "overlays": [
     {
-      "id": "openai-agents",
-      "target": "openai-developers/1.3.6/skills/agents/SKILL.md",
-      "source": "templates/skill-overlays/openai-agents/SKILL.md",
-      "originalSha256": "1918f74c7509ef03916f0a5c6fd85a35c66faba65e26948e41cd2351cf61f334",
-      "overlaySha256": "aedd16a39ab1e7de74e5954c1448c6d883163cde5e6b2946367f36dcfbd0bb27"
-    },
-    {
       "id": "vercel-build-agents",
       "target": "vercel/0.54.1/skills/build-agents/SKILL.md",
       "source": "templates/skill-overlays/vercel-build-agents/SKILL.md",
