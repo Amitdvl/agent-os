@@ -37,6 +37,7 @@
       "upstream": "https://github.com/rorkai/App-Store-Connect-CLI",
       "review_notes": "Upstream README and commands/auth.mdx reviewed for install and credential names on 2026-09-09. No binary version pinned, installed, or audited; brew install asc requires deliberate installation."
     },
-    {"id": "approved-workflow-consolidation", "kind": "agent-os-skill", "locator": "docs/approved-skill-consolidation.md", "pin": "1.0.0", "automation": "disabled", "review_notes": "Reviewed Cloudflare/deployment consolidation, frontend QA/helper retention, installed-first skill discovery, provider-scoped overlays and focused outcome/bottleneck contracts. Plugin overlays are pinned, preview-first and refuse unknown content; no auth or account state included."}
+    {"id": "approved-workflow-consolidation", "kind": "agent-os-skill", "locator": "docs/approved-skill-consolidation.md", "pin": "1.0.0", "automation": "disabled", "review_notes": "Reviewed Cloudflare/deployment consolidation, frontend QA/helper retention, installed-first skill discovery, provider-scoped overlays and focused outcome/bottleneck contracts. Plugin overlays are pinned, preview-first and refuse unknown content; no auth or account state included."},
+    {"id": "wwwwh-agent-os", "kind": "agent-os-skill", "locator": "skills/wwwwh", "pin": "1.0.0", "automation": "disabled", "review_notes": "Independently authored adaptive inquiry guidance. Questions, order and depth arise from the situation; a revisable working goal directs attention and methods remain selective. Comparative evaluation and limits are documented separately; no runtime, external service or private data dependency."}
   ]
 }

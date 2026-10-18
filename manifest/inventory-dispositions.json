@@ -81,7 +81,7 @@
     {
       "id": "agent-os-core-skills",
       "disposition": "portable-core",
-      "skills": ["systematic-debugging", "react-best-practices", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire"]
+      "skills": ["systematic-debugging", "react-best-practices", "book", "cli-for-agents", "cover-project", "fallacy-check", "goal-supervisor", "justification-audit", "orchestration", "outcome-loop", "pamphlet", "production-algorithm", "production-repo-baseline", "publication-safety", "sire", "wwwwh"]
     },
     {
       "id": "creator-art-direction",

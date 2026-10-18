@@ -72,6 +72,12 @@ measured `half-bounce` workflow for native macOS app readiness, paused
 automation templates, and optional hook templates. They are not scheduled or
 installed automatically; each destination chooses and configures them locally.
 
+## Adaptive inquiry
+
+[WWWWH](docs/wwwwh.md) provides optional guidance for adaptive, goal-oriented inquiry.
+Comparative benefit over ordinary assistance has not been demonstrated; see the
+usage and evaluation limits before adopting it.
+
 ## Reusable design kits
 
 [Monochrome Workspace](docs/design-kits.md) packages a clean white-and-black workspace aesthetic as reusable files and code. Use it directly in any project or discover it through `$monochrome-workspace` in the creator pack. Impeccable is optional.
