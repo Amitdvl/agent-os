@@ -38,6 +38,15 @@
       "review_notes": "Upstream README and commands/auth.mdx reviewed for install and credential names on 2026-09-09. No binary version pinned, installed, or audited; brew install asc requires deliberate installation."
     },
     {"id": "approved-workflow-consolidation", "kind": "agent-os-skill", "locator": "docs/approved-skill-consolidation.md", "pin": "1.0.0", "automation": "disabled", "review_notes": "Reviewed Cloudflare/deployment consolidation, frontend QA/helper retention, installed-first skill discovery, provider-scoped overlays and focused outcome/bottleneck contracts. Plugin overlays are pinned, preview-first and refuse unknown content; no auth or account state included."},
-    {"id": "wwwwh-agent-os", "kind": "agent-os-skill", "locator": "skills/wwwwh", "pin": "1.0.0", "automation": "disabled", "review_notes": "Independently authored adaptive inquiry guidance. Questions, order and depth arise from the situation; a revisable working goal directs attention and methods remain selective. Comparative evaluation and limits are documented separately; no runtime, external service or private data dependency."}
+    {"id": "wwwwh-agent-os", "kind": "agent-os-skill", "locator": "skills/wwwwh", "pin": "1.0.0", "automation": "disabled", "review_notes": "Independently authored adaptive inquiry guidance. Questions, order and depth arise from the situation; a revisable working goal directs attention and methods remain selective. Comparative evaluation and limits are documented separately; no runtime, external service or private data dependency."},
+    {
+      "id": "rea-agents-npm",
+      "kind": "npm",
+      "locator": "rea-agents",
+      "pin": "6.7.0",
+      "automation": "disabled",
+      "upstream": "https://github.com/morluto/rea",
+      "review_notes": "Official README, installation guide and published npm interface reviewed 2026-10-18. CLI-first integration; Node ^22.19.0, ^24.11.0 or >=26.0.0. Static JavaScript and built-in Mach-O inspection verified without a decompiler. Optional native providers and Frida are separate prerequisites. No bundled upstream skill, MCP registration, provider installation, login or auto-update is implied."
+    }
   ]
 }

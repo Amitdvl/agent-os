@@ -12,8 +12,8 @@ const CLI = join(ROOT, "bootstrap", "cli.mjs");
 const SANDBOX = join(ROOT, ".sandbox", `integration-${process.pid}`);
 const WINDOWS = platform() === "win32";
 const PLATFORM_TOOL_IDS = WINDOWS
-  ? ["obsidian", "opencli", "rdt-cli", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"]
-  : ["asc", "birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"];
+  ? ["obsidian", "opencli", "rdt-cli", "rea", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"]
+  : ["asc", "birdclaw", "discrawl", "instagram-cli", "notcrawl", "notebridge", "notion", "obsidian", "opencap", "opencli", "peekaboo", "rdt-cli", "rea", "remindctl", "spogo", "twitter-cli", "wacli", "wacrawl", "xurl", "yt-dlp", "youtube"];
 
 test.after(async () => {
   await rm(SANDBOX, { recursive: true, force: true });
@@ -83,7 +83,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.ok((await lstat(claudeLink)).isSymbolicLink());
   assert.match(await readFile(join(codexLink, "SKILL.md"), "utf8"), /## Preflight/);
   const toolRequirements = {
-    asc: "asc auth status --validate", birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli --read-only --json doctor", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
+    rea: "rea capabilities --json", asc: "asc auth status --validate", birdclaw: "birdclaw sync", discrawl: "discrawl sync --full", "instagram-cli": "no Instagram website", notcrawl: "notcrawl sync --source desktop", notebridge: "notebridge --format json doctor", notion: "notion auth status", obsidian: "obsidian search", opencap: "opencap record status", opencli: "opencli twitter bookmark-folders", peekaboo: "peekaboo list windows", "rdt-cli": "rdt search", remindctl: "remindctl list", spogo: "spogo auth status", "twitter-cli": "twitter search", wacli: "wacli --read-only --json doctor", wacrawl: "wacrawl sync", xurl: "xurl --help", "yt-dlp": "--no-playlist", youtube: "watch later",
   };
   for (const [id, phrase] of Object.entries(toolRequirements).filter(([id]) => PLATFORM_TOOL_IDS.includes(id))) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");

@@ -134,6 +134,29 @@
       "freshness": "Query current App Store Connect state and confirm the selected profile and app ID before acting; verify remote state after a requested write.",
       "safety": "Uploads, submissions, releases, pricing, tester invitations, deletion, and account changes require exact app/resource targets and action intent. Never print private keys, JWTs, or session contents.",
       "command": {"invocation": "$asc", "purpose": "App Store Connect app and TestFlight inspection and explicitly requested release management; use the canonical skill and detailed routing safeguards."}
+    },
+    {
+      "id": "rea",
+      "binary": "rea",
+      "purpose": "Use automatically for relevant reverse-engineering investigations of apps, binaries, JavaScript/Electron bundles and recorded artifacts; no explicit REA invocation required.",
+      "packs": [
+        "research"
+      ],
+      "source": "rea-agents-npm",
+      "disposition": "external",
+      "platforms": [
+        "darwin",
+        "win32"
+      ],
+      "auth": [
+        "none"
+      ],
+      "freshness": "Verify installed help and provider capabilities; inspect current target bytes and retain Evidence digests and limitations.",
+      "safety": "Start with scoped static inspection. Runtime execution, attachment, instrumentation, UI/device actions and writes require task authority for the exact target and effects. Never inspect credential/session stores, bypass licensing or weaken Focus Protection.",
+      "command": {
+        "invocation": "$rea",
+        "purpose": "Reverse engineer selected apps and artifacts with local Evidence. Automatic when relevant; explicit invocation: $rea."
+      }
     }
   ]
 }

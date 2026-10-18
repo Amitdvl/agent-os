@@ -102,7 +102,7 @@ test("every audited tool and skill has a machine-readable disposition", async ()
   const dispositions = await json("inventory-dispositions");
   const tools = await json("tools");
   const commands = await json("commands");
-  assert.equal(dispositions.localTools.length, 20);
+  assert.equal(dispositions.localTools.length, 21);
   assert.deepEqual(new Set(dispositions.localTools.map((item) => item.id)), new Set(tools.tools.map((item) => item.id)));
   assert.deepEqual(new Set(dispositions.commands.map((item) => item.id)), new Set(commands.commands.map((item) => item.id)));
   const installedSkills = dispositions.skillGroups.flatMap((group) => group.skills);

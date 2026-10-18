@@ -2,7 +2,7 @@
 
 The manifest is the source of truth for the portable inventory:
 
-- `manifest/tools.json` — 20 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
+- `manifest/tools.json` — 21 selected tool identities, binaries, safety, freshness, source IDs, and auth classes.
 - `manifest/sources.json` — pinned/reviewable install provenance or an explicit `manual-unresolved` boundary.
 - `manifest/secret-requirements.json` — requirement names and access classes only; it contains no values.
 - `manifest/packs.json` — core, local productivity, research, communication, creator, macOS development, and web development packs.
@@ -99,3 +99,23 @@ hashes, local verification and update recovery are documented in
 [approved-skill-consolidation.md](approved-skill-consolidation.md). They do not
 copy vendor reference trees or account state, install plugins, or choose an agent
 provider for generic requests.
+
+## REA
+
+`rea` is the official `rea-agents` npm package, pinned to 6.7.0 and selected by
+the research pack. Its generated skill and sibling routing contract select it
+automatically for relevant reverse-engineering requests; `$rea` is the explicit
+invocation. Ordinary source editing does not trigger artifact analysis. The
+Commands catalog records invocation, purpose, source path and installed status.
+
+Use `agent-os install --tools rea` to preview the pinned install and the existing
+reviewed-install flow to apply it deliberately. Node ^22.19.0, ^24.11.0 or >=26
+is required. Static JavaScript/Electron and built-in macOS metadata inspection
+need no decompiler. Native decompilation and other optional providers need their
+own configured tools. CLI use needs no credentials or MCP registration; encrypted
+inventory remains local. Automatic tool selection grants no authority for target
+execution, instrumentation, account changes, license bypass or blocked sites.
+
+The contract is independently authored; REA and its bundled upstream workflow
+remain upstream-owned. Consult the [official installation guide](https://github.com/morluto/rea/blob/main/docs/installation.md)
+and installed command help for current provider and side-effect details.
