@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { access, chmod, lstat, mkdir, readFile, readdir, readlink, realpath, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { access, chmod, lstat, mkdir, readFile, readdir, readlink, realpath, rename, rm, rmdir, stat, symlink, writeFile } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { homedir, platform } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
@@ -353,7 +353,9 @@ function extractBlock(content) {
   const startIndex = content.indexOf(START_PREFIX);
   const endIndex = content.indexOf(END_MARKER);
   if (startIndex === -1 && endIndex === -1) return null;
-  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) throw new Error("malformed Agent OS managed block");
+  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex
+      || content.indexOf(START_PREFIX, startIndex + START_PREFIX.length) !== -1
+      || content.indexOf(END_MARKER, endIndex + END_MARKER.length) !== -1) throw new Error("malformed or ambiguous Agent OS managed block");
   const end = endIndex + END_MARKER.length;
   return { start: startIndex, end, text: content.slice(startIndex, end) };
 }
@@ -387,7 +389,13 @@ async function symlinkAncestor(path) {
   let current = dirname(path);
   while (true) {
     try {
-      if ((await lstat(current)).isSymbolicLink()) return current;
+      if ((await lstat(current)).isSymbolicLink()) {
+        // macOS exposes standard temporary/config roots through these exact
+        // system aliases. They are not a redirected package or state folder.
+        const systemAlias = platform() === "darwin" && ["/var", "/tmp", "/etc"].includes(current)
+          && await realpath(current) === `/private${current}`;
+        if (!systemAlias) return current;
+      }
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
@@ -397,7 +405,32 @@ async function symlinkAncestor(path) {
   }
 }
 
+// A checkout-linked skill is managed at its discovery link, never by adopting
+// files through that link (which would let update/uninstall mutate the source).
+async function canonicalSourceLink(path, sourceRoot, id) {
+  let info;
+  try { info = await lstat(path); } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+  if (!info.isSymbolicLink() || await symlinkAncestor(path)) return null;
+  let target;
+  try { target = await realpath(path); } catch (error) {
+    if (["ENOENT", "ENOTDIR", "ELOOP"].includes(error.code)) return null;
+    throw error;
+  }
+  if (target !== await realpath(sourceRoot)) return null;
+  return { kind: "symlink", path, linkTarget: await readlink(path), canonicalSource: target, id };
+}
+
 async function classifyOperation(operation, previousState, adoptExisting = false) {
+  const ancestor = await symlinkAncestor(operation.path);
+  if (ancestor) return { ...operation, status: "conflict", reason: "refusing target through symlink ancestor" };
+  if (operation.kind !== "symlink") {
+    try {
+      if (!(await lstat(operation.path)).isFile()) return { ...operation, status: "conflict", reason: "expected a regular file, not a symlink or directory" };
+    } catch (error) { if (error.code !== "ENOENT") throw error; }
+  }
   if (operation.kind === "symlink") {
     let currentTarget = null;
     let currentKind = null;
@@ -425,7 +458,9 @@ async function classifyOperation(operation, previousState, adoptExisting = false
   const current = await readText(operation.path, null);
   const previous = managedRecord(previousState, operation.path);
   if (operation.kind === "managed-block") {
-    const existingBlock = current === null ? null : extractBlock(current);
+    let existingBlock;
+    try { existingBlock = current === null ? null : extractBlock(current); }
+    catch (error) { return { ...operation, status: "conflict", reason: error.message }; }
     if (existingBlock && !previous) return { ...operation, status: "conflict", reason: "unowned Agent OS block exists", current };
     if (existingBlock && previous?.blockHash !== hash(existingBlock.text)) return { ...operation, status: "conflict", reason: "managed block drifted", current };
     const next = mergeBlock(current ?? "", operation.block);
@@ -472,6 +507,11 @@ async function buildPlan(context) {
     for (const skill of selectedSkills(context)) {
       const source = join(REPO_ROOT, skill.path);
       const sourceRoot = dirname(source);
+      const sourceLink = await canonicalSourceLink(join(hostHome, host.skillDirectory, skill.id), sourceRoot, `${host.id}:skill-link:${skill.id}`);
+      if (sourceLink) {
+        operations.push(sourceLink);
+        continue;
+      }
       const files = skill.includePackage ? await packageFiles(sourceRoot) : ["SKILL.md"];
       for (const file of files) {
         operations.push({ kind: "file", path: join(hostHome, host.skillDirectory, skill.id, file), content: await readText(join(sourceRoot, file)), id: `${host.id}:skill:${skill.id}:${file}` });
@@ -484,6 +524,15 @@ async function buildPlan(context) {
     for (const command of selectedCommands(context)) {
       const content = await readText(join(REPO_ROOT, command.path));
       const path = host.commandMode === "markdown" ? join(hostHome, host.commandDirectory, `${command.id}.md`) : join(hostHome, host.skillDirectory, command.id, "SKILL.md");
+      if (host.commandMode !== "markdown") {
+        const sourceLink = await canonicalSourceLink(dirname(path), dirname(join(REPO_ROOT, command.path)), `${host.id}:command-link:${command.id}`);
+        if (sourceLink) {
+          const existingLink = operations.find((operation) => operation.path === sourceLink.path);
+          if (existingLink && existingLink.canonicalSource !== sourceLink.canonicalSource) throw new Error(`conflicting command/skill destination: ${command.id}`);
+          if (!existingLink) operations.push(sourceLink);
+          continue;
+        }
+      }
       const existing = operations.find((operation) => operation.path === path);
       if (existing) {
         if (existing.kind !== "file" || existing.content !== content) throw new Error(`conflicting command/skill destination: ${command.id}`);
@@ -519,6 +568,10 @@ function planSummary(context, plan) {
 }
 
 async function atomicWrite(target, content) {
+  if (await symlinkAncestor(target)) throw new Error("refusing write through symlink ancestor");
+  try {
+    if ((await lstat(target)).isSymbolicLink()) throw new Error("refusing write to a symlink");
+  } catch (error) { if (error.code !== "ENOENT") throw error; }
   await mkdir(dirname(target), { recursive: true });
   const temp = join(dirname(target), `.${Date.now()}-${process.pid}.agent-os.tmp`);
   await writeFile(temp, content, { mode: 0o600 });
@@ -634,6 +687,124 @@ async function applyInstructionReconciliation(context, plan) {
       ? { ...item, blockHash: blockHashes.get(item.path) }
       : item),
   };
+  await atomicWrite(context.statePath, `${JSON.stringify(state, null, 2)}\n`);
+  return state;
+}
+
+// Ownership repair changes provenance only. It is deliberately separate from
+// deployment: every existing target must already equal the portable plan.
+async function ownershipReconciliationPlan(context) {
+  if (!context.previousState || !Array.isArray(context.previousState.managed)) {
+    return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "managed-state ledger is missing or invalid" }];
+  }
+  for (const item of context.previousState.managed) {
+    if (typeof item.path !== "string" || !isAbsolute(item.path) || !["file", "symlink", "managed-block"].includes(item.kind)) {
+      return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "invalid managed-state record" }];
+    }
+    if (ensureUnder(context.userHome, item.path, "managed-state target") !== item.path) {
+      return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "managed-state paths must be normalized" }];
+    }
+  }
+  const ledgerInfo = await lstat(context.statePath);
+  if (!ledgerInfo.isFile() || ledgerInfo.isSymbolicLink() || await symlinkAncestor(context.statePath)) {
+    return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "ownership ledger must be a regular file without symlink ancestors" }];
+  }
+  if (await symlinkAncestor(join(context.stateDir, "backups", "probe"))) {
+    return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "ownership backup storage must not traverse symlinks" }];
+  }
+  const priorPaths = context.previousState.managed.map((item) => item.path);
+  if (new Set(priorPaths).size !== priorPaths.length) {
+    return [{ id: "ownership:ledger", path: context.statePath, status: "conflict", reason: "duplicate managed-state paths" }];
+  }
+  const desired = await buildPlan(context);
+  const operations = [];
+  for (const item of desired) {
+    const previous = managedRecord(context.previousState, item.path);
+    const ancestor = await symlinkAncestor(item.path);
+    if (ancestor) {
+      operations.push({ ...item, status: "conflict", reason: "ownership reconciliation refuses a symlink ancestor" });
+      continue;
+    }
+    let info;
+    try { info = await lstat(item.path); } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    let record;
+    let reason = null;
+    if (item.kind === "symlink") {
+      if (!info?.isSymbolicLink()) reason = "expected discovery symlink is missing or replaced";
+      else if (await readlink(item.path) !== item.linkTarget) reason = "discovery symlink differs from the declared target";
+      else record = { id: item.id, kind: item.kind, path: item.path, linkTarget: item.linkTarget };
+    } else if (!info?.isFile() || info.isSymbolicLink()) {
+      reason = "expected regular file is missing or replaced";
+    } else if (item.kind === "managed-block") {
+      const current = await readText(item.path);
+      let block;
+      try { block = extractBlock(current); }
+      catch (error) {
+        operations.push({ ...item, status: "conflict", reason: error.message });
+        continue;
+      }
+      if (!previous || previous.kind !== "managed-block") reason = "instruction block is not ledger-owned";
+      else if (!block || block.text !== item.block) reason = "instruction block differs from the current portable render";
+      else record = { id: item.id, kind: item.kind, path: item.path, blockHash: hash(item.block) };
+    } else if (await readText(item.path) !== item.content) {
+      reason = "file differs from the current portable render; preserve customization";
+    } else {
+      record = { id: item.id, kind: item.kind, path: item.path, hash: hash(item.content) };
+    }
+    if (record && previous?.kind === record.kind) record = { ...previous, ...record };
+    operations.push({ ...item, record, status: reason ? "conflict" : previous && JSON.stringify(previous) === JSON.stringify(record) ? "unchanged" : "adopt", reason });
+  }
+  const paths = new Set(desired.map((item) => item.path));
+  const sourceLinks = desired.filter((item) => item.canonicalSource);
+  for (const item of context.previousState.managed) {
+    if (paths.has(item.path)) continue;
+    // Descendant file records are superseded by ownership of the source link.
+    if (sourceLinks.some((link) => item.path.startsWith(link.path + sep))) {
+      operations.push({ ...item, status: "retire", reason: "source discovery link owns no descendant files" });
+      continue;
+    }
+    let info;
+    try { info = await lstat(item.path); } catch (error) { if (error.code !== "ENOENT") throw error; }
+    if (!info) {
+      operations.push({ ...item, status: "retire", reason: "obsolete managed target is absent" });
+      continue;
+    }
+    const ancestor = await symlinkAncestor(item.path);
+    let matches = false;
+    if (!ancestor && item.kind === "symlink" && info.isSymbolicLink()) matches = await readlink(item.path) === item.linkTarget;
+    else if (!ancestor && info.isFile() && !info.isSymbolicLink()) {
+      const current = await readText(item.path);
+      try {
+        matches = item.kind === "file" ? hash(current) === item.hash
+          : item.kind === "managed-block" && hash(extractBlock(current)?.text ?? "") === item.blockHash;
+      } catch { matches = false; }
+    }
+    operations.push({ ...item, record: item, status: matches ? "unchanged" : "conflict", reason: matches ? null : "unselected managed target drifted; preserve it" });
+  }
+  return operations;
+}
+
+async function applyOwnershipReconciliation(context, plan) {
+  if (plan.some((item) => item.status === "conflict")) throw new Error("refusing ownership reconciliation with conflicts");
+  if (!plan.some((item) => ["adopt", "retire"].includes(item.status))) return context.previousState;
+  // Recheck the complete target plan and ledger immediately before mutation.
+  const ledgerBefore = await readFile(context.statePath);
+  const currentState = JSON.parse(ledgerBefore.toString("utf8"));
+  if (JSON.stringify(currentState) !== JSON.stringify(context.previousState)) throw new Error("ownership ledger changed during reconciliation");
+  const fresh = await ownershipReconciliationPlan(context);
+  if (JSON.stringify(fresh) !== JSON.stringify(plan)) throw new Error("ownership targets changed during reconciliation");
+  const state = {
+    ...context.previousState,
+    agentOsVersion: context.bundle.package.version,
+    manifestDigest: hash(JSON.stringify(context.bundle)),
+    updatedAt: new Date().toISOString(),
+    managed: plan.filter((item) => item.status !== "retire").map((item) => item.record),
+  };
+  const timestamp = new Date().toISOString().replaceAll(":", "-");
+  if (!(await readFile(context.statePath)).equals(ledgerBefore)) throw new Error("ownership ledger changed during reconciliation");
+  await atomicWrite(backupTarget(context.stateDir, context.statePath, timestamp), ledgerBefore);
   await atomicWrite(context.statePath, `${JSON.stringify(state, null, 2)}\n`);
   return state;
 }
@@ -1450,6 +1621,11 @@ async function uninstallPlan(context) {
   if (!context.previousState) return [];
   const operations = [];
   for (const item of context.previousState.managed ?? []) {
+    if (!isAbsolute(item.path) || ensureUnder(context.userHome, item.path, "managed-state target") !== item.path
+        || await symlinkAncestor(item.path)) {
+      operations.push({ ...item, status: "conflict", reason: "refusing aliased managed-state target or symlink ancestor" });
+      continue;
+    }
     if (item.kind === "symlink") {
       try {
         const info = await lstat(item.path);
@@ -1461,13 +1637,24 @@ async function uninstallPlan(context) {
       }
       continue;
     }
+    try {
+      if (!(await lstat(item.path)).isFile()) {
+        operations.push({ ...item, status: "conflict", reason: "expected a regular managed file" });
+        continue;
+      }
+    } catch (error) { if (error.code !== "ENOENT") throw error; }
     const current = await readText(item.path, null);
     if (current === null) {
       operations.push({ ...item, status: "already-missing" });
       continue;
     }
     if (item.kind === "managed-block") {
-      const block = extractBlock(current);
+      let block;
+      try { block = extractBlock(current); }
+      catch (error) {
+        operations.push({ ...item, status: "conflict", reason: error.message });
+        continue;
+      }
       if (!block || hash(block.text) !== item.blockHash) operations.push({ ...item, status: "conflict", reason: "managed block drifted" });
       else operations.push({ ...item, status: "remove-block", current, next: removeBlock(current) });
     } else if (hash(current) !== item.hash) operations.push({ ...item, status: "conflict", reason: "managed file drifted" });
@@ -1513,11 +1700,10 @@ function printHuman(object) {
   console.log(JSON.stringify(object, null, 2));
 }
 
-async function main() {
-  const options = parseArgs(process.argv.slice(2));
+async function main(options = parseArgs(process.argv.slice(2)), locked = false) {
   const command = options._[0] ?? "help";
   if (["help", "--help", "-h"].includes(command)) {
-    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|reconcile-instructions|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
+    console.log("Usage: agent-os <setup|install|vault|status|doctor|update|reconcile-instructions|reconcile-ownership|safe-uninstall|live-cutover|live-rollback|render-tool|validate> [--profile ID] [--packs a,b] [--tools a,b] [--hosts codex,claude-code] [--home PATH] [--legacy-root PATH] [--safe] [--adopt-existing] [--apply] [--json]");
     console.log("Vault adapters: agent-os vault bind --kind agent-secrets --root /absolute/path [--helper scripts/agent-secrets] [--apply]; agent-os vault unbind [--apply]");
     return;
   }
@@ -1540,8 +1726,24 @@ async function main() {
   }
   if (validation.errors.length) throw new Error(`invalid manifests: ${validation.errors.join("; ")}`);
 
-  const preferState = ["status", "doctor", "update", "reconcile-instructions", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
+  const preferState = ["status", "doctor", "update", "reconcile-instructions", "reconcile-ownership", "safe-uninstall", "uninstall", "live-cutover", "live-rollback"].includes(command);
   const context = await resolveContext(bundle, options, preferState);
+  // All supported writers share one lock, acquired before reloading their
+  // ledger/config snapshot. A crashed writer's lock needs explicit inspection;
+  // never guess that an existing lock is stale and steal its authority.
+  if (options.apply && !locked) {
+    if (["reconcile-ownership", "reconcile-instructions"].includes(command) && !context.previousState) throw new Error("refusing reconciliation without an ownership ledger");
+    if (await symlinkAncestor(join(context.stateDir, "lifecycle.lock"))) throw new Error("refusing lifecycle state through a symlink ancestor");
+    await mkdir(context.stateDir, { recursive: true });
+    const lockPath = join(context.stateDir, "lifecycle.lock");
+    try { await mkdir(lockPath); }
+    catch (error) {
+      if (error.code === "EEXIST") throw new Error("another Agent OS lifecycle operation holds the lock; inspect the active writer before removing a stale lock");
+      throw error;
+    }
+    try { return await main(options, true); }
+    finally { await rmdir(lockPath); }
+  }
   if (platform() === "win32" && ["live-cutover", "live-rollback"].includes(command)) {
     throw new Error(`${command} is not supported on Windows.`);
   }
@@ -1595,6 +1797,17 @@ async function main() {
     const plan = await buildPlan(context);
     const summary = planSummary(context, plan);
     if (options.apply) await applyPlan(context, plan);
+    options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
+    return;
+  }
+  if (command === "reconcile-ownership") {
+    const plan = await ownershipReconciliationPlan(context);
+    const summary = {
+      apply: Boolean(options.apply),
+      operations: plan.map(({ id, path, status, reason }) => ({ id, path: displayPath(context, path), status, reason: reason ?? null })),
+      conflicts: plan.filter((item) => item.status === "conflict").map((item) => `${displayPath(context, item.path)}: ${item.reason}`),
+    };
+    if (options.apply) await applyOwnershipReconciliation(context, plan);
     options.json ? console.log(JSON.stringify(summary)) : printHuman(summary);
     return;
   }

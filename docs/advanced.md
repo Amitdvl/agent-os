@@ -11,6 +11,7 @@ agent-os status [--catalog] [--json]
 agent-os doctor [--json]
 agent-os update [--apply]
 agent-os reconcile-instructions [--apply]
+agent-os reconcile-ownership [--apply] [--json]
 agent-os safe-uninstall [--apply]
 agent-os live-cutover --legacy-root <legacy-root> [--apply]
 agent-os live-rollback [--apply]
@@ -50,6 +51,37 @@ record, and updates ledger metadata only when the live block is byte-for-byte
 identical to the freshly rendered portable block. It never writes guidance or
 touches skills, tools, rules, hooks, or other managed outputs; any content
 difference stays a conflict.
+
+`reconcile-ownership` repairs stale or missing ownership metadata without
+writing any generated target, configuration, source package or discovery link.
+It requires an existing valid ledger. Preview lists exact-content adoptions,
+unchanged records and retirement of obsolete absent targets. Apply rechecks the
+whole plan and ledger, saves an exact ledger backup, and updates only the ledger.
+Any content difference, missing selected output, arbitrary symlink ancestor,
+changed unselected managed target or ambiguous record refuses the entire repair.
+Custom content must first be reviewed and preserved in its appropriate portable
+source or explicit machine-local contract; reconciliation never blesses arbitrary
+local content just to clear a conflict.
+
+Existing skill/command directory links resolving exactly to their declared
+checkout source are represented as discovery-link ownership. Their literal link
+spelling is preserved; descendant files are not owned through them. Ordinary
+update leaves source packages untouched, and uninstall removes only the discovery
+link. Same-content copies at a different link target are not canonical source
+links and remain protected conflicts. Copied installations retain file ownership.
+This recognizes existing source links; it does not convert copied installations.
+
+Lifecycle applies use an exclusive `~/.agent-os/lifecycle.lock` directory and
+reload configuration and ownership after acquiring it. A competing CLI writer
+refuses before mutation; the lock is released on success or error. After a
+crash, inspect for an active writer before manually removing its stale lock.
+Do not edit managed targets or the ledger using other processes during apply:
+the lock coordinates Agent OS CLI writers using the same state directory,
+not arbitrary external editors. Independent installations with overlapping host
+targets and different state directories also require external serialization.
+Ownership repair also refuses redirected backup storage, non-normalized ledger
+paths, and repeated or malformed instruction markers. Ordinary update and
+uninstall reject file records reached through symlinks even before reconciliation.
 
 Generated allow rules use one broad prefix per selected binary because command-specific rules make normal local operation fragile. They do not authorize external writes: every tool template and global policy still requires exact user intent.
 
