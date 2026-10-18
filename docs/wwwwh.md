@@ -17,6 +17,9 @@ The safe core distributes the self-contained [skill](../skills/wwwwh/SKILL.md) t
 supported host skill roots. The installed Commands catalog advertises `$wwwwh`
 only when the Codex entry point exists. Use the dollar-sign invocation or explicitly
 request WWWWH; there is no custom executable or separate slash-command parser.
+Automatic invocation is disabled by `agents/openai.yaml`
+(`policy.allow_implicit_invocation: false`). The skill remains installed for
+explicit use and is not selected automatically for other requests.
 
 ```text
 $wwwwh Here is the situation and evidence: …
