@@ -103,9 +103,9 @@ provider for generic requests.
 ## REA
 
 `rea` is the official `rea-agents` npm package, pinned to 6.7.0 and selected by
-the research pack. Its generated skill and sibling routing contract select it
-automatically for relevant reverse-engineering requests; `$rea` is the explicit
-invocation. Ordinary source editing does not trigger artifact analysis. The
+the research pack. Its generated skill and sibling routing contract require
+explicit invocation through `$rea` or a request to use REA. Codex discovery
+metadata disables implicit invocation while keeping the skill available. The
 Commands catalog records invocation, purpose, source path and installed status.
 
 Use `agent-os install --tools rea` to preview the pinned install and the existing
@@ -113,7 +113,7 @@ reviewed-install flow to apply it deliberately. Node ^22.19.0, ^24.11.0 or >=26
 is required. Static JavaScript/Electron and built-in macOS metadata inspection
 need no decompiler. Native decompilation and other optional providers need their
 own configured tools. CLI use needs no credentials or MCP registration; encrypted
-inventory remains local. Automatic tool selection grants no authority for target
+inventory remains local. Explicit invocation grants no authority for target
 execution, instrumentation, account changes, license bypass or blocked sites.
 
 The contract is independently authored; REA and its bundled upstream workflow

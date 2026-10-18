@@ -138,7 +138,7 @@
     {
       "id": "rea",
       "binary": "rea",
-      "purpose": "Use automatically for relevant reverse-engineering investigations of apps, binaries, JavaScript/Electron bundles and recorded artifacts; no explicit REA invocation required.",
+      "purpose": "Use only when the user invokes $rea or explicitly asks to use REA for reverse-engineering selected apps, binaries, JavaScript/Electron bundles or recorded artifacts.",
       "packs": [
         "research"
       ],
@@ -155,7 +155,7 @@
       "safety": "Start with scoped static inspection. Runtime execution, attachment, instrumentation, UI/device actions and writes require task authority for the exact target and effects. Never inspect credential/session stores, bypass licensing or weaken Focus Protection.",
       "command": {
         "invocation": "$rea",
-        "purpose": "Reverse engineer selected apps and artifacts with local Evidence. Automatic when relevant; explicit invocation: $rea."
+        "purpose": "Reverse engineer selected apps and artifacts with local Evidence. On demand only: invoke $rea or explicitly ask to use REA."
       }
     }
   ]

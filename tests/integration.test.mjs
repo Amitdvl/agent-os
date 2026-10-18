@@ -77,6 +77,8 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.equal(launcherSmoke.status, 0, `launcher failed:\nstdout: ${launcherSmoke.stdout}\nstderr: ${launcherSmoke.stderr}`);
   assert.equal(JSON.parse(launcherSmoke.stdout).ok, true);
   const primaryTool = WINDOWS ? "opencli" : "birdclaw";
+  const reaMetadata = join(home, ".codex", "skills", "rea", "agents", "openai.yaml");
+  assert.match(await readFile(reaMetadata, "utf8"), /allow_implicit_invocation: false/);
   const codexLink = join(home, ".codex", "skills", primaryTool);
   const claudeLink = join(home, ".claude", "skills", primaryTool);
   assert.ok((await lstat(codexLink)).isSymbolicLink());

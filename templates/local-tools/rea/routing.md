@@ -1,14 +1,13 @@
 # REA investigation routing
 
-## Automatic selection
+## Explicit invocation only
 
-Use automatically, without an explicit REA request, when the current task needs
-reverse engineering of an identified app, native binary, JavaScript/Electron
-bundle, package, or recorded artifact. Good triggers include explaining a feature
-without source, tracing IPC or module relationships, comparing packaged versions,
-and recovering implementation behavior with evidence. Stay within the user's
-selected target and objective. Do not run REA for ordinary source edits or sweep
-installed apps in the background. Explicit invocation: `$rea`.
+Use REA only when the user invokes `$rea` or explicitly asks to use REA.
+An ordinary reverse-engineering request does not activate REA. Once requested,
+use it for the selected app, native binary, JavaScript/Electron bundle, package,
+or recorded artifact. Stay within the user's selected target and objective;
+do not sweep installed apps in the background. Keep the CLI installed and
+available for on-demand use.
 
 ## Preflight and installation
 
@@ -49,7 +48,7 @@ scripts to resolve an optional Frida dependency. Keep provider limitations clear
 
 ## Effects and authority
 
-Automatic selection authorizes relevant inspection within the current task; it
+Explicit invocation authorizes relevant inspection within the current task; it
 is not standing permission for every REA command. Consult `rea capabilities
 --json` and exact command help before non-static probes. Executing a target,
 attaching debuggers, Frida scripts, process capture, browser/native UI scenarios,
