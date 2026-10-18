@@ -16,11 +16,17 @@ Distinguish missing advertised behavior, a product defect, missing evidence and 
 
 Keep one current closure queue. Each open gate needs its scope, owner, next action and evidence. Historical reports remain background. Distinguish implemented, exercised, exported, reviewed and published. Counts and percentages need denominators and uncertainty; unequal rows do not form a trustworthy progress meter.
 
+A finite label inventory does not bound option semantics. For an open contract, state a concrete accepted example, an excluded or qualified boundary and the required editing/output surfaces. Displaying a choice and committing its effects are different obligations. Decide whether a discovery is required by the agreed outcome or is an optional proposal before implementation. Early interaction review helps discover the contract; it cannot guarantee exhaustive prediction.
+
 ## Prove a thin complete path, then combinations
 
 Establish one ordinary user path across source, validation, controls, persistence and output before implementing a broad inventory. Do not rely on private activation patches to prove the shipped starting path. Reject invalid operations without partially mutating files, assets, history or recovery state.
 
+Cloning a source model is not a transaction over filesystem effects. Prepare and measure dependencies privately, validate the complete candidate plan, then publish immutable assets and commit source/history. Rejection checks should compare the whole relevant asset inventory and redo state, not only source equality. Preserve old dependencies still referenced by history. Repeated late side effects or duplicated eligibility interpretation are evidence for extracting a shared preparation/commit boundary.
+
 Review interactions early. Identity changes, inherited styling, cloned views, scrolling, layered controls and state restoration often fail at boundaries that individual component checks cannot see. Use a compact stress fixture derived from the actual risks. Test fresh late entry and backward/random state restoration when the product permits seeking or replay. Do not require every Cartesian combination without a reason.
+
+An early minimal output smoke checks the pipeline. Exercise combined stress cases in cheaper preview before polished output production and full acceptance review; the early smoke is not release approval.
 
 Prefer one durable model, explicit capabilities and small shared semantic functions. Keep platform mechanics at appropriate edges. Extract a state planner or shared view rule when it eliminates duplicated interpretation; do not infer that a long task justifies a rewrite. Architecture claims need code and experience evidence.
 
@@ -29,6 +35,8 @@ Prefer one durable model, explicit capabilities and small shared semantic functi
 Use bounded independent test or review ownership where project policy calls for it. Give workers the behavior contract, allowed writes, relevant source state and clear acceptance boundaries. The lead retains integration, final judgment and scope control. Worker activity is not itself product progress.
 
 Parallelize reasoning and independent reads. Lease scarce browser, emulator, GPU, synthesis or disk-heavy execution when concurrency distorts results. Inspect disk headroom and retained artifact growth before expensive batches. Teardown disposable fixtures on failure. Do not increase timeouts or weaken checks merely to hide contention or a real assertion failure.
+
+Separate observed storage exhaustion from suspected execution contention. An isolated pass under several changed conditions does not identify their individual contributions. Serialization can reduce competing working sets while retained artifact accumulation still exhausts storage; evaluate both remedies against the next real run.
 
 ## Stabilize before expensive output
 
@@ -47,6 +55,8 @@ Attach acceptance to an immutable identity and a named scope: relevant source/as
 | A release is delivered | Current required checks, intended diff, accepted actual artifact and verified publication | Local commits or a feature branch push |
 
 Distinguish product fixes from oracle fixes. Preserve the original failure, state the contract that made the expectation wrong, and retain a meaningful fault-sensitive check. Diagnose rasterization, hidden state and serialization differences instead of automatically accepting or rejecting them. Report full exit statuses; cancellations, resource exhaustion and filtered logs are not passes.
+
+Preserve discovery chronology: a visual review may reveal an obligation missing from green tests; a new assertion protects that obligation; an isolated fault shows the assertion can discriminate. Fault sensitivity does not prove the original oracle was complete. Project records should retain this causal trace, with links to the failure, correction and check, rather than only counts of faults or coverage.
 
 For visual imitation, record reference version and evidence type. A still does not prove motion; documentation does not prove every rendered state; a patent does not establish shipped behavior. Tests support visual judgment and fidelity disclosures, rather than replacing them.
 
