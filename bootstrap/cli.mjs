@@ -178,6 +178,7 @@ async function validateBundle(bundle) {
     if (!sources.has(tool.source)) errors.push(`tool ${tool.id} references missing source ${tool.source}`);
     if (!tool.binary || !tool.purpose || !tool.safety) errors.push(`tool ${tool.id} is missing routing fields`);
     if (!TOOL_CONTRACTS[tool.id]) errors.push(`tool ${tool.id} has no portable template`);
+    if (!(await exists(join(REPO_ROOT, "templates", "local-tools", tool.id, "routing.md")))) errors.push(`tool ${tool.id} has no routing contract`);
   }
 
   for (const id of Object.keys(TOOL_CONTRACTS)) if (!tools.has(id)) errors.push(`portable template ${id} has no tool manifest`);
@@ -375,7 +376,7 @@ function renderToolSkill(tool, source) {
   const contract = TOOL_CONTRACTS[tool.id];
   if (!contract) throw new Error(`missing portable tool contract for ${tool.id}`);
   const auth = tool.auth.join(", ");
-  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\ninstall_source: ${source.kind}:${source.locator}\nsource_pin: ${source.pin}\n---\n\n# ${tool.id}\n\nThis managed template routes Agent OS to the upstream \`${tool.binary}\` binary after the user has deliberately installed it. Binary presence does not prove authentication.\n\n## Setup and configuration\n\nInstall only through the reviewed source plan. Configuration path: ${contract.root}. This is a placeholder for the new user's user-owned data root; authentication is never copied.\n\n## Tool-specific workflow\n\n${TOOL_DETAILS[tool.id]}\n\n## Data and authentication\n\n- Data root: ${contract.root}\n- Authentication: ${auth}\n- Credential rule: Never inspect, print, copy, or migrate credentials, sessions, archives, browser state, or private app state.\n\n## Preflight\n\n${contract.preflight.map((command) => `- \`${command}\``).join("\n")}\n\n## Freshness\n\n${tool.freshness}\n\n## Safe reads\n\n${contract.reads.map((command) => `- \`${command}\``).join("\n")}\n\n## Guarded writes\n\n${contract.writes.map((command) => `- ${command}`).join("\n")}\n\n${tool.safety}\n\n## Limitations\n\n${contract.limits}\n\n## Troubleshooting\n\n${contract.fix}\n`;
+  return `---\nname: ${tool.id}\ndescription: ${tool.purpose}\ninstall_source: ${source.kind}:${source.locator}\nsource_pin: ${source.pin}\n---\n\n# ${tool.id}\n\nThis managed template routes Agent OS to the upstream \`${tool.binary}\` binary after the user has deliberately installed it. Binary presence does not prove authentication. Read sibling \`routing.md\` before operation; it preserves detailed workflow, freshness and write safeguards. Verify examples against current installed help before relying on flags.\n\n## Setup and configuration\n\nInstall only through the reviewed source plan. Configuration path: ${contract.root}. This is a placeholder for the new user's user-owned data root; authentication is never copied.\n\n## Tool-specific workflow\n\n${TOOL_DETAILS[tool.id]}\n\n## Data and authentication\n\n- Data root: ${contract.root}\n- Authentication: ${auth}\n- Credential rule: Never inspect or expose credential/session stores, or copy/migrate private archives and app state. Requested bounded archive/content reads through the supported tool are allowed; Agent OS never imports the underlying state.\n\n## Preflight\n\n${contract.preflight.map((command) => `- \`${command}\``).join("\n")}\n\n## Freshness\n\n${tool.freshness}\n\n## Bounded reads and freshness operations\n\nArchive sync may update local output and follows the declared freshness policy.\n\n${contract.reads.map((command) => `- \`${command}\``).join("\n")}\n\n## Guarded writes\n\n${contract.writes.map((command) => `- ${command}`).join("\n")}\n\n${tool.safety}\n\n## Limitations\n\n${contract.limits}\n\n## Troubleshooting\n\n${contract.fix}\n`;
 }
 
 function managedRecord(previousState, path) {
@@ -460,7 +461,10 @@ async function buildPlan(context) {
   const launcher = launcherPath(context);
   if (platform() === "win32") operations.push({ kind: "file", path: launcher, content: renderWindowsLauncher(), id: "agent-os:launcher" });
   else operations.push({ kind: "symlink", path: launcher, linkTarget: relative(dirname(launcher), canonicalLauncherTarget()), adoptableTarget: canonicalLauncherTarget(), id: "agent-os:launcher" });
-  for (const tool of tools) operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
+  for (const tool of tools) {
+    operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "SKILL.md"), content: renderToolSkill(tool, sourceMap.get(tool.source)), id: `local-tools:tool:${tool.id}` });
+    operations.push({ kind: "file", path: join(context.localToolsRoot, "tools", tool.id, "routing.md"), content: await readText(join(REPO_ROOT, "templates", "local-tools", tool.id, "routing.md")), id: `local-tools:routing:${tool.id}` });
+  }
   for (const host of context.hosts) {
     const hostHome = host.id === "codex" ? context.codexHome : context.claudeHome;
     operations.push({ kind: "managed-block", path: join(hostHome, host.instructionFile), block, id: `${host.id}:instructions` });
@@ -1531,7 +1535,7 @@ async function main() {
     const tool = bundle.tools.tools.find((item) => item.id === id);
     if (!tool) throw new Error("Usage: agent-os render-tool <tool-id>");
     const source = byId(bundle.sources.sources).get(tool.source);
-    process.stdout.write(renderToolSkill(tool, source));
+    process.stdout.write(options.routing ? await readText(join(REPO_ROOT, "templates", "local-tools", tool.id, "routing.md")) : renderToolSkill(tool, source));
     return;
   }
   if (validation.errors.length) throw new Error(`invalid manifests: ${validation.errors.join("; ")}`);

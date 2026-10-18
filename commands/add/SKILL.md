@@ -49,8 +49,8 @@ dirty work and never expose secrets.
    - If the tool is intentionally machine-only or cannot be shared safely, record a specific Agent OS inventory exclusion and reason; never silently omit it.
    - Run Agent OS validation, tests, `git diff --check`, and `./bin/twin-audit` against the live registry, command source, goal-prompt skill, and global instructions. Commit the intended Agent OS change locally.
 6. Update global routing guidance:
-   - Add concise guidance to the live Codex `AGENTS.md` under `Local Machine CLIs`.
-   - Include when to use the tool, freshness/sync expectations, write-safety boundaries, and secret-safety rules.
+   - Update the configured capability catalog and registry; standing guidance routes through that catalog rather than duplicating a full CLI table.
+   - Keep portable policy triggers in Agent OS and private locators in the local wrapper. Put tool-specific freshness, write and secret safeguards in the canonical `SKILL.md` / `routing.md` pair.
 7. Update Agent Vault when needed:
    - Use the global `agent-secrets` skill for credentials, tokens, OAuth, browser sessions, SaaS accounts, package registries, deploy targets, databases, webhooks, or secret-bearing config paths.
    - Add or update encrypted inventory under the Agent Vault tools directory.
@@ -83,7 +83,7 @@ Each registry entry must include:
 
 - `purpose`: concise routing summary.
 - `binary`: executable agents should call.
-- `skill`: live Codex local-tools skill path for `<tool>`.
+- `skill`: canonical installed tool contract path for `<tool>`; it must resolve to the same `SKILL.md` as `skill_symlink`. Preserve executable/helpers in older directories when consolidating contract copies.
 - `skill_symlink`: live Codex skill symlink path for `<tool>`.
 - `data_root`: concrete path, `tool-owned`, external service name, or `none`.
 - `secrets`: `none`, `external`, a specific Agent Vault path, or a concise

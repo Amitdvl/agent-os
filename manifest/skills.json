@@ -2,7 +2,7 @@
   "version": 1,
   "skills": [
     {"id": "agent-os", "path": "skills/agent-os/SKILL.md", "disposition": "portable-core"},
-    {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract"},
+    {"id": "agent-secrets", "path": "skills/agent-secrets/SKILL.md", "disposition": "portable-core-contract", "command": {"invocation": "$agent-secrets", "purpose": "Use the existing encrypted vault first; preserve same-task inventory, scoped credentials and privacy."}},
     {"id": "book", "path": "skills/book/SKILL.md", "disposition": "portable-core", "includePackage": true},
     {"id": "cli-for-agents", "path": "skills/cli-for-agents/SKILL.md", "disposition": "portable-core"},
     {"id": "cover-project", "path": "skills/cover-project/SKILL.md", "source": "cover-project-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$cover-project", "purpose": "Use $cover-project before substantive suite expansion: assign separable behavior, state/recovery and persistence testing to one bounded worker. Routine fixes and explicit single-agent constraints stay direct. Return tests, scoped metrics and fault evidence; use retained regression and assertion-design references."}},
@@ -22,7 +22,7 @@
     {"id": "image-art-direction", "path": "skills/image-art-direction/SKILL.md", "disposition": "portable-creator-workflow", "includePackage": true, "command": {"invocation": "$image-art-direction", "purpose": "Use $image-art-direction to iterate image briefs and edits; load OpenAI Aesthetic Images only for that requested visual style."}},
     {"id": "sire", "path": "skills/sire/SKILL.md", "source": "sire-agent-os", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$sire", "purpose": "Use $sire to research a blocker, compare solutions, recommend a plan, and start a native goal only after your approval."}},
     {"id": "skill-cleaner", "path": "skills/skill-cleaner/SKILL.md", "disposition": "portable-maintainer-workflow", "command": {"invocation": "$skill-cleaner", "purpose": "Use $skill-cleaner for a read-only duplicate and prompt-budget audit; honor namespaced plugin overrides and distinguish CLI discovery from desktop verification."}},
-    {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core"},
+    {"id": "tool-routing", "path": "skills/tool-routing/SKILL.md", "disposition": "portable-core", "command": {"invocation": "$tool-routing", "purpose": "Select canonical installed tool contracts and complete registry, allow-rule and twin onboarding."}},
     {"id": "last30days", "path": null, "disposition": "third-party-optional"},
     {"id": "systematic-debugging", "path": "skills/systematic-debugging/SKILL.md", "source": "systematic-debugging-consolidated", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$systematic-debugging", "purpose": "Use $systematic-debugging to investigate failures, bound edits, test a cause and verify a focused fix."}},
     {"id": "react-best-practices", "path": "skills/react-best-practices/SKILL.md", "source": "react-best-practices-consolidated", "disposition": "portable-core", "includePackage": true, "command": {"invocation": "$react-best-practices", "purpose": "Use $react-best-practices for canonical React/Next.js rules and a focused correctness, accessibility and performance review."}},

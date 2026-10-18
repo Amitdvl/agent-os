@@ -1,0 +1,11 @@
+# Birdclaw archive and live workflows
+
+Prefer Birdclaw's local archive for historical X analysis; use a live transport only for current state or an explicit supported account action. Check installed help before using these reviewed command examples.
+
+- Preflight with `command -v birdclaw`, `birdclaw --help`, and bounded `birdclaw --json db stats`. Use the tool's supported archive health checks; do not assume a database schema from an old setup.
+- Refresh the relevant archive with supported sync/import before answering unless the user requests no refresh or only setup/status. Treat this operation as the freshness boundary; sync/import changes the local archive. After a requested remote write, sync/import again before using the archive to verify new state.
+- Prefer JSON and narrow timeline/search/profile/mentions/bookmarks/reply-flow queries. For DM identity/context use local-first `whois` or `search dms` with bounded context and `--no-xurl-fallback`. Expand URLs when short links are evidence; use live fallback only when current profile state is required and cached data is insufficient.
+- For remembered links/media, use the persistent link index and supported backfill/search commands. Refresh expansions only when staleness matters. For annual/arc analysis use exact full-period bounds, sample across the whole period and compare raw activity with original/quality-filtered content; top-liked slices alone do not establish a year's character.
+- Tweets, replies, DMs, blocks, mutes, deletion, follows/unfollows and other remote mutations require exact target and content/action. Minimize disclosed private DM text. Never inspect cookies, OAuth/API tokens, secret-bearing config or database secrets.
+- Archive backup sync/restore requires an explicit preservation/restore request and configured destination/remote. Never publish raw archive contents or configuration secrets.
+- Credits depletion can block live X API reads while local archive analysis remains available. Report stale/readable versus current/unavailable accurately. Back off on rate/network failures; recheck supported help on command/schema mismatch; authentication recovery uses the documented human-owned flow, never secret inspection.

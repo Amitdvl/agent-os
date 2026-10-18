@@ -1,0 +1,9 @@
+# Reminders freshness, notifications and writes
+
+Use Remindctl for Apple Reminders, not calendar events. Check installed version/help/status; use doctor for permission/sync issues. Prefer JSON for list/show/search/info and readback.
+
+- CLI results can lag the visible app and omit hierarchy. For Today, current/updated reminders or subtasks, verify native Reminders state before answering; visible app state wins conflicts. If configured, run the owner's native Today helper first: its path is a machine-local binding, never a portable absolute path. Otherwise use supported native UI/scripting inspection. Scripting may expose fresher titles/dates but not child hierarchy; inspect native UI for subtasks.
+- Add/edit/complete/delete require the intended list/reminder/date/action. Read back by stable ID or bounded search; exit status alone is insufficient. Use current clock/date evidence for date math, preserve explicit timezone/date intent and avoid guessing localized list names.
+- Native `Urgent` is unsupported. `--alarm` creates a separate EventKit notification; do not claim it enables Urgent. Newly created timed reminders get an alarm at the due time by default. Leave priority unset/none unless the user explicitly requests a supported low/medium/high priority. If native Urgent is specifically requested, explain the limit instead of claiming success.
+- Preserve wording when verbatim capture is requested; otherwise use executable next-action titles. Split unrelated actions. Use the default list unless a list/category is clear. Search matches plain text in titles/notes/URLs, not shell regex. Use supported no-input flags in automation to avoid hanging prompts.
+- Read/write only through supported interfaces; privacy permissions remain user-controlled. A first-run authorization prompt is a real access checkpoint, not a reason to invent completion.

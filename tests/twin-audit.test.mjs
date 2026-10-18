@@ -53,13 +53,29 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(unrelated), { recursive: true });
     await writeFile(unrelated, "---\nname: no-temptation-lockin\ndescription: private fixture\n---\n");
   }
-  await writeFile(instructions, "## Agent OS Twin Synchronization\nCommit the intended Agent OS mirror change locally. Push it to the configured Agent OS `origin`. Never force-push or push unrelated project work.\n\n## Task Orchestration\n`/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Use one executor by default. Automatically use the `orchestration` skill only when justified. The lead owns integration. Never claim a model or delegation occurred. Worker output is evidence, not a replacement goal. Do not create user-visible tasks merely to split a goal.\n\n## Core Agent Policy\nMake frequent small, coherent commits at safe milestones. Use `fallacy-check` quietly. When a task depends on a product or tool capability, verify the current installed interface and authoritative documentation before making a capability claim. Distinguish what the product can do from what the current policy allows. Never claim a capability is impossible from assumption alone.\n\n## Conditional Workflow Summaries\nInclude Reusable workflow updates only when the task actually added or changed a reusable surface. Omit this item or section entirely otherwise. Never emit negative placeholders.\n");
-  await writeFile(instructions, (await readFile(instructions, "utf8")) + "\nFor completed repository implementation work, merging into the repository's default branch and pushing that branch are mandatory completion steps. Apply `trunk-finish` automatically after verification; a pushed feature branch alone is not completion. This standing instruction authorizes the ordinary commit, merge, and push of intended task changes without another confirmation. Honor explicit draft, PR-only, local-only, or no-push requests. Use the required PR, review, and CI route for protected branches; never bypass protections, force-push, or include unrelated work. If verification, conflicts, access, authentication, or required approvals prevent completion, report the exact blocker and leave the work explicitly unfinished. Read-only and exploratory tasks do not require commits or merges.\n");
+  const policies = JSON.parse(await readFile(join(ROOT, "manifest", "policies.json"), "utf8")).policies;
+  const profiles = JSON.parse(await readFile(join(ROOT, "manifest", "profiles.json"), "utf8")).profiles;
+  const profile = profiles.find((item) => item.id === "strict-portable");
+  const policySources = await Promise.all(profile.policies.map(async (id) => {
+    const source = policies.find((item) => item.id === id);
+    return (await readFile(join(ROOT, source.path), "utf8")).trim();
+  }));
+  await writeFile(instructions, `<!-- agent-os:start profile=strict-portable -->\n\n${policySources.join("\n\n")}\n\n<!-- agent-os:end -->\n`);
   return { registry, registryRoot, registryLinkRoot, commandRoot, goal, orchestration, instructions, commands, skills };
 }
 
 function auditArgs(fixture) {
   return ["--live-registry", fixture.registry, "--live-commands", fixture.commandRoot, "--live-goal-prompt", fixture.goal, "--live-orchestration", fixture.orchestration, "--live-instructions", fixture.instructions, "--live-skill-root", fixture.commandRoot, "--live-symlink-root", fixture.commandRoot];
+}
+
+async function renderPortableTools(fixture) {
+  const tools = JSON.parse(await readFile(join(ROOT, "manifest", "tools.json"), "utf8")).tools;
+  for (const { id } of tools) {
+    const rendered = spawnSync(process.execPath, [join(ROOT, "bootstrap", "cli.mjs"), "render-tool", id], { cwd: ROOT, encoding: "utf8" });
+    assert.equal(rendered.status, 0, rendered.stderr || rendered.stdout);
+    await writeFile(join(fixture.registryRoot, id, "SKILL.md"), rendered.stdout);
+    await writeFile(join(fixture.registryRoot, id, "routing.md"), await readFile(join(ROOT, "templates", "local-tools", id, "routing.md")));
+  }
 }
 
 test("twin audit accepts mirrored commands and an explicitly excluded live skill", async (context) => {
@@ -136,6 +152,33 @@ test("twin audit rejects a missing registered tool routing document", async (con
   assert.match(report.failures.join("\n"), /registered tool routing missing: discrawl/);
 });
 
+test("twin audit rejects two readable contract roots for one registered tool", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-roots-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const alternate = join(root, "alternate-discrawl");
+  await mkdir(alternate);
+  // Even identical text can drift independently: identity of the authoritative
+  // contract, rather than current readability or content equality, is the gate.
+  await writeFile(join(alternate, "SKILL.md"), await readFile(join(fixture.registryRoot, "discrawl", "SKILL.md")));
+  await writeFile(join(alternate, "routing.md"), "# discrawl routing\n");
+  await rm(join(fixture.registryLinkRoot, "discrawl"));
+  await symlink(alternate, join(fixture.registryLinkRoot, "discrawl"));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /registered tool.*(?:contract|root|target).*discrawl|registered tool.*discrawl.*(?:contract|root|target)/i);
+});
+
+test("twin audit accepts a registry contract alias resolving to the canonical tool root", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-alias-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const alias = join(root, "legacy-contract-alias");
+  await symlink(join(fixture.registryRoot, "discrawl"), alias);
+  const registry = await readFile(fixture.registry, "utf8");
+  await writeFile(fixture.registry, registry.replace(`skill: ${join(fixture.registryRoot, "discrawl", "SKILL.md")}`, `skill: ${join(alias, "SKILL.md")}`));
+  assert.equal(JSON.parse(run(auditArgs(fixture)).stdout).ok, true);
+});
+
 test("twin audit detects missing and mismatched portable command content", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));
@@ -194,7 +237,7 @@ test("twin audit detects a missing conditional workflow summary rule", async (co
   context.after(() => rm(root, { recursive: true, force: true }));
   const fixture = await writeFixture(root);
   const content = await readFile(fixture.instructions, "utf8");
-  await writeFile(fixture.instructions, content.replace(/\n\n## Conditional Workflow Summaries[\s\S]*$/, "\n"));
+  await writeFile(fixture.instructions, content.replace(/^.*only when the task actually added or changed.*$/mi, ""));
   assert.match(run(auditArgs(fixture), 1).stdout, /missing conditional workflow-summary phrases/);
 });
 
@@ -215,7 +258,100 @@ test("twin audit rejects live instructions that drop mandatory default-branch co
   const before = JSON.parse(run(auditArgs(fixture)).stdout);
   assert.equal(before.ok, true);
   const content = await readFile(fixture.instructions, "utf8");
-  await writeFile(fixture.instructions, content.replace(/^For completed repository implementation work,.*$/m, ""));
+  await writeFile(fixture.instructions, content.replace(/^.*For completed repository implementation work,.*$/m, ""));
   const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
   assert.match(report.failures.join("\n"), /live global instructions are missing mandatory completion policy/);
+});
+
+test("twin audit rejects a missing focus guard even if its old words remain outside the managed block", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-focus-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const original = await readFile(fixture.instructions, "utf8");
+  const focus = (await readFile(join(ROOT, "policies", "focus.md"), "utf8")).trim();
+  assert.ok(original.includes(focus), "fixture must first contain the full focus policy");
+  await writeFile(fixture.instructions, `${focus}\n\n${original.replace(focus, "# Focus Protection\n\n[deleted guard]")}`);
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.equal(report.instructionBlock.status, "content-mismatch");
+  assert.match(report.failures.join("\n"), /live managed instruction block content-mismatch/);
+});
+
+test("twin audit fails closed on malformed, repeated and unknown-profile instruction markers", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-markers-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const original = await readFile(fixture.instructions, "utf8");
+  const mutants = [
+    [original.replace("<!-- agent-os:end -->", ""), "malformed"],
+    [`${original}\n<!-- agent-os:end -->`, "malformed"],
+    [original.replace("<!-- agent-os:start profile=strict-portable -->", "<!-- agent-os:start profile=unknown -->"), "unknown-profile"],
+    [`<!-- agent-os:end -->\n${original}`, "malformed"],
+    [`${original}\n<!-- agent-os:start profile=strict-portable-- >`, "malformed"],
+    [`${original}\n<!-- agent-os:end-- >`, "malformed"],
+  ];
+  for (const [content, expected] of mutants) {
+    await writeFile(fixture.instructions, content);
+    const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+    assert.equal(report.instructionBlock.status, expected);
+    assert.ok(report.failures.includes(`live managed instruction block ${expected}`));
+  }
+});
+
+test("twin audit allows an owner identity appendix without weakening portable policy comparison", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-identity-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const original = await readFile(fixture.instructions, "utf8");
+  await writeFile(fixture.instructions, original.replace("\n\n<!-- agent-os:end -->", "\n\n# Local Identity\n- Owner preference: fixture only.\n\n<!-- agent-os:end -->"));
+  const report = JSON.parse(run(auditArgs(fixture)).stdout);
+  assert.equal(report.instructionBlock.status, "match");
+});
+
+test("twin audit compares detailed tool routing as well as its discoverable skill", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-routing-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await renderPortableTools(fixture);
+  const args = [...auditArgs(fixture), "--live-tool-root", fixture.registryRoot];
+  assert.equal(JSON.parse(run(args).stdout).ok, true);
+  const routingPath = join(fixture.registryRoot, "discrawl", "routing.md");
+  const original = await readFile(routingPath, "utf8");
+  // A harmless-looking change must be caught even while the entrypoint skill
+  // and all paths still match, because this file holds moved safety behavior.
+  await writeFile(routingPath, `${original}\nUndeclared routing change.\n`);
+  let report = JSON.parse(run(args, 1).stdout);
+  assert.match(report.failures.join("\n"), /portable tool contract content-mismatch: discrawl/);
+  await rm(routingPath);
+  report = JSON.parse(run(args, 1).stdout);
+  assert.match(report.failures.join("\n"), /registered tool routing missing: discrawl/);
+});
+
+test("twin audit binds registered contracts to the audited root even when registry and discovery agree elsewhere", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-bound-root-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await renderPortableTools(fixture);
+  const canonical = join(fixture.registryRoot, "discrawl");
+  const alias = join(root, "canonical-discrawl-alias");
+  await symlink(canonical, alias);
+  const originalRegistry = await readFile(fixture.registry, "utf8");
+  const declaredSkill = `skill: ${join(canonical, "SKILL.md")}`;
+  await writeFile(fixture.registry, originalRegistry.replace(declaredSkill, `skill: ${join(alias, "SKILL.md")}`));
+  const args = [...auditArgs(fixture), "--live-tool-root", fixture.registryRoot];
+  // Different spelling of the same real contract remains valid, including when
+  // the explicit audited root is supplied.
+  assert.equal(JSON.parse(run(args).stdout).ok, true);
+
+  const alternate = join(root, "second-discrawl-root");
+  await mkdir(alternate);
+  await writeFile(join(alternate, "SKILL.md"), `${await readFile(join(canonical, "SKILL.md"), "utf8")}\nDrifted active skill.\n`);
+  await writeFile(join(alternate, "routing.md"), `${await readFile(join(canonical, "routing.md"), "utf8")}\nDrifted active routing.\n`);
+  await writeFile(fixture.registry, originalRegistry.replace(declaredSkill, `skill: ${join(alternate, "SKILL.md")}`));
+  await rm(join(fixture.registryLinkRoot, "discrawl"));
+  await symlink(alternate, join(fixture.registryLinkRoot, "discrawl"));
+  // Registry and discovery now agree, and the explicit audit root still holds
+  // pristine generated files. Neither of those facts certifies the active pair.
+  const report = JSON.parse(run(args, 1).stdout);
+  assert.ok(report.failures.includes("portable tool contract root-mismatch: discrawl"));
+  assert.equal(report.failures.some((failure) => failure.includes("competing contract roots")), false, "this challenge must expose the audited-root gap rather than the simpler registry/link mismatch");
 });

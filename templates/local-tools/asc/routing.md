@@ -1,0 +1,10 @@
+# App Store Connect workflows
+
+Use `asc` for current App Store Connect API inspection and explicitly requested build, TestFlight, metadata, signing, subscription or release work. Verify installed version and command help before relying on flags; examples describe the reviewed interface, not a guarantee about every installed version. Installing an upstream skill pack is a separate workflow change.
+
+- Preflight: `asc version`, `asc --help`, `asc auth status --validate`, `asc auth doctor`. Keep diagnostics bounded and sanitized. Binary presence is not authentication.
+- Check the existing vault inventory and credential environment before setup or replacement. Team keys need `ASC_KEY_ID` and `ASC_ISSUER_ID`; individual keys use `ASC_KEY_TYPE=individual` and omit issuer ID. Supply exactly one of `ASC_PRIVATE_KEY_PATH`, `ASC_PRIVATE_KEY`, or `ASC_PRIVATE_KEY_B64` through the vault. Never print private keys, JWTs, decrypted files or session contents, or copy private keys into repositories.
+- Choose the intended profile/account and least-privilege app access. `ASC_PROFILE` changes credential resolution; avoid mixing sources and consider supported strict-auth settings. Do not switch accounts silently, create replacement keys automatically, bypass keychain, or create repository-local credential config.
+- Query fresh API state, for example bounded `asc apps list --output json`, then resolve stable app/build/version/resource IDs. Check pagination/filter help rather than enumerating an entire account by default.
+- Uploads, tester invitations/distribution, metadata/signing/subscription changes, submissions, releases, pricing, deletion and account changes require exact targets and requested action. Use supported dry runs when available and read back remote state afterwards. Tool registration grants no release authority.
+- Account permissions and API coverage apply. Apple Ads, StoreKit credentials and web sessions are separate integrations. Use sanitized supported diagnostics for failure; never inspect keychain/config contents. Upstream telemetry can be disabled through supported `ASC_TELEMETRY_DISABLED=1` or `DO_NOT_TRACK=1` settings.

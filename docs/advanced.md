@@ -59,3 +59,16 @@ skill roots before inventory filtering. It also checks registered local-tool
 and the governed ctx7 hook test copy. An unknown but valid live skill must be
 added to the portable inventory or named as an explicit machine-only exclusion;
 a dangling link is always a failure.
+
+Registry `skill` and discovery `skill_symlink/SKILL.md` must resolve to the same
+file, even if competing copies have identical text. Tool setup/update generates
+both `SKILL.md` and `routing.md`; `render-tool <id> --routing` prints the latter.
+Twin audit compares both with portable source. Preserve private supplemental
+helpers, executables and configuration in older directories; aliases may replace
+duplicate documents, never whole tool directories.
+
+The live managed instruction block must exactly match the policies selected by
+its profile. Missing, repeated or malformed markers and policy drift fail the
+audit, even if an outside paragraph repeats a required phrase. A renderer-owned
+`Local Identity` appendix remains machine-only. See
+[instruction consolidation](standing-instructions.md) for the preservation map.

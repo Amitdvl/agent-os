@@ -1,0 +1,10 @@
+# Notion archive workflows
+
+Use Notcrawl for local-first Notion archive status/sync, search, read-only SQL, Markdown/database export and explicitly requested private git-sharing. It does not write back to Notion; use the registered Notion API/UI route for edits. Verify installed command help before relying on examples.
+
+- Preflight version/help plus bounded `notcrawl metadata --json`, `doctor --json` or `status --json` as relevant. Check archive status and explicitly select `sync --source desktop`, `api`, `notion-mcp` or `all` when freshness matters. Honor no-refresh/setup-only requests and report stale data or gaps when current coverage is unavailable.
+- Desktop ingestion snapshots the cache and reads it without modifying Notion's app storage. Desktop coverage is opportunistic; API coverage is limited to integration-shared content; MCP sync is targeted repair, not complete workspace enumeration. Empty fresh-install results may need an explicit source sync.
+- API sync uses `NOTION_TOKEN` injected only into the child process through the configured vault. Check existing vault inventory/environment before requesting setup or creating replacements. Connector repair reads authorized auth at request time; never store connector credentials in archive config.
+- Prefer bounded search, database listing and read-only SQL. Exports require scope and destination; use task-local output when none is otherwise specified. Sync, tap, export, maintain, publish, subscribe and update mutate local archive/share state.
+- `publish --push` is a remote write requiring exact remote/repository and push intent. Use private remotes unless public sharing is explicitly requested; exported page contents can remain private even when credentials are excluded. Resolve update refs and targets deliberately.
+- Never inspect/expose raw API tokens, Codex bearer credentials, browser cookies, signed URLs, credential files or secret-bearing config. Diagnose through sanitized doctor/status. Use supported no-update-check environment settings only when noisy checks interfere with noninteractive work.

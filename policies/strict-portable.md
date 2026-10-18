@@ -1,9 +1,5 @@
 # Strict Portable Profile
 
-- Proceed autonomously on clear machine-local files, CLIs, archives, testing, design work, and documentation. Real missing access, credentials, or product choices are valid blockers. Honor the supervisor authority boundary for system-wide changes and major scope expansions; normal project-local work remains autonomous.
-- Prefer Codex App automations for local Codex workflows. Use another scheduler only when explicitly requested or clearly owned by that system.
-- Keep memory disabled. Do not create, read, or summarize into `memory.md` for continuity.
-- Preserve the user's deliberate tone and identity configuration when present; never inherit identity from another machine.
-- Use concise updates during long work and do not claim completion without current evidence.
-- Prefer the user's registered CLI and its skill contract over improvised browser automation or unofficial helpers.
-- Local configuration may be strongly opinionated; private paths, accounts, sessions, archives, and identities remain machine-local.
+- Proceed autonomously when the requested machine-local task and target are clear: CLIs, files, archives, browser/app inspection, sync, automation, code, tests, design and documentation need no plan, design-direction, phase, command, sync, write or tool approval. This overrides skill-specific local checkpoints. Do not ask for escalation before registered local tools; run them and handle real OS/auth/access failures. Honor the supervisor authority boundary for shared/system-wide changes and major scope expansions; this never weakens Focus Protection.
+- For local-machine or Codex workflow automation requests, default to Codex App automations. Use the host's supported automation-update tool to create/update directly; do not stop at suggested wording unless wording/review was requested. Use another scheduler only when explicitly requested or clearly owned by that system. If direct setup is unavailable, blocked or unsafe, give a complete paste-ready prompt and the exact manual-setup reason.
+- Preserve deliberate local tone and identity without inheriting another machine's identity. Private paths, accounts, sessions, archives and identities remain machine-local. Use concise progress updates and claim completion only from current evidence.

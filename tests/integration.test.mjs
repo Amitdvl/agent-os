@@ -60,6 +60,11 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.match(await readFile(codexInstructions, "utf8"), /Existing User Policy/);
   const registry = join(home, ".agent-os", "local-tools", "registry.json");
   assert.equal(JSON.parse(await readFile(registry, "utf8")).tools.length, PLATFORM_TOOL_IDS.length);
+  for (const id of PLATFORM_TOOL_IDS) {
+    const deployed = join(home, ".agent-os", "local-tools", "tools", id);
+    assert.equal(await readFile(join(deployed, "routing.md"), "utf8"), await readFile(join(ROOT, "templates", "local-tools", id, "routing.md"), "utf8"), `${id} lost its detailed routing contract`);
+    assert.match(await readFile(join(deployed, "SKILL.md"), "utf8"), /Read sibling `routing\.md` before operation/, `${id} does not load its preserved safeguards`);
+  }
   const launcher = join(home, ".local", "bin", WINDOWS ? "agent-os.cmd" : "agent-os");
   if (WINDOWS) assert.match(await readFile(launcher, "utf8"), /bootstrap\\cli\.mjs/);
   else {
@@ -82,7 +87,7 @@ test("full deployment renders central registry, host symlinks, rules, status and
   };
   for (const [id, phrase] of Object.entries(toolRequirements).filter(([id]) => PLATFORM_TOOL_IDS.includes(id))) {
     const content = await readFile(join(home, ".agent-os", "local-tools", "tools", id, "SKILL.md"), "utf8");
-    for (const heading of ["## Setup and configuration", "## Tool-specific workflow", "## Data and authentication", "## Preflight", "## Freshness", "## Safe reads", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    for (const heading of ["## Setup and configuration", "## Tool-specific workflow", "## Data and authentication", "## Preflight", "## Freshness", "## Bounded reads and freshness operations", "## Guarded writes", "## Limitations", "## Troubleshooting"]) assert.match(content, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(content, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), `${id} lacks its canonical requirement`);
   }
   if (PLATFORM_TOOL_IDS.includes("remindctl")) {
@@ -151,7 +156,16 @@ test("full deployment renders central registry, host symlinks, rules, status and
   assert.deepEqual(catalogue.plugins, []);
   assert.deepEqual(catalogue.workflows.map((item) => item.id), ["core", "local-productivity", "research", "communication", "creator", "macos-development", "web-development"]);
   assert.deepEqual(catalogue.classifiedCatalogue.map((item) => item.group).filter((item, index, all) => index === all.indexOf(item)), ["personal-slash-commands", "workflows", "local-tools", "standalone-skills"]);
-  assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === (WINDOWS ? "opencli" : "birdclaw")).source, "managed local-tools registry");
+  assert.equal(catalogue.classifiedCatalogue.find((item) => item.id === (WINDOWS ? "opencli" : "birdclaw") && item.group === "local-tools").source, "managed local-tools registry");
+  for (const id of PLATFORM_TOOL_IDS) {
+    const command = catalogue.classifiedCatalogue.find((item) => item.id === id && item.group === "personal-slash-commands");
+    assert.ok(command, `${id} is missing its reusable-skill command entry`);
+    assert.equal(command.source, "manifest/tools.json");
+    assert.match(command.invocation, new RegExp(`^[/$]${id}$`));
+    assert.equal(command.status, "installed");
+    assert.equal(command.sourcePath, `<CODEX_HOME>/skills/${id}/SKILL.md`);
+    assert.ok(command.description, `${id} command entry needs a useful purpose`);
+  }
 
   const beforeUpdate = await readFile(join(home, ".agent-os", "state.json"), "utf8");
   const update = JSON.parse(run(["update", "--home", home, "--safe", "--json"], 0, noTools).stdout);

@@ -1,8 +1,6 @@
 # Secrets
 
-- Never request credentials, API keys, login tokens, backup codes, cookies, or decrypted secret values in chat.
-- Use a configured encrypted vault adapter when a task needs secrets. Keep only requirement names, scopes, and access classes in Agent OS.
-- Never print decrypted values, credential files, browser session storage, cookie databases, keychain material, or secret-bearing tool configuration.
-- Adding or first using an external service must update the user's own encrypted inventory through their configured vault workflow. Agent OS never creates or copies that inventory itself.
-- Authentication remains a human checkpoint unless the selected tool has a separately authorized vault injection mechanism.
-
+- Load `agent-secrets` whenever a task needs credentials, API keys, login tokens, cookies, backup-code storage, SOPS, age, encrypted env files, or agent-accessible secrets. Use the configured encrypted vault; check matching encrypted inventory/env records before asking for access or creating replacement credentials.
+- Never request secrets in chat or print decrypted values, credential files, browser session storage, cookie databases, keychain material, or secret-bearing configuration. Use process-scoped injection, preserve existing values unless replacement is explicitly requested, and verify the vault temporary directory is empty after secret operations.
+- Whenever adding, integrating, installing, authenticating or standardizing an external service, provider, API, SaaS account, OAuth app, webhook, database, deploy target, package registry or machine-local tool for agent use, update the user's encrypted Agent Vault inventory in the same task. Store agent-accessible API keys/tokens in the vault during creation or first use, only through the authorized safe mechanism. Load `agent-secrets` for inventory schemas and operational steps.
+- Agent OS records only requirement names, scopes and access classes; never copy the user's inventory or values into it. Authentication remains a human checkpoint unless the selected tool has a separately authorized vault injection mechanism.

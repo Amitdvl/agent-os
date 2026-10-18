@@ -114,17 +114,39 @@ async function auditRegistryContracts(records) {
         else throw error;
       }
     }
+    const skillStatus = await readableStatus(record.skill);
+    const sameContract = skillStatus === "readable" && linkStatus === "readable"
+      ? await realpath(record.skill) === await realpath(join(record.skill_symlink, "SKILL.md"))
+      : null;
     return {
       id: record.id,
       skillPath: record.skill,
-      skill: await readableStatus(record.skill),
+      skill: skillStatus,
       routingPath: routing,
       routing: await readableStatus(routing),
       skillSymlink: record.skill_symlink,
       resolvedLink,
       link: linkStatus,
+      sameContract,
     };
   }));
+}
+
+async function auditInstructionBlock(instructions) {
+  const candidates = [...instructions.matchAll(/<!--\s*agent-os\s*:\s*(?:start|end)\b/gi)];
+  const starts = [...instructions.matchAll(/<!-- agent-os:start profile=([^\s>]+) -->/g)];
+  const ends = [...instructions.matchAll(/<!-- agent-os:end -->/g)];
+  if (candidates.length !== 2 || starts.length !== 1 || ends.length !== 1 || ends[0].index < starts[0].index) return { status: "malformed", profile: null };
+  const profileId = starts[0][1];
+  const profiles = JSON.parse(await readFile(join(ROOT, "manifest", "profiles.json"), "utf8"));
+  const profile = profiles.profiles.find((item) => item.id === profileId);
+  if (!profile) return { status: "unknown-profile", profile: profileId };
+  const policies = JSON.parse(await readFile(join(ROOT, "manifest", "policies.json"), "utf8"));
+  const expected = (await Promise.all(profile.policies.map((id) => readFile(join(ROOT, policies.policies.find((item) => item.id === id).path), "utf8")))).map((text) => text.trim()).join("\n\n");
+  const actual = instructions.slice(starts[0].index + starts[0][0].length, ends[0].index).trim();
+  // Identity is explicitly machine-owned and may be appended by the renderer.
+  const portable = actual.split("\n\n# Local Identity\n")[0];
+  return { status: portable === expected ? "match" : "content-mismatch", profile: profileId };
 }
 
 async function commandIds(root) {
@@ -310,13 +332,21 @@ function renderedToolSkill(id) {
   return result.stdout;
 }
 
-async function auditRenderedTools(liveRoot, tools) {
+async function auditRenderedTools(liveRoot, tools, registryContracts) {
   if (!liveRoot) return [];
   return Promise.all(tools.map(async (tool) => {
     const livePath = join(liveRoot, tool.id, "SKILL.md");
     try {
       const live = await readFile(livePath, "utf8");
-      return { id: tool.id, livePath, status: live === renderedToolSkill(tool.id) ? "match" : "content-mismatch" };
+      const routingPath = join(liveRoot, tool.id, "routing.md");
+      const routing = await readFile(routingPath, "utf8");
+      const expectedRouting = await readFile(join(ROOT, "templates", "local-tools", tool.id, "routing.md"), "utf8");
+      const registered = registryContracts.find((record) => record.id === tool.id && record.skillPath);
+      if (registered && (await realpath(registered.skillPath) !== await realpath(livePath)
+        || await realpath(registered.routingPath) !== await realpath(routingPath))) {
+        return { id: tool.id, livePath, routingPath, status: "root-mismatch" };
+      }
+      return { id: tool.id, livePath, routingPath, status: live === renderedToolSkill(tool.id) && routing === expectedRouting ? "match" : "content-mismatch" };
     } catch (error) {
       if (error.code === "ENOENT") return { id: tool.id, livePath, status: "missing" };
       throw error;
@@ -389,7 +419,7 @@ async function main() {
   const commandAudit = await auditCommands(liveCommands, portableCommands, forbidRoot);
   const roots = [...new Set([liveCommands, liveSkillRoot, ...liveSymlinkRoots].filter(Boolean))];
   const [toolAudit, skillAudit, ctx7Audit, noVerifyAudit, ctx7TestAudit, rootLinkGroups, skillNames] = await Promise.all([
-    auditRenderedTools(liveToolRoot, allTools),
+    auditRenderedTools(liveToolRoot, allTools, registryContracts),
     auditPortableSkills(liveSkillRoot, skillsManifest.skills),
     auditExactFile(liveCtx7Hook, join(ROOT, "templates", "hooks", "ctx7-guard", "ctx7_guard.py")),
     auditExactFile(liveNoVerifyHook, join(ROOT, "templates", "hooks", "block-no-verify", "block_no_verify.sh")),
@@ -422,6 +452,7 @@ async function main() {
   const uncoveredHostSkills = commandAudit.hostSkillIds.filter((id) => !knownHostSkills.has(id));
   const instructionSkillPaths = await Promise.all(referencedSkillPaths(instructions, liveInstructions).map(async (path) => ({ path, status: await readableStatus(path) })));
   const instructionPresent = /^#+\s+(?:Agent OS )?Twin Synchronization\s*$/mi.test(instructions);
+  const instructionBlock = await auditInstructionBlock(instructions);
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
@@ -453,6 +484,7 @@ async function main() {
     if (source.skill !== "readable") failures.push(`registered tool skill ${source.skill}: ${source.id}`);
     if (source.routing !== "readable") failures.push(`registered tool routing ${source.routing}: ${source.id}`);
     if (source.link !== "readable") failures.push(`registered tool skill link ${source.link}: ${source.id}`);
+    if (source.sameContract === false) failures.push(`registered tool competing contract roots: ${source.id}`);
   }
   for (const link of skillLinks) if (link.status !== "ok") failures.push(`host skill symlink ${link.status}: ${link.livePath}`);
   for (const collision of skillNames.collisions) failures.push(`enabled live skill name collision: ${collision.normalizedName} (${collision.entries.map((entry) => entry.path).join(", ")})`);
@@ -465,6 +497,7 @@ async function main() {
   if (goalPromptAudit.status !== "match") failures.push("live goal-prompt content mismatch");
   if (orchestrationAudit.status !== "match") failures.push("live orchestration skill content mismatch");
   if (!instructionPresent) failures.push("live global instructions are missing the Agent OS twin rule");
+  if (instructionBlock.status !== "match") failures.push(`live managed instruction block ${instructionBlock.status}`);
   if (missingTwinSyncPhrases.length) failures.push(`live global instructions are missing Agent OS publish policy phrases: ${missingTwinSyncPhrases.join(", ")}`);
   if (missingOrchestrationPhrases.length) failures.push(`live global instructions are missing orchestration policy phrases: ${missingOrchestrationPhrases.join(", ")}`);
   if (missingLiveWorkflowSummaryPhrases.length) failures.push(`live global instructions are missing conditional workflow-summary phrases: ${missingLiveWorkflowSummaryPhrases.join(", ")}`);
@@ -493,6 +526,7 @@ async function main() {
     skillNames,
     uncoveredHostSkills,
     instructionSkillPaths,
+    instructionBlock,
     rules: rulesAudit,
     ctx7Hook: ctx7Audit,
     noVerifyHook: noVerifyAudit,

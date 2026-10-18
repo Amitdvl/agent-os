@@ -4,97 +4,116 @@
     {
       "id": "birdclaw", "binary": "birdclaw", "purpose": "X local archive analysis and guarded live sync/actions.",
       "packs": ["research", "communication"], "source": "birdclaw-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["local-archive", "human-login"],
-      "freshness": "Refresh the relevant archive unless the user requests no refresh or asks only about setup.", "safety": "Never inspect credential files; require exact intent for remote actions and protect private DMs."
+      "freshness": "Refresh the relevant archive unless the user requests no refresh or asks only about setup.", "safety": "Never inspect credential files; require exact intent for remote actions and protect private DMs.",
+      "command": {"invocation": "$birdclaw", "purpose": "X local archive analysis and guarded live sync/actions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "discrawl", "binary": "discrawl", "purpose": "Discord archive sync/search and supported explicit writes.",
       "packs": ["communication"], "source": "discrawl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
-      "freshness": "Run a full sync before answering from message data and again after supported writes.", "safety": "Do not expose tokens or private message content beyond the request."
+      "freshness": "Run a full sync before answering from message data and again after supported writes.", "safety": "Do not expose tokens or private message content beyond the request.",
+      "command": {"invocation": "$discrawl", "purpose": "Discord archive sync/search and supported explicit writes; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "instagram-cli", "binary": "instagram-cli", "purpose": "Instagram Direct/profile reads and explicit messaging actions.",
       "packs": ["communication"], "source": "instagram-cli-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login"],
-      "freshness": "Use thread IDs from a fresh bounded inbox result.", "safety": "Never inspect sessions; no website fallback; login stays user-owned."
+      "freshness": "Use thread IDs from a fresh bounded inbox result.", "safety": "Never inspect sessions; no website fallback; login stays user-owned.",
+      "command": {"invocation": "$instagram-cli", "purpose": "Instagram Direct/profile reads and explicit messaging actions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "notcrawl", "binary": "notcrawl", "purpose": "Notion local archive sync, search, SQL, export, and guarded private share.",
       "packs": ["local-productivity"], "source": "notcrawl-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["agent-vault", "human-login"],
-      "freshness": "Check archive status and explicitly select the sync source when freshness matters.", "safety": "Never expose tokens, signed URLs, cache databases, or private archive contents."
+      "freshness": "Check archive status and explicitly select the sync source when freshness matters.", "safety": "Never expose tokens, signed URLs, cache databases, or private archive contents.",
+      "command": {"invocation": "$notcrawl", "purpose": "Notion local archive sync, search, SQL, export, and guarded private share; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "notebridge", "binary": "notebridge", "purpose": "Local Wispr Flow and Apple Notes reads, explicit exports, guarded Apple changes, and one-way mirroring.",
       "packs": ["local-productivity"], "source": "notebridge-manual", "disposition": "external-local", "platforms": ["darwin"], "auth": ["macos-permission"],
-      "freshness": "Discovery batches fresh native metadata. Body/all search reads current bodies without an index; doctor reports build identity and capabilities. Wispr needs no sync.", "safety": "Wispr is read-only. Apple writes require stable IDs and exact intent. Create/update/append/replace/move/delete resolve real previews and need --if-match HASH --apply --yes; stale writes fail before dispatch and applied edits are read back. Prefer append or exact replace over whole-body replacement. Attachment and ambiguous native list/table body edits fail closed. Native checklist state, history and atomic CAS are unavailable. Mirrors are one-way and never delete Notes.", "command": {"invocation": "/notebridge", "purpose": "Use compact Apple/Wispr reads, rich views, image inspection and hash-guarded edits."}
+      "freshness": "Discovery batches fresh native metadata. Body/all search reads current bodies without an index; doctor reports build identity and capabilities. Wispr needs no sync.", "safety": "Wispr is read-only. Apple writes require stable IDs and exact intent. Create/update/append/replace/move/delete resolve real previews and need --if-match HASH --apply --yes; stale writes fail before dispatch and applied edits are read back. Prefer append or exact replace over whole-body replacement. Attachment and ambiguous native list/table body edits fail closed. Native checklist state, history and atomic CAS are unavailable. Mirrors are one-way and never delete Notes.",
+      "command": {"invocation": "/notebridge", "purpose": "Local Wispr Flow and Apple Notes reads, explicit exports, guarded Apple changes, and one-way mirroring; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "notion", "binary": "notion", "purpose": "Notion API reads and explicit page creation/append.",
       "packs": ["local-productivity"], "source": "notion-manual", "disposition": "external-local", "platforms": ["darwin"], "auth": ["agent-vault"],
-      "freshness": "Run an auth status check before authenticated work.", "safety": "Never print injected environment values; writes require target and content."
+      "freshness": "Run an auth status check before authenticated work.", "safety": "Never print injected environment values; writes require target and content.",
+      "command": {"invocation": "$notion", "purpose": "Notion API reads and explicit page creation/append; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "obsidian", "binary": "obsidian", "purpose": "Obsidian vault search, links, reads, and explicit note edits.",
       "packs": ["local-productivity"], "source": "obsidian-manual", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["none"],
-      "freshness": "Use the configured vault as the source of truth.", "safety": "Treat the vault read-only unless a specific edit is requested."
+      "freshness": "Use the configured vault as the source of truth.", "safety": "Treat the vault read-only unless a specific edit is requested.",
+      "command": {"invocation": "$obsidian", "purpose": "Obsidian vault search, links, reads, and explicit note edits; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "opencap", "binary": "opencap", "purpose": "Screen video recording, event logs, upload, sharing, and edits.",
       "packs": ["creator"], "source": "opencap-manual", "disposition": "external", "platforms": ["darwin"], "auth": ["human-login", "macos-permission"],
-      "freshness": "Check recording status before starting a recording.", "safety": "Record only on request; sharing, deletion, trim, and rename require exact targets."
+      "freshness": "Check recording status before starting a recording.", "safety": "Record only on request; sharing, deletion, trim, and rename require exact targets.",
+      "command": {"invocation": "$opencap", "purpose": "Screen video recording, event logs, upload, sharing, and edits; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "opencli", "binary": "opencli", "purpose": "Browser-backed website adapters, including authenticated X bookmark-folder research, and Browser Bridge automation.",
       "packs": ["research"], "source": "opencli-npm", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
-      "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters. For named X bookmark folders, use the folder adapter first; if X returns its folder-index 404, mine OpenCLI's current bookmark corpus and label it as corpus-wide.", "safety": "Never inspect cookies, session storage, or traces to obtain a folder ID; browser/account writes require exact intent."
+      "freshness": "Run doctor before browser-backed work and list profiles when profile choice matters. For named X bookmark folders, use the folder adapter first; if X returns its folder-index 404, mine OpenCLI's current bookmark corpus and label it as corpus-wide.", "safety": "Never inspect cookies, session storage, or traces to obtain a folder ID; browser/account writes require exact intent.",
+      "command": {"invocation": "$opencli", "purpose": "Browser-backed website adapters, including authenticated X bookmark-folder research, and Browser Bridge automation; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "peekaboo", "binary": "peekaboo", "purpose": "macOS screen, app, window inspection and UI automation support.",
       "packs": ["local-productivity", "creator"], "source": "peekaboo-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
-      "freshness": "Inspect the current visible UI state immediately before acting.", "safety": "Prefer read-only inspection; UI writes need a clear target and task authority."
+      "freshness": "Inspect the current visible UI state immediately before acting.", "safety": "Prefer read-only inspection; UI writes need a clear target and task authority.",
+      "command": {"invocation": "$peekaboo", "purpose": "macOS screen, app, window inspection and UI automation support; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "rdt-cli", "binary": "rdt", "purpose": "Reddit browsing, search, exports, account reads, and explicit interactions.",
       "packs": ["research", "communication"], "source": "rdt-cli-git", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
-      "freshness": "Use bounded sequential requests and structured output.", "safety": "Never inspect browser cookies; interactions require exact target/action."
+      "freshness": "Use bounded sequential requests and structured output.", "safety": "Never inspect browser cookies; interactions require exact target/action.",
+      "command": {"invocation": "$rdt-cli", "purpose": "Reddit browsing, search, exports, account reads, and explicit interactions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "remindctl", "binary": "remindctl", "purpose": "Apple Reminders reads and explicit create/update/complete/delete actions.",
       "packs": ["local-productivity"], "source": "remindctl-audited", "disposition": "external", "platforms": ["darwin"], "auth": ["macos-permission"],
-      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action. Native Urgent is unsupported; use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority."
+      "freshness": "Verify Today/subtask views against native state when CLI output may lag.", "safety": "Reminder writes require target list/reminder/date/action. Native Urgent is unsupported; use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority.",
+      "command": {"invocation": "$remindctl", "purpose": "Apple Reminders reads and explicit create/update/complete/delete actions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "spogo", "binary": "spogo", "purpose": "Spotify search, playback, queue, library, playlists, and listening data.",
       "packs": ["creator"], "source": "spogo-brew", "disposition": "external", "platforms": ["darwin"], "auth": ["browser-session"],
-      "freshness": "Check auth status before authenticated work.", "safety": "Never inspect cookies; playback and account/player changes are user-visible writes."
+      "freshness": "Check auth status before authenticated work.", "safety": "Never inspect cookies; playback and account/player changes are user-visible writes.",
+      "command": {"invocation": "$spogo", "purpose": "Spotify search, playback, queue, library, playlists, and listening data; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "twitter-cli", "binary": "twitter", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions.",
       "packs": ["research", "communication"], "source": "twitter-cli-uv", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
-      "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes."
+      "freshness": "Use for current state; prefer local Birdclaw archives for historical analysis.", "safety": "Avoid verbose auth output; require exact target/content for writes.",
+      "command": {"invocation": "$twitter-cli", "purpose": "Live X timelines, search, bookmarks, profiles, and guarded account actions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "wacli", "binary": "wacli", "purpose": "WhatsApp linked-device live reads and writes.",
       "packs": ["communication"], "source": "wacli-audited", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
-      "freshness": "Use current linked-device state for live tasks.", "safety": "Sends and account/group mutations require exact target and content/action."
+      "freshness": "Use current linked-device state for live tasks.", "safety": "Sends and account/group mutations require exact target and content/action.",
+      "command": {"invocation": "$wacli", "purpose": "WhatsApp linked-device live reads and writes; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "wacrawl", "binary": "wacrawl", "purpose": "Read-only WhatsApp Desktop archive sync/search.",
       "packs": ["communication"], "source": "wacrawl-audited", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["local-archive"],
-      "freshness": "Sync before answers from archive data unless the user opts out.", "safety": "Never mutate WhatsApp or expose raw archives/private message text unnecessarily."
+      "freshness": "Sync before answers from archive data unless the user opts out.", "safety": "Never mutate WhatsApp or expose raw archives/private message text unnecessarily.",
+      "command": {"invocation": "$wacrawl", "purpose": "Read-only WhatsApp Desktop archive sync/search; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "xurl", "binary": "xurl", "purpose": "Authenticated X API transport and guarded live actions.",
       "packs": ["research", "communication"], "source": "xurl-homebrew-cask", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["human-login"],
-      "freshness": "Check auth status before live API work.", "safety": "Never inspect credential storage or use verbose auth; no inline secrets."
+      "freshness": "Check auth status before live API work.", "safety": "Never inspect credential storage or use verbose auth; no inline secrets.",
+      "command": {"invocation": "$xurl", "purpose": "Authenticated X API transport and guarded live actions; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "yt-dlp", "binary": "yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads.",
       "packs": ["research", "creator"], "source": "yt-dlp-brew", "disposition": "external", "platforms": ["darwin", "win32"], "auth": ["none"],
-      "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads."
+      "freshness": "Inspect public metadata only when requested; no background or bulk retrieval.", "safety": "No cookies, login, proxy, geo-bypass, or unauthorized downloads.",
+      "command": {"invocation": "$yt-dlp", "purpose": "Public-media metadata/subtitles and explicitly authorized bounded downloads; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "youtube", "binary": "youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session.",
       "packs": ["research"], "source": "youtube-wrapper-agent-os", "disposition": "external-local", "platforms": ["darwin", "win32"], "auth": ["browser-session"],
-      "freshness": "Run OpenCLI doctor immediately before browser-backed saves and inspect the submitted YouTube URL with yt-dlp when metadata is needed.", "safety": "Never inspect cookies or session files; Watch Later saves require the exact URL, explicit user intent, and --yes; report success only after the selected state is verified."
+      "freshness": "Run OpenCLI doctor immediately before browser-backed saves and inspect the submitted YouTube URL with yt-dlp when metadata is needed.", "safety": "Never inspect cookies or session files; Watch Later saves require the exact URL, explicit user intent, and --yes; report success only after the selected state is verified.",
+      "command": {"invocation": "$youtube", "purpose": "YouTube metadata inspection and explicit Watch Later saves through an existing OpenCLI browser session; use the canonical skill and detailed routing safeguards."}
     },
     {
       "id": "asc",
@@ -113,7 +132,8 @@
         "human-login"
       ],
       "freshness": "Query current App Store Connect state and confirm the selected profile and app ID before acting; verify remote state after a requested write.",
-      "safety": "Uploads, submissions, releases, pricing, tester invitations, deletion, and account changes require exact app/resource targets and action intent. Never print private keys, JWTs, or session contents."
+      "safety": "Uploads, submissions, releases, pricing, tester invitations, deletion, and account changes require exact app/resource targets and action intent. Never print private keys, JWTs, or session contents.",
+      "command": {"invocation": "$asc", "purpose": "App Store Connect app and TestFlight inspection and explicitly requested release management; use the canonical skill and detailed routing safeguards."}
     }
   ]
 }

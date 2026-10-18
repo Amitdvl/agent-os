@@ -6,7 +6,7 @@
       "path": "commands/add/SKILL.md",
       "disposition": "portable-core",
       "selectedByDefault": true,
-      "purpose": "Onboard a new external tool into Agent OS manifests and guidance without silently authenticating it."
+      "purpose": "Onboard a tool with one canonical contract, registry and discovery link; preserve vault, allow-rule, HUD and Agent OS requirements."
     },
     {
       "id": "archive",
