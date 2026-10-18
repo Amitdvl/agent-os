@@ -167,6 +167,87 @@ async function assertStopped(servers) {
 }
 const posix = { skip: process.platform === 'win32' ? 'POSIX process group lifecycle checks; Windows tree cleanup requires a Windows runner' : false };
 
+function groupSignalScenario(mode, signum = 9) {
+  const script = `import importlib.util,json,signal,sys
+spec=importlib.util.spec_from_file_location('owned_server_helper',sys.argv[1])
+module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+mode=sys.argv[2];signum=int(sys.argv[3]);events=[];clock=[0.0];probes=[0]
+denied=PermissionError(1,'synthetic denied signal')
+class Process:
+ pid=42424242
+ def poll(self):return None if mode=='live' else 7
+def killpg(pgid,sig):
+ events.append([pgid,int(sig)])
+ if pgid!=Process.pid:raise AssertionError('signaled an unowned group')
+ if sig!=0:raise denied
+ probes[0]+=1
+ if mode=='gone-after-denial' and probes[0]>1:raise ProcessLookupError(3,'confirmed absent')
+ if mode=='present':return
+ raise PermissionError(1,'probe still denied')
+def sleep(seconds):
+ if seconds<=0:raise AssertionError('busy-loop cleanup')
+ clock[0]+=seconds
+module.os.killpg=killpg
+module.time.monotonic=lambda:clock[0]
+module.time.sleep=sleep
+raised=False;original=False
+try:module.signal_owned_group(Process(),signum)
+except PermissionError as error:raised=True;original=error is denied
+print(json.dumps({'raised':raised,'original':original,'events':events,'elapsed':clock[0],'probes':probes[0]}))
+`;
+  const result = spawnSync(python, ['-B', '-c', script, helper, mode, String(signum)], { encoding: 'utf8', timeout: 5000 });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  return JSON.parse(result.stdout);
+}
+
+test('owned-group cleanup accepts transient denial only after confirming the reaped group is absent', posix, () => {
+  const result = groupSignalScenario('gone-after-denial');
+  assert.equal(result.raised, false);
+  assert.equal(result.probes, 2, 'one denied probe must not count as confirmed cleanup');
+  assert.deepEqual(result.events.map(event => event[1]), [9, 0, 0]);
+  assert.ok(result.elapsed > 0, 'transient denial must use a bounded condition check');
+});
+
+test('persistent group permission denial remains an error and cleanup probing is bounded', posix, () => {
+  const result = groupSignalScenario('denied');
+  assert.equal(result.raised, true);
+  assert.equal(result.original, true, 'retain the original failure rather than replacing it with probe noise');
+  assert.ok(result.probes > 0);
+  assert.ok(result.elapsed > 0 && result.elapsed <= 1, `permission probing was not bounded: ${result.elapsed}s`);
+  assert.equal(result.events.filter(event => event[1] !== 0).length, 1, 'do not blindly replay a denied signal');
+});
+
+test('cleanup never hides denial for a live leader or a group that still exists', posix, () => {
+  const live = groupSignalScenario('live', 15);
+  assert.equal(live.raised, true);
+  assert.equal(live.original, true);
+  assert.equal(live.probes, 0, 'live-leader denial is not the reaped-group race');
+  assert.deepEqual(live.events.map(event => event[1]), [15]);
+  const present = groupSignalScenario('present');
+  assert.equal(present.raised, true);
+  assert.equal(present.original, true);
+  assert.equal(present.probes, 1, 'successful existence probe must fail closed immediately');
+  assert.deepEqual(present.events.map(event => event[1]), [9, 0]);
+});
+
+test('reaping a shell leader does not skip the final signal to its owned descendant group', posix, () => {
+  const script = `import importlib.util,json,sys
+spec=importlib.util.spec_from_file_location('owned_server_helper',sys.argv[1])
+module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+events=[]
+class Process:
+ pid=42424242
+ def poll(self):return 0
+ def wait(self,timeout=None):return 0
+module.os.killpg=lambda pgid,sig:events.append([pgid,int(sig)])
+module.stop_owned([Process()])
+print(json.dumps(events))
+`;
+  const result = spawnSync(python, ['-B', '-c', script, helper], { encoding: 'utf8', timeout: 5000 });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.deepEqual(JSON.parse(result.stdout), [[42424242, 15], [42424242, 9]], 'shell exit does not establish that its descendants exited');
+});
+
 test('multi-server helper waits for both servers, runs the dependent command and stops shell descendants', posix, async context => {
   const setup = await fixture(context);
   const servers = [await setup.server(), await setup.server()];

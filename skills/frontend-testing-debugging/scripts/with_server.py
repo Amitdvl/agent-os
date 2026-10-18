@@ -19,14 +19,35 @@ def listening(port):
         return False
 
 
+def signal_owned_group(process, signum):
+    try:
+        os.killpg(process.pid, signum)
+    except ProcessLookupError:
+        return
+    except PermissionError as error:
+        # A rapidly disappearing shell/child group can briefly report EPERM
+        # after its leader is reaped. Never treat permission denial alone as
+        # successful cleanup or retry a real signal against a reused group ID.
+        if process.poll() is None:
+            raise
+        deadline = time.monotonic() + 0.25
+        while time.monotonic() < deadline:
+            try:
+                os.killpg(process.pid, 0)
+            except ProcessLookupError:
+                return  # Confirmed gone, rather than merely inaccessible.
+            except PermissionError:
+                time.sleep(0.005)
+                continue
+            raise error  # A present group must not be silently retained.
+        raise error
+
+
 def stop_owned(processes):
     if os.name == 'posix':
         # Send to groups even if the shell leader exited; its children may remain.
         for process in reversed(processes):
-            try:
-                os.killpg(process.pid, signal.SIGTERM)
-            except ProcessLookupError:
-                pass
+            signal_owned_group(process, signal.SIGTERM)
         deadline = time.monotonic() + 2
         for process in reversed(processes):
             try:
@@ -34,10 +55,7 @@ def stop_owned(processes):
             except subprocess.TimeoutExpired:
                 pass
         for process in reversed(processes):
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
+            signal_owned_group(process, signal.SIGKILL)
             process.wait()
     else:
         for process in reversed(processes):
