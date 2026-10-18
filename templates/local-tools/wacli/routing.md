@@ -2,7 +2,7 @@
 
 Use Wacrawl for read-only WhatsApp Desktop history/search/unread/media metadata and local archive/backup checks. Use Wacli for linked-device/current protocol state, contacts/chats/groups/channels, automation, sending/reactions/presence, archive/pin/mute/mark-read and account/device actions.
 
-Check installed `wacli version` and help before relying on reviewed commands; prefer JSON for sync/chats/messages/doctor. Use supported `--read-only` exploration when not writing. Linked-device login remains user-owned; never read session files from disk or inspect credentials.
+Check installed `wacli version` and help before relying on reviewed commands; prefer JSON for sync/chats/messages/doctor. Use `wacli --read-only --json doctor` for a local health check; the `status` command is no longer present in 0.22.0. Use supported `--read-only` exploration when not writing. Linked-device login remains user-owned; never read session files from disk or inspect credentials.
 
 Sends require exact chat/contact/group and exact message or media/content. Reactions, polls, presence, archive/pin/mute/mark-read, group/channel changes and account/device mutations need the requested target/action; a read request does not authorize these changes. Resolve ambiguous targets with fresh bounded reads and verify supported writes through the same system before reporting success.
 
