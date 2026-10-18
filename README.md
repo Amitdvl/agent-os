@@ -74,6 +74,8 @@ installed automatically; each destination chooses and configures them locally.
 
 ## Adaptive inquiry
 
+For substantial implementation and reusable-kit work, [engineering lessons](docs/agentic-engineering.md) covers finite scope, ordinary-path proof, interaction review, evidence reuse, resource ownership and release closure. It is a practice guide; project-specific evidence stays in its consuming repository.
+
 [WWWWH](docs/wwwwh.md) provides optional guidance for adaptive, goal-oriented inquiry.
 Comparative benefit over ordinary assistance has not been demonstrated; see the
 usage and evaluation limits before adopting it.

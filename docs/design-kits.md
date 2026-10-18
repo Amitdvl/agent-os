@@ -1,5 +1,7 @@
 # Reusable design kits
 
+For kit development and adoption, use the [engineering practice guide](agentic-engineering.md#using-these-lessons-for-reusable-kits): shared source, registered starting points, editor controls, retained snapshots and actual output have distinct acceptance boundaries. This does not require a new framework or duplicate catalog.
+
 ## Monochrome Workspace
 
 [Open the kit](../skills/monochrome-workspace/assets/kit/README.md) · [Design rules](../skills/monochrome-workspace/assets/kit/DESIGN.md) · [Interactive specimen](../skills/monochrome-workspace/assets/kit/example.html)
