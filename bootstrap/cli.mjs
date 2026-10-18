@@ -30,7 +30,8 @@ const END_MARKER = "<!-- agent-os:end -->";
 const LIVE_CUTOVER_COMMAND_IDS = ["add", "commands", "teach", "trunk-finish"];
 const LEGACY_COMMAND_IDS = ["add", "commands", "trunk-finish"];
 const LEGACY_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; `agent-system/skills` is only the upstream source for reusable global assets.";
-const CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; Agent OS is the canonical portable source for reusable global assets.";
+const PREVIOUS_CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; Agent OS is the canonical portable source for reusable global assets.";
+const CUTOVER_GUIDANCE = "Read project instructions before editing. Use `.agents/skills` as the canonical repo-local skill root; Agent OS is the portable source for reusable global assets. Keep repo-specific overrides in the consuming repo.";
 
 // These are portable *templates*, not machine configuration. Every selected
 // tool receives the same complete section structure, with only safe command
@@ -1058,8 +1059,9 @@ function exactGuidancePlan(content) {
   if (content === null) return { status: "conflict", reason: "Codex AGENTS.md is missing", original: null, next: null };
   const legacyCount = content.split(LEGACY_GUIDANCE).length - 1;
   const targetCount = content.split(CUTOVER_GUIDANCE).length - 1;
-  if (legacyCount === 1 && targetCount === 0) return { status: "replace-guidance", reason: null, original: content, next: content.replace(LEGACY_GUIDANCE, CUTOVER_GUIDANCE) };
-  if (legacyCount === 0 && targetCount === 1) return { status: "already-cut-over", reason: null, original: content, next: content };
+  const previousTargetCount = content.split(PREVIOUS_CUTOVER_GUIDANCE).length - 1;
+  if (legacyCount === 1 && targetCount === 0 && previousTargetCount === 0) return { status: "replace-guidance", reason: null, original: content, next: content.replace(LEGACY_GUIDANCE, CUTOVER_GUIDANCE) };
+  if (legacyCount === 0 && targetCount + previousTargetCount === 1) return { status: "already-cut-over", reason: null, original: content, next: content };
   return { status: "conflict", reason: "Codex AGENTS.md does not contain exactly one recognized cutover guidance sentence", original: content, next: null };
 }
 

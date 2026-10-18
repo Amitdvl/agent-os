@@ -465,7 +465,8 @@ test("update and uninstall refuse a drifted managed symlink", async (context) =>
 });
 
 const LEGACY_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; `agent-system/skills` is only the upstream source for reusable global assets.";
-const CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; Agent OS is the canonical portable source for reusable global assets.";
+const PREVIOUS_CUTOVER_GUIDANCE = "Consuming repos should use `.agents/skills` as the canonical repo-local skill root; Agent OS is the canonical portable source for reusable global assets.";
+const CUTOVER_GUIDANCE = "Read project instructions before editing. Use `.agents/skills` as the canonical repo-local skill root; Agent OS is the portable source for reusable global assets. Keep repo-specific overrides in the consuming repo.";
 const CUTOVER_COMMANDS = ["add", "commands", "teach", "trunk-finish"];
 const LEGACY_COMMANDS = ["add", "commands", "trunk-finish"];
 
@@ -530,6 +531,10 @@ test("live cutover is preview-first, exact, idempotent, and rollback restores th
   assert.equal(JSON.parse(run(["doctor", "--home", fixture.home, "--json"]).stdout).coreChecks.find((item) => item.id === "live-cutover").ok, true);
   const guardedRollback = run(["live-rollback", "--home", fixture.home, "--apply", "--json"], 1);
   assert.match(guardedRollback.stderr, /refusing live rollback/);
+  await writeFile(agents, fixture.originalGuidance.replace(LEGACY_GUIDANCE, PREVIOUS_CUTOVER_GUIDANCE), "utf8");
+  const previousStatus = JSON.parse(run(["status", "--home", fixture.home, "--json"]).stdout);
+  assert.equal(previousStatus.liveCutover.status, "applied");
+  assert.equal(JSON.parse(run(["doctor", "--home", fixture.home, "--json"]).stdout).coreChecks.find((item) => item.id === "live-cutover").ok, true);
   await writeFile(agents, fixture.originalGuidance.replace(LEGACY_GUIDANCE, CUTOVER_GUIDANCE), "utf8");
 
   const idempotent = JSON.parse(run(["live-cutover", "--home", fixture.home, "--apply", "--json"]).stdout);
