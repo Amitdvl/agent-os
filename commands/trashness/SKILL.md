@@ -93,6 +93,42 @@ location make disposal highly confident:
 Age is supporting evidence, not deletion authority. Omit uncertain items even
 if they are large.
 
+## Expanded Eligibility
+
+The following also qualify when their additional evidence is recorded in the
+manifest. A space target never substitutes for that evidence.
+
+- Retired render intermediates, temporary previews, extracted frames and
+  waveform caches: prove they are reproducible or redundant and no longer
+  referenced by a current project, report or evidence manifest. Preserve
+  editable source/assets, accepted exports, deliberately retained rejected
+  evidence, source-frozen snapshots and sole surviving outputs. Being ignored,
+  rejected, old, or inside `work/` does not by itself establish retirement.
+- Retired fixture histories and superseded rollback points: require positive
+  retirement evidence, retained source/assets, and no surviving dependency on
+  their blobs or absolute paths. Missing project directories alone are
+  insufficient; history may contain the only remaining source. Record the
+  retention decision and loss of rollback ability; keep recent history and
+  named milestones unless their retirement is explicitly authorized. Do not
+  prune content-addressed blobs without verifying the application's reference
+  model and every surviving reference.
+- Disposable simulator fixtures: require device-specific authorization to
+  retire the fixture and evidence that all its apps, settings and test data are
+  disposable. Preserve reference devices, wanted data, credentials and active
+  devices; shutdown or a default device name alone is insufficient. List the
+  exact UUID and use the installed simulator tool's exact-device removal.
+  This narrow test-fixture exception does not permit general database, profile
+  or virtual-disk cleanup.
+- Inactive dependency installs containing hardlinks: allow only when every
+  alias of each linked inode lies inside the authorized set, all aliases pass
+  protections, and package metadata remains available for reinstall. Never
+  chmod or modify linked contents. Count each inode once and reject incomplete
+  alias accounting; preserve installs used by a related running process.
+
+Revalidate retirement evidence and surviving references immediately before
+deletion along with identities and open-file checks. Broader category approval
+does not establish that a particular candidate meets these conditions.
+
 ## Absolute Exclusions
 
 Never include:
@@ -117,6 +153,8 @@ Never include:
   authorized under the contract below. Never empty Trash wholesale.
 
 Do not use Mole, CleanMyMac, or another broad cleaner as the deletion engine.
+The explicit disposable simulator-fixture exception above is the only exception
+to the database/profile exclusion; ordinary application data stays excluded.
 
 ## Discovery Workflow
 
@@ -134,7 +172,9 @@ Do not use Mole, CleanMyMac, or another broad cleaner as the deletion engine.
    reason, and proposed deletion method.
 6. Deduplicate nested targets so authorizing a directory never also lists its
    children as separate removals.
-7. Calculate exact totals from the final manifest.
+7. Calculate exact totals from the final manifest, counting shared inodes once.
+   Report allocated-byte totals separately from the measured free-space change;
+   hardlinks, APFS clones and concurrent activity can make them differ.
 
 ## Authorization Contract
 
