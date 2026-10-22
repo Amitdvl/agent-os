@@ -15,6 +15,7 @@
       {"id": "no-temptation-lockin", "reason": "Owner-specific identity and focus boundary; intentionally machine-only and never copied into the portable distribution."}
     ],
     "excludedLiveConfiguration": [
+      {"id": "codex-owner-permission-default", "reason": "The owner's explicitly selected permission profile, tool approval defaults and trusted project scopes are private user-level application preferences. Do not distribute Full access or automatic tool approval as Agent OS defaults or copy host-specific permission selections and project trust paths."},
       {"id": "owner-policy-bindings", "reason": "The private instruction wrapper retains owner tone, hook and repository/vault/registry paths, native helper locations and narrow user-granted UI setup authorization. Portable policies mirror behavior and configurable contracts, never these identities, paths or owner-specific grants."},
       {"id": "codex-skill-path-enablements", "reason": "Host skill enablements use namespaced selectors for plugin entries and paths for local entries. Absolute paths and installed plugin identities stay machine-local. Agent OS mirrors the collision policy and audit contract."},
       {"id": "agent-vault-adapter-binding", "reason": "The vault root and helper location are machine-local. Agent OS mirrors only the versioned adapter schema and metadata-only behavior."},

@@ -42,6 +42,11 @@ The research pack's OpenCLI contract treats named X bookmark folders as an authe
 
 Intentional exclusions include accounts, credentials, encryption identities, browser data, local archives, macOS privacy grants, host logs/sessions, remote publishing, automatic authentication, and any mechanism for weakening focus protections.
 
+The owner's Codex permission profile, tool approval defaults and trusted project
+scopes are explicitly machine-local. Agent OS does not distribute Full access or
+automatic tool approval as defaults or copy host-specific permission selections
+and project trust paths; each owner chooses their application permissions.
+
 The portable workspace-navigation contract tells agents to consult an optional
 machine-local `~/.agent-os/workspaces.json` before broad discovery. The live
 registry's absolute paths and project names are intentionally excluded; only a
