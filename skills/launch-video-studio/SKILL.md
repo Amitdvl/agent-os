@@ -1,6 +1,6 @@
 ---
 name: launch-video-studio
-description: Create or edit launch videos and product demo videos using the registered primary studio, including named video templates or formats such as imessage and iMessage conversation videos.
+description: Create or edit launch videos and product demo videos using the registered managed local studio, including named video templates or formats such as imessage and iMessage conversation videos.
 ---
 
 # Launch Video Studio
@@ -18,9 +18,17 @@ requests continue through the registered-primary route below.
 
 ## Locate and discover
 
-Run `scripts/resolve-studio.mjs` from this skill with Node. It resolves `LAUNCH_VIDEO_STUDIO_ROOT` when supplied, otherwise the active `launch-video-studio` canonical project in the private `~/.agent-os/workspaces.json`, and verifies the repository's package identity and harness. Use the returned directory as the working directory. If neither configuration exists, report that the studio checkout needs to be registered; do not substitute a similarly named scratch directory or create a new studio.
+Run this skill's `scripts/resolve-studio.mjs --json` with Node. Discovery is read-only. It returns the registered package location plus either `mode: "managed"` or `mode: "development"`. It honors an explicit `LAUNCH_VIDEO_STUDIO_ROOT` first. Otherwise it reads the active `launch-video-studio` record in the private `~/.agent-os/workspaces.json`.
 
-A private registry may declare this studio under `remotePrimaryProjects` with `hostLabel` and `projectLabel`. The resolver then stops with the saved project to open on that machine, even if a retained local copy exists. Respect that routing: do not silently author on the backup, assume a remote shell, or start another studio. Use supported host access within the user's authorization; otherwise direct them to the named project. An explicit `LAUNCH_VIDEO_STUDIO_ROOT` is a deliberate local override. Machine labels and paths stay in the private registry, never in this portable skill.
+A managed record declares `managedRoot`, an absolute host-local installation folder, and `controller`, the absolute trusted bootstrap controller file (or the canonical project's `scripts/managed-studio.mjs`). The resolver validates the installation and active software ownership markers and returns `root`, `managedRoot`, `controller`, `libraryRoot`, and `revision`. A registered managed installation supersedes obsolete remote-primary routing. An invalid managed installation fails closed; repair it through its registered controller, rather than silently authoring in another checkout. A registered controller ancestor alias resolves to its canonical file before being returned. Paths and ownership state remain private machine configuration. Read the resolved repository’s `AGENTS.md` before controller or editing operations.
+
+For managed routine work, run Node on the returned `controller` with `open --root <managedRoot>`. This built-in-only controller checks the verified release, prepares project-local dependencies, checks health, and returns the local server's port/revision. After `open`, run discovery again: startup may update or fall back. Require the new discovery `revision` to match `open`’s daemon revision, and use that current `root` for the client and guides; report a mismatch instead of executing the previously discovered software. Run that software's `workspace/client.mjs` with `--url http://127.0.0.1:<port>` for ordinary create/open/edit/drafts/assets/preview state/export operations. Use `catalog` for current formats and films; use the live harness only for format guides, checks and inspection. Film data lives under `libraryRoot/projects`; never create or edit films in the installed software's checkout. Use the same local server as the user so CLI and UI share serialization and durable state.
+
+Client commands include `sync <film> --operation status|enable|now|continue|recover|diagnostics`, `open <film> --takeover true` for an explicitly requested handoff, and `managed status|update|retry|restart`. Enable sharing once per chosen film, then saves upload automatically. `recover` retains divergent versions as separate films; inspect its structured `recoveredName`. Read state/capabilities and current source versions before commands. Preserve browser drafts and valid history; do not bypass ownership guards or fix conflict state with raw Git resets/force pushes. A pending/offline result is durable local work, not proof it reached another computer.
+
+If startup or dependencies fail, use the registered controller's `doctor`, `update --retry` and `open` with the same root. These operate within the owned installation and retain prior working software; no global tools or system settings are authorized by this workflow. If access, storage or creative conflicts need a human decision, report the exact code and next step. Never create a verified-release marker or claim another host passed from assumption.
+
+Development records retain the canonical-project behavior. A private `remotePrimaryProjects` record without a managed local installation names the saved destination host/project and refuses silent backup authoring. Explicit environment overrides deliberately select a development checkout; do not use them to bypass ordinary managed routing. If no registration exists, report that setup/registration is needed; do not choose a similarly named scratch folder or bulk-migrate films.
 
 Read that repository's `AGENTS.md`, then query the live catalog:
 
@@ -34,13 +42,13 @@ For an explicitly named format, resolve its canonical entry and read its returne
 
 ## Make and adapt
 
-Create through the harness, for example:
+In a managed installation, create through the running workspace client with `create <project-name> --format <canonical-id> --url <returned-local-url>`. In an explicitly selected development checkout, create through the harness, for example:
 
 ```sh
 npm --silent run studio -- create <project-name> --format imessage
 ```
 
-`--template` is a synonym for `--format`. Follow the format guide for its inputs and shape. Adapt the copied project to the user's product, story, assets, and reading time; sample content is demonstration material, not product truth. Existing videos are editable projects, not templates to overwrite. Native HTML and timelines remain the editable master; use the repository's source ownership, preview, check, snapshot, and render commands rather than inventing another editor or driving the UI for ordinary authoring.
+`--template` is a synonym for `--format`. Follow the format guide for its inputs and shape. Adapt the copied project to the user's product, story, assets, and reading time; sample content is demonstration material, not product truth. Existing videos are editable projects, not templates to overwrite. Native HTML and timelines remain the editable master. In managed installations, use the shared workspace for mutations, previews and exports; use read-only harness checks/snapshots against the absolute library film path. In development checkouts, use the repository’s source ownership, preview, check, snapshot and render commands. Do not invent another editor or drive the UI for ordinary authoring.
 
 Read the repository README and relevant returned guides for the installed command syntax. Verify the chosen output shape, actual rendered frames, and audio as appropriate, and report the difference between a template's supported profiles and what has actually been checked for this film. Keep source/assets editable and deliver the export in the current thread. This skill does not authorize purchases, deployment, or public publication.
 
