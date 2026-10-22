@@ -76,7 +76,7 @@ async function fixture(t){
   const seed=join(home,'seed'),repo=join(home,'source'),origin=join(home,'origin.git');await mkdir(seed);
   await git(seed,'init','--initial-branch=main');await git(seed,'config','user.name','Independent owned fixture');await git(seed,'config','user.email','fixture@localhost');
   await put(join(seed,'package.json'),JSON.stringify({name:'launch-video-studio',scripts:{studio:'node scripts/studio.mjs'}}));await put(join(seed,'scripts/studio.mjs'),'// Owned harness identity fixture\n');
-  await put(join(seed,'tracked.txt'),'original source\n');await put(join(seed,'projects/shared-film/index.html'),'durable film source\n');await put(join(seed,'projects/shared-film/.studio-state/sync.json'),JSON.stringify({enabled:true,owner:'owned-fixture'}));
+  await put(join(seed,'tracked.txt'),'original source\n');await put(join(seed,'projects/shared-film/index.html'),'durable film source\n');await put(join(seed,'projects/shared-film/.studio-state/sync.json'),JSON.stringify({schemaVersion:1,enabled:true,owner:'owned-fixture'}));
   await git(seed,'add','.');await git(seed,'commit','-m','Initial owned source');const activeRevision=await git(seed,'rev-parse','HEAD');
   await put(join(seed,'.studio-release.json'),JSON.stringify({schemaVersion:1,sourceRevision:activeRevision,verifiedPlatforms:['darwin','win32']}));await git(seed,'add','.');await git(seed,'commit','-m','Verified release marker');await git(home,'clone','--bare',seed,origin);await git(home,'clone',origin,repo);
   await git(repo,'config','user.name','Independent owned fixture');await git(repo,'config','user.email','fixture@localhost');
@@ -166,4 +166,40 @@ test('default Git queries scrub inherited repository/config redirects and never 
   const before=await retained(f.home),environment={...process.env,GIT_DIR:join(f.home,'missing-git-directory'),GIT_WORK_TREE:f.seed,GIT_INDEX_FILE:join(f.home,'forbidden-index'),GIT_CONFIG_COUNT:'1',GIT_CONFIG_KEY_0:'remote.origin.url',GIT_CONFIG_VALUE_0:join(f.home,'foreign-injected.git')};
   const observed=await inspectMaintenance({repo:f.repo,home:f.home,environment,discovery:f.discovery,request:f.request,now:f.now});
   assert.equal(observed.repository.relation,'current');assert.equal(observed.studio.healthy,true);assert.deepEqual(maintenancePlan(observed),{actions:[],deferred:[],attention:[]});assert.deepEqual(await retained(f.home),before,'redirect variables and executable Git monitors cannot mutate or redirect inspection');
+});
+
+test('verified completed writer handoff is quiet without resetting retained error or retry state, while uncertain handoffs fail closed',async t=>{
+  const f=await fixture(t),statePath=join(f.libraryRoot,'.git/studio-managed.json'),retryPath=join(f.libraryRoot,'.git/studio-transport.json'),base=JSON.parse(await readFile(statePath,'utf8'));
+  const handed={...base,deviceId:'former-writer',results:{'shared-film':{status:'error',code:'WRITER_CHANGED'}}};await put(statePath,JSON.stringify(handed));await put(retryPath,JSON.stringify({'shared-film':3}));
+  let before=await retained(f.home),observed=await f.inspect();
+  assert.deepEqual(observed.films,[{name:'shared-film',enabled:true,ownerLocal:false,status:'synced',paused:true,handoffComplete:true}]);assert.equal(observed.studio.activity,'idle');assert.deepEqual(maintenancePlan(observed),{actions:[],deferred:[],attention:[]});assert.deepEqual(await retained(f.home),before,'completed handoff observation must not reset old error, retry ledger, ownership or any file');
+  for(const patch of [{ownerLocal:true},{status:'pending'},{status:'unknown'},{handoffComplete:'true'}]){
+    const plan=maintenancePlan({...observed,films:[{...observed.films[0],...patch}]});assert.ok(plan.attention.length>0,'an inconsistent handoff flag must not suppress retained paused state: '+JSON.stringify(patch));
+  }
+  const blocked=async(label,options)=>{
+    const preserved=await retained(f.home),value=await f.inspect(options),film=value.films[0],plan=maintenancePlan(value);
+    assert.notEqual(film.handoffComplete,true,label);assert.notEqual(film.status,'synced',label);assert.equal(film.paused,true,label);assert.notEqual(value.studio.activity,'idle',label);assert.ok(plan.attention.length+plan.deferred.length>0,label);noAction(plan,'sync-film');assert.deepEqual(await retained(f.home),preserved,label+' must preserve all files');
+  };
+  for(const [label,state] of [
+    ['local owner',{...handed,deviceId:'owned-fixture'}],
+    ['different retained error',{...handed,results:{'shared-film':{status:'error',code:'PUSH_FAILED'}}}],
+    ['conflict',{...handed,results:{'shared-film':{status:'conflict',code:'WRITER_CHANGED'}}}],
+    ['pending is not a completed handoff',{...handed,results:{'shared-film':{status:'pending',code:'WRITER_CHANGED'}}}],
+    ['missing error identity',{...handed,results:{'shared-film':{status:'error'}}}]
+  ]){await put(statePath,JSON.stringify(state));await blocked(label);}
+  await put(statePath,JSON.stringify(handed));await blocked('remote unknown',{run:async(command,args,cwd)=>{if(command==='git'&&args[0]==='ls-remote')throw new Error('Owned remote unavailable');return f.run(command,args,cwd);}});
+  const sourcePath=join(f.libraryRoot,'projects/shared-film/index.html'),source=await readFile(sourcePath);await put(sourcePath,'Unsaved local film after ownership moved\n');await blocked('dirty local film');await put(sourcePath,source);
+  await put(join(f.seed,'projects/shared-film/index.html'),'Distinct accepted incoming film\n');await git(f.seed,'add','.');await git(f.seed,'commit','-m','Different remote film checkpoint');await git(f.seed,'push',f.origin,'main');await git(f.repo,'fetch','origin');await git(f.repo,'merge','--ff-only','origin/main');await git(f.libraryRoot,'fetch','origin');await blocked('known different remote film tree');
+  await git(f.libraryRoot,'merge','--ff-only','origin/main');
+  for(const [label,config] of [
+    ['shared config disabled',{schemaVersion:1,enabled:false,owner:'owned-fixture'}],
+    ['missing owner',{schemaVersion:1,enabled:true}],
+    ['null owner',{schemaVersion:1,enabled:true,owner:null}],
+    ['empty owner',{schemaVersion:1,enabled:true,owner:''}],
+    ['blank owner',{schemaVersion:1,enabled:true,owner:'   '}],
+    ['unknown sync schema',{schemaVersion:2,enabled:true,owner:'owned-fixture'}]
+  ]){
+    await put(join(f.seed,'projects/shared-film/.studio-state/sync.json'),JSON.stringify(config));await git(f.seed,'add','.');await git(f.seed,'commit','-m',label);await git(f.seed,'push',f.origin,'main');for(const root of [f.repo,f.libraryRoot]){await git(root,'fetch','origin');await git(root,'merge','--ff-only','origin/main');}
+    assert.equal(await git(f.libraryRoot,'rev-parse','HEAD:projects/shared-film'),await git(f.repo,'rev-parse','HEAD:projects/shared-film'),'rejection must hold even with exactly equal clean known film trees');await blocked('clean matching film with '+label);
+  }
 });

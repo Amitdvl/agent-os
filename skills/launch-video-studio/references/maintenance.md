@@ -66,6 +66,13 @@ software adoption: only a valid published, both-platform verified release can
 advance the installed runtime. Never fabricate the release marker. Existing film
 kit snapshots adopt changes deliberately.
 
+After a completed editing handoff, the previous computer may retain a paused
+`WRITER_CHANGED` retry. If it is no longer the writer, the film is clean, and its
+complete Git tree matches the known remote film tree, the probe records
+`handoffComplete: true` and treats this retained pause quietly. It preserves the
+ledger and ownership. Local edits, unknown remote state, other errors and actual
+conflicts do not qualify for this exception.
+
 The probe's observations are a point-in-time view, not a lock. Studio's own
 transaction/ownership guards remain the final authority. Unknown or malformed
 state must defer destructive/interrupting actions. A stopped server has no health

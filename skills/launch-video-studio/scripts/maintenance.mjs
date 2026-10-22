@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { resolveStudio } from './resolve-studio.mjs';
 const execute = promisify(execFile);
 const oid = value => /^[a-f0-9]{40}$/.test(value ?? '');
+const completedHandoff = film => film.handoffComplete === true && film.ownerLocal === false && film.status === 'synced';
 const json = async path => JSON.parse(await readFile(path, 'utf8'));
 function gitEnvironment(environment) {
   const env = { ...environment, GIT_TERMINAL_PROMPT: '0', GCM_INTERACTIVE: 'never', GIT_LITERAL_PATHSPECS: '1', GIT_OPTIONAL_LOCKS: '0', GIT_NO_LAZY_FETCH: '1' };
@@ -36,7 +37,7 @@ export function maintenancePlan(snapshot) {
   }
   for (const film of snapshot.films ?? []) {
     if (!film.enabled) continue;
-    if (film.paused || film.status === 'conflict' || film.status === 'unknown') attention.push(`Film ${film.name}: ${film.paused ? 'retries paused' : film.status}; preserve local work and inspect diagnostics.`);
+    if ((film.paused && !completedHandoff(film)) || film.status === 'conflict' || film.status === 'unknown') attention.push(`Film ${film.name}: ${film.paused ? 'retries paused' : film.status}; preserve local work and inspect diagnostics.`);
     else if (film.status === 'pending' && film.ownerLocal && studio?.healthy === true) actions.push({ type: 'sync-film', name: film.name });
   }
   return { actions, deferred, attention };
@@ -123,18 +124,20 @@ export async function inspectMaintenance({ repo, home = homedir(), environment =
       if (!project || name === project) snapshot.films.push(film);
       const config = await json(join(studio.libraryRoot, 'projects', name, '.studio-state', 'sync.json'));
       film.ownerLocal = config.owner === state.deviceId;
-      const prior = state.results?.[name]?.status;
+      const result = state.results?.[name];
+      const prior = result?.status;
+      const movedWriter = !film.ownerLocal && config.schemaVersion === 1 && typeof config.owner === 'string' && Boolean(config.owner.trim()) && config.enabled === true && prior === 'error' && result.code === 'WRITER_CHANGED';
       const dirty = Boolean(await git(studio.libraryRoot, 'status', '--porcelain', '--', `projects/${name}`));
       film.status = prior === 'conflict' ? 'conflict' : dirty ? 'pending' : prior === 'pending' ? 'pending' : 'unknown';
       // Compare trees, not whole commits: unrelated code/film changes need no transfer.
-      if (!dirty && prior === 'synced' && oid(remoteHead)) {
+      if (!dirty && (prior === 'synced' || movedWriter) && oid(remoteHead)) {
         const localTree = await git(studio.libraryRoot, 'rev-parse', `HEAD:projects/${name}`);
         const remoteTree = await git(studio.libraryRoot, 'rev-parse', `${remoteHead}:projects/${name}`);
-        if (oid(localTree) && localTree === remoteTree) film.status = 'synced';
+        if (oid(localTree) && localTree === remoteTree) { film.status = 'synced'; if (movedWriter) film.handoffComplete = true; }
         else film.status = 'pending';
       }
       if (film.status === 'pending') studio.activity = 'busy';
-      else if (film.status === 'unknown' || film.status === 'conflict' || film.paused) studio.activity = 'unknown';
+      else if (film.status === 'unknown' || film.status === 'conflict' || (film.paused && !completedHandoff(film))) studio.activity = 'unknown';
     }
   } catch { studio.activity = 'unknown'; snapshot.errors.push('Film sync freshness unavailable; preserve data and inspect existing sync diagnostics.'); }
   return snapshot;
