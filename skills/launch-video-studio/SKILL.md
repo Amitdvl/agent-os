@@ -16,6 +16,17 @@ map, text, caption and trim concepts. This branch does not resolve or create a
 studio, change the chosen stack, or authorize an installation. General studio
 requests continue through the registered-primary route below.
 
+## Quiet maintenance on every prompt
+
+For every prompt in the Studio repository, and before ordinary Studio work from
+elsewhere, follow [quiet prompt-time maintenance](references/maintenance.md).
+Run this skill's `scripts/maintenance.mjs` with Node against the canonical local
+checkout. It reports safe actions using existing Git, controller and sync
+interfaces. Execute warranted routine maintenance, recheck the result, and stay
+quiet when healthy. Preserve active editing/rendering, unowned changes, paused
+retries and film ownership. This applies equally on Mac and Windows; it does not
+qualify a new runtime release or enable sharing for additional films.
+
 ## Locate and discover
 
 Run this skill's `scripts/resolve-studio.mjs --json` with Node. Discovery is read-only. It returns the registered package location plus either `mode: "managed"` or `mode: "development"`. It honors an explicit `LAUNCH_VIDEO_STUDIO_ROOT` first. Otherwise it reads the active `launch-video-studio` record in the private `~/.agent-os/workspaces.json`.
@@ -28,7 +39,7 @@ For managed routine work, run Node on the returned `controller` with `open --roo
 
 Client commands include `sync <film> --operation status|enable|now|continue|recover|diagnostics`, `open <film> --takeover true` for an explicitly requested handoff, and `managed status|update|retry|restart`. Enable sharing once per chosen film, then saves upload automatically. `recover` retains divergent versions as separate films; inspect its structured `recoveredName`. Read state/capabilities and current source versions before commands. Preserve browser drafts and valid history; do not bypass ownership guards or fix conflict state with raw Git resets/force pushes. A pending/offline result is durable local work, not proof it reached another computer.
 
-If startup or dependencies fail, use the registered controller's `doctor`, `update --retry` and `open` with the same root. These operate within the owned installation and retain prior working software; no global tools or system settings are authorized by this workflow. If access, storage or creative conflicts need a human decision, report the exact code and next step. Never create a verified-release marker or claim another host passed from assumption.
+If startup or dependencies fail, inspect the registered controller's `doctor` and use bounded `update`/`open` recovery with the same root. Follow the maintenance contract before an explicit `update --retry`; ordinary prompt checks must not reset paused retry budgets. These operate within the owned installation and retain prior working software; no global tools or system settings are authorized by this workflow. If access, storage or creative conflicts need a human decision, report the exact code and next step. Never create a verified-release marker or claim another host passed from assumption.
 
 Development records retain the canonical-project behavior. A private `remotePrimaryProjects` record without a managed local installation names the saved destination host/project and refuses silent backup authoring. Explicit environment overrides deliberately select a development checkout; do not use them to bypass ordinary managed routing. If no registration exists, report that setup/registration is needed; do not choose a similarly named scratch folder or bulk-migrate films.
 
