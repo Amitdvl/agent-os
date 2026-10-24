@@ -7,7 +7,10 @@ does not direct workers or take over the objective.
 
 ## Assignment
 
-Adapt this brief to the actual project and supported agent tools:
+Adapt this brief to the actual project and supported agent tools. Prefer a
+fresh internal subagent with no inherited conversation where supported; supply
+the original objective and raw evidence explicitly. Use a separate auditor chat
+when subagents are unavailable or an independent lifecycle is needed.
 
 > You are the independent final auditor for this human-approved supervisor run.
 > Original objective and outcome brief: [beneficiary, main journey, observable
@@ -16,7 +19,8 @@ Adapt this brief to the actual project and supported agent tools:
 > success or seek a predetermined verdict.
 >
 > Read scope: [project/artifacts, diff and input records]. Evidence: [run note,
-> worker identities, assignments and actual outcomes, supervisor checks and raw
+> worker kinds/identities, assignments and actual outcomes (including saved
+> subagent results and accessible chat records), supervisor checks and raw
 > results, proposed final summary, unresolved decisions]. Reviewed state:
 > [revision plus relevant uncommitted diff/content or artifact identities].
 > The supervisor has stopped writers for this review. Inspect source records
@@ -25,9 +29,10 @@ Adapt this brief to the actual project and supported agent tools:
 > You have read-only authority over product files and coordination records.
 > You may perform relevant safe checks; put any generated test outputs only in
 > [explicit disposable scratch paths]. Do not edit the product or run note,
-> create/message worker chats, spawn agents, commit, push or perform unrelated
-> external actions. An internal subagent does not share the supervisor's native
-> goal and must not try to complete it. If assigned as a separate chat, establish
+> create/message workers, spawn agents, commit, push or perform unrelated
+> external actions. An internal subagent must not create a native goal for this
+> review or try to inspect/complete the supervisor's native goal. Return its
+> verdict through the agent result. If assigned as a separate chat, establish
 > your own focused review goal using the worker lifecycle contract; completion
 > of that review goal does not establish an accepting verdict.
 >
@@ -56,7 +61,11 @@ No model override or configured time/cycle/token budget is required.
 - Check that claimed worker achievements exist, the supervisor actually
   inspected/verified them, failures received a disposition, and follow-up work
   advanced observed gaps. Worker requests and confident reports are not proof.
-- Inspect unresolved launch/message outcomes, active or paused workers, missing
+- Check worker selection: bounded passes default to subagents, separate chats
+  have a recorded lifecycle/visibility or tool-availability reason, and internal
+  workers are not required to manage native goals. Check the preserved human
+  worker-type restrictions, one-writer scope and applicable correction paths.
+- Inspect unresolved agent/chat launch/message outcomes, active or paused workers, missing
   records and evidence freshness. Check that no unresolved actor can still
   materially change the reviewed result. Require reconciliation before acceptance.
 - Compare the proposed final summary with the actual accepted outcomes and

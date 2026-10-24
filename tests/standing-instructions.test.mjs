@@ -47,16 +47,16 @@ const SCENARIOS = [
     /isolated write scope/,
   ]],
   ["supervisor activation requires actual human consent", "orchestration", [
-    /actual human reply explicitly approves creating and messaging separate worker chats/,
+    /actual human reply explicitly approves supervision with subagent delegation and creating\/messaging separate worker chats when useful/,
     /preselection, silence and question-delivery acknowledgment do not count/,
     /do not repeat a declined offer/,
   ]],
   ["supervisor completion follows independent audit and deliberate stops", "orchestration", [
-    /independent final auditor.*after any correction\/re-audit loop/,
+    /independent final auditor.*after corrections\/re-audit/,
     /do not configure cycle, time or token budgets unless requested/,
     /preserve deliberate pauses/,
-    /reconcile uncertain launches before retrying/,
-    /propagate human stops to active workers/,
+    /reconcile uncertain (?:agent\/chat )?launches before retrying/,
+    /propagate human stops.*supported controls/,
     /preserve exactly one prefix/,
   ]],
   ["supervisor shared changes need concrete approval before dispatch", "orchestration", [

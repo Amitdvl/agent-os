@@ -1,6 +1,6 @@
 interface:
   display_name: "Goal Supervisor"
-  short_description: "Define outcomes, review worker goals, and finish coherently."
+  short_description: "Supervise bounded subagents; use independent chats when useful."
   default_prompt: "Use $goal-supervisor to propose supervision of the objective we defined, and start only after my explicit approval."
 policy:
   allow_implicit_invocation: true

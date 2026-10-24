@@ -1,14 +1,16 @@
 ---
 name: goal-supervisor
-description: Recommend and, after explicit human approval, run a native goal supervisor that reviews separate worker chats and chooses valuable follow-up work under a high-level objective. Use for open-ended improvement that benefits from repeated discovery and review.
+description: Recommend and, after explicit human approval, run a native goal supervisor with bounded subagents by default and separate worker chats when independent lifecycle is useful. Review outcomes and choose valuable follow-up work under a high-level objective.
 ---
 
 # Goal Supervisor
 
-Keep the high-level objective in the supervisor chat. Give each concrete pass to
-a separate worker chat with its own native goal. Review the actual result, then
-choose the next valuable pass. Finish only after an independent final auditor
-accepts the current result with no important actionable gap remaining.
+Keep the high-level objective in the supervisor chat's native goal. Delegate
+bounded passes to internal subagents by default. Use separate worker chats when
+their independent lifecycle or direct human visibility provides a concrete
+benefit. Review the actual result, then choose the next valuable pass. Finish
+only after an independent final auditor accepts the current result with no
+important actionable gap remaining.
 Do not configure cycle, time or token budgets unless the human requests them.
 
 ## Define the outcome
@@ -32,9 +34,10 @@ note, rather than creating another planning system.
 
 Once the human has defined an objective that benefits from iterative discovery,
 proactively recommend this workflow in the native human question box. State the
-objective and ask whether to start a supervisor that may create and message
-separate worker chats, review their results, choose further in-scope work, and
-obtain an independent final audit with corrections before completion. Offer “Start supervisor” and “Keep normal
+objective and ask whether to start a supervisor that may delegate to subagents,
+create and message separate worker chats when useful, review their results,
+choose further in-scope work, and obtain an independent final audit with
+corrections before completion. Offer “Start supervisor” and “Keep normal
 execution.” Leave the run off until the human explicitly approves.
 
 Loading this skill, defining an objective, ordinary implementation approval,
@@ -45,8 +48,9 @@ or dispatch workers while awaiting an answer. Do not repeat a declined offer
 without a material scope change or a human request. A clear human approval of
 the concrete supervisor proposal already given covers the run; do not ask again.
 
-One approval covers creating and messaging workers and a final auditor for the
-agreed objective.
+One approval covers dispatching, messaging and following up with subagent or
+separate-chat workers and a final auditor for the agreed objective. Honor any
+human restriction on worker type; the default does not override it.
 Apply the human authority boundary below throughout the run.
 Do not turn run approval into permission for unrelated external actions.
 
@@ -104,9 +108,12 @@ At the start or resumption of an approved supervisor run, use the supported
 one `#SV ` prefix on later renames and retain it after completion so supervisor
 chats remain identifiable. Apply it to the supervisor, not its workers or auditor.
 
-Verify native goal tools and supported app tools for creating, waiting for,
-reading and messaging chats are available. Use their installed schemas. If a
-required capability is missing, report it and leave supervision unstarted;
+Verify native goal tools for the supervisor and supported coordination tools
+for the chosen worker type. Subagents need spawn, follow-up, result/state and
+stop controls; separate chats need app create, wait, read and message tools
+and their own native goal tools. Use installed schemas. Missing chat tools do
+not block a run that can use subagents throughout. If a required capability has
+no supported alternative, report it and leave the dependent work unstarted;
 never substitute a private app bridge or a claimed native goal. Verify that an
 independent agent can inspect the result before promising audited completion.
 
@@ -118,7 +125,8 @@ pause requires human resume authority; context recovery does not grant it.
 
 Keep a short, explicit run note in the project, for example
 `work/goal-supervisor.json`: objective, scope, actual human approval reference,
-supervisor identity, active worker or pending dispatch, accepted results,
+supervisor identity, worker kind (`subagent` or `chat`), actual identity, assignment
+and lifecycle state or pending dispatch, accepted results,
 review evidence, remaining gaps and final reason for stopping. Track proposed
 system-wide changes or major scope expansions, the actual human approval or
 rejection references, and pending decisions separately from agent reviews.
@@ -127,6 +135,31 @@ and re-audit evidence; retain earlier findings and their resolution. Use the cur
 chat and this inspectable artifact for recovery, never a hidden memory store.
 
 ## Supervise
+
+### Choose the worker type
+
+Use an internal subagent for a bounded investigation, implementation, test or
+review pass. Give it a focused assignment and the context needed to perform it;
+choose fresh context or inherited history deliberately using the supported
+spawn options. A subagent does not share the supervisor's native goal and is
+not required to create one. Its final report is assignment evidence for the
+supervisor to verify, not completion of the supervisor goal.
+
+Use a separate worker chat when the pass needs its own persistent native goal
+and independent continuation, direct human steering/revisiting, a different
+project or host, or another concrete lifecycle/configuration benefit that the
+available subagent interface cannot provide. Length or file count alone does
+not require a new chat. Record the reason in the run note. If subagent tools
+are unavailable, a supported separate chat is a fallback; disclose that reason.
+Each chat worker creates and manages its own focused native goal.
+
+Keep the supervisor's native goal active across passes. Neither worker type
+shares it. Switching worker type must preserve the assignment, evidence and
+authority records, and reconcile the previous worker before any replacement
+can write. Do not create a second writer to work around an unknown launch,
+unavailable worker state or deliberate pause.
+
+### Dispatch and follow the pass
 
 Inspect the project and intended behavior. Discover work from evidence. Before
 each pass, identify the current obstacle to the outcome, the observation or
@@ -141,28 +174,39 @@ earns its place when its answer could change a consequential decision. Avoid
 speculative polish, local improvements that do not help the objective, repeated
 attempts without new evidence and tasks invented merely to keep running.
 
-Before launching, reconcile the run note against supported chat state. Follow
-an existing worker before creating another. Persist dispatch intent with a
-unique marker, focused task and project target before `create_thread`; save the
-returned chat identity immediately. If the call's outcome is unknown, inspect
-matching chats and their initial prompts using `list_threads`/`read_thread`.
-Do not retry an uncertain launch until it is resolved. A queued client ID is
-not a ready thread ID. Never guess or silently duplicate it.
+Before launching, reconcile the run note against supported agent or chat state.
+Follow an existing worker before creating another. Persist dispatch intent with
+a unique marker, worker kind, focused task and project target before spawning
+or `create_thread`; save the returned actual identity immediately. For an unknown
+subagent launch, inspect the supported agent inventory/state and available
+messages/results. For an unknown chat launch, inspect matching chats and their
+initial prompts using `list_threads`/`read_thread`. Do not retry an uncertain
+launch until resolved; if the interface cannot reconcile it, report the gap and
+leave replacement dispatch pending. A queued client ID is not a ready thread ID.
+Never guess identities or silently duplicate work.
 
 Use one worker writer at a time in the approved project. For a project chat,
 resolve its actual project through `list_projects`; preserve the current
 checkout unless worktree isolation was requested. Projectless workers need
-explicit allowed paths. Use the host's configured model unless the human
-requested one. Read [the worker contract](references/worker-contract.md) when
+explicit allowed paths. Subagents use the approved checkout and explicit write
+scope; spawning does not itself isolate files. Preserve normal model defaults:
+subagents inherit the parent unless explicitly configured, and new chats use
+the host's configured model unless the human requested one.
+Read [the worker contract](references/worker-contract.md) when
 dispatching or correcting a worker.
 
-Use cursor-aware `wait_threads` calls of at most 60 seconds. A timeout or a
-finished turn is a reason to inspect, not proof of a completed worker goal.
-Read relevant results and check actual files/diff, behavior, tests and remaining
-limitations. Native goals belong to their own chats: workers create and inspect
-their own goals, never through a second app-server client. A worker's saved goal
-response is assistant-reported evidence; do not label it independent goal
-telemetry when the read interface omits native goal events.
+For subagents, use supported waits of at most 60 seconds and inspect delivered
+reports and agent state; a notification alone is not a verified result. Use the
+follow-up task control to start another turn for an idle subagent; a message
+alone may not resume it. Persist accepted reports/evidence in the run note so
+recovery does not depend on an old agent handle remaining available.
+
+For chats, use cursor-aware `wait_threads` calls of at most 60 seconds. A timeout
+or finished turn is a reason to inspect, not proof of a completed worker goal.
+Chat workers create and inspect their own goals, never through a second
+app-server client. A saved goal response is assistant-reported evidence; do not
+label it independent telemetry when the reader omits native goal events.
+For both kinds, check actual files/diff, behavior, tests and remaining limitations.
 
 ## Review the work and its contribution
 
@@ -194,10 +238,13 @@ ceremony for every pass. The final audit below is required for every completed
 supervisor run.
 
 Reject a confident success claim if an acceptance check fails. Send specific
-in-scope correction to the same worker and verify again. If its goal is still
-active, observe its continuation; do not launch a competing writer. If its goal
-was completed prematurely, explicitly instruct that worker to establish a new
-focused correction goal. Respect a paused worker and ask before resuming it.
+in-scope correction to the same worker and verify again. Resume an idle subagent
+with a focused follow-up assignment. For a chat whose goal is still active,
+observe its continuation; if completed prematurely, instruct that worker to
+establish a new focused correction goal. Do not launch a competing writer.
+Respect a deliberately paused/stopped worker of either kind and obtain human
+resume authority before restarting it. Reconcile an unavailable worker's state
+and write effects before replacing it, carrying forward unresolved findings.
 
 After accepting a pass, update the run note, reconsider the whole objective,
 and choose another worker only for an observed important gap. Keep the
@@ -213,8 +260,9 @@ After the supervisor's whole-result review and before calling `update_goal`
 with `status: complete`, obtain an independent final audit. Read
 [the auditor contract](references/auditor-contract.md) when assigning or
 correcting this review. Use a fresh internal subagent with bounded read-only
-scope where supported; otherwise use a separate auditor chat under the approved
-chat authority. It must not be the supervisor or an implementation worker, and
+scope and fresh context (no inherited conversation where supported); otherwise
+use a separate auditor chat under the approved chat authority. It must not be
+the supervisor or an implementation worker, and
 must not delegate further. If no independent reviewer is available, leave the
 goal incomplete and report the missing capability; self-review is insufficient.
 
@@ -223,8 +271,8 @@ outcomes, raw artifacts/diff, verification records, human authority records for
 system-wide changes and scope expansions, outstanding decisions and
 the supervisor's proposed completion summary. Supply evidence locations and
 access, not just a reassuring narrative or a requested verdict. Let it inspect
-worker chats through supported readers where available; disclose omitted
-records or access limits. Record the actual state being reviewed, including
+worker chats through supported readers or saved subagent assignments/results;
+disclose omitted records or access limits. Record the actual state being reviewed, including
 uncommitted changes and relevant artifact identities. Wait until writers have
 stopped and keep that state stable while the auditor reviews it.
 
@@ -275,16 +323,21 @@ decision, report exactly what remains and ask once. Do not dispatch dependent
 work or claim completion while waiting. Use native blocked status only when
 its actual tool criteria are satisfied, and paused only on human instruction.
 
-On a human stop, launch nothing further. Send the active worker an explicit
-stop-and-pause instruction through the supported messaging tool, inspect its
-acknowledgment/state, and pause this goal too when authorized by that stop.
+On a human stop, launch nothing further. For an active subagent, communicate the
+stop instruction and use its supported interrupt/stop control. Verify a stopped
+or idle state with no active work, or an explicit stop acknowledgment; do not
+wake it merely to obtain an acknowledgment. Do not send a follow-up that
+restarts it. For an active chat worker, send an explicit stop-and-pause
+instruction and inspect its acknowledgment/state and reported native goal status.
+Pause this supervisor goal too when authorized by that stop.
 Stop an active auditor too through its supported agent/chat controls and
 inspect its acknowledgment or state; an internal auditor has no shared native
-goal. Record a pending stop if delivery or acknowledgment is unresolved.
+goal. Record a pending stop when neither supported state nor acknowledgment
+establishes that work stopped; disclose any unresolved instruction delivery.
 Messaging is cooperative and may wait for the current tool call to finish;
-pausing the supervisor alone does not pause another chat. Provide the active
-worker link/control if immediate manual intervention is needed. Never promise
-an atomic global kill switch or silently undo a human pause.
+pausing the supervisor alone does not establish that another actor stopped.
+Provide the available worker link/control if immediate manual intervention is
+needed. Never promise an atomic global kill switch or silently undo a human pause.
 
 Report the accepted worker outcomes, meaningful verification, final auditor
 verdict and material corrections, remaining decisions or limitations, and why
