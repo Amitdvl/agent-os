@@ -28,6 +28,7 @@ Word count is descriptive, never an acceptance criterion.
 | macOS artifact procedures | Core retains stable ignored .noindex outputs, inventory/deployed separation, task-product cleanup, fresh trashness manifest and authorization/preservation; no blanket cleanup. |
 | Bounded Tool Output + scattered preferences | Core retains progressive bounded reads, evidence/verbatim exceptions, full logs, true exit status, attribution and errors. |
 | Workspace navigation + capability claims + Reminders + fallacy-check | Core retains private workspace registry, safe scratch/output use, current interface and authoritative documentation, comparison checks, Urgent limitation and quiet consequential-reasoning threshold. |
+| Evidence-based skepticism | Core requires checking consequential user and agent hypotheses against sources and actual behavior, seeking counterevidence, distinguishing observation/inference/unknowns, and correcting unsupported claims. Respect goals and preferences; verification remains proportionate and does not add routine approval gates. |
 
 ## Contract-root reconciliation
 
