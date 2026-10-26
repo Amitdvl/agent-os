@@ -96,7 +96,11 @@ The core `goal-prompt` and `goal-supervisor` packages preserve outcome milestone
 explicit intent amendments and bounded supporting work. Supervision records
 contribution in its existing run note, diagnoses repeated nonprogress with a
 no-drift option, reuses valid evidence and verifies recovery through actions.
-Worker/auditor contracts carry the same outcome and authority boundaries. The
+Worker/auditor contracts carry the same outcome and authority boundaries. Team
+limits are distinguished from project capacity; approved separate chats require
+observed execution and verified worker settings. Independent region/domain groups
+own bounded integration, and finished playable batches take priority over
+worker-count reporting. The
 Commands catalog describes both packages and their supported dollar-sign
 invocation. See [engineering guidance](agentic-engineering.md#recognize-drift-without-manufacturing-it)
 for neutral steering and research limits; this adds no scheduler or hard budget.

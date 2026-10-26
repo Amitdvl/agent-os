@@ -12,6 +12,10 @@ and record why. Do not require an internal worker to create a native goal.
 > [subagent or chat]. Follow the matching lifecycle instructions below. Do not
 > configure cycle, time or token budgets.
 >
+> Required worker settings: [human-requested access, model and reasoning, if any].
+> Verify actual runtime/host state before dependent work; defaults and prompt
+> wording are not proof. Report a mismatch and keep the affected branch pending.
+>
 > Work in [actual project/checkout or explicit allowed paths]. Preserve unrelated
 > work. Scope/non-goals: [boundaries]. Acceptance checks: [observable checks].
 > Active milestone and relevant matrix items: [observable outcome]. For a

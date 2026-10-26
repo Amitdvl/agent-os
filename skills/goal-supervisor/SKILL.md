@@ -111,7 +111,13 @@ chats remain identifiable. Apply it to the supervisor, not its workers or audito
 Verify native goal tools for the supervisor and supported coordination tools
 for the chosen worker type. Subagents need spawn, follow-up, result/state and
 stop controls; separate chats need app create, wait, read and message tools
-and their own native goal tools. Use installed schemas. Missing chat tools do
+and their own native goal tools. Use installed schemas. Verify each new worker's
+actual access and requested model/reasoning
+settings through supported runtime or host state. Local defaults, a role name and
+prompt instructions do not establish inherited permissions. If a required setting
+is missing, keep that assignment pending, report the exact supported correction
+and continue independent work; do not silently relax the human's requirement.
+Missing chat tools do
 not block a run that can use subagents throughout. If a required capability has
 no supported alternative, report it and leave the dependent work unstarted;
 never substitute a private app bridge or a claimed native goal. Verify that an
@@ -169,6 +175,16 @@ available subagent interface cannot provide. Length or file count alone does
 not require a new chat. Record the reason in the run note. If subagent tools
 are unavailable, a supported separate chat is a fallback; disclose that reason.
 Each chat worker creates and manages its own focused native goal.
+
+When useful independent work is waiting at a team limit, verify the limit's actual
+scope: nested agents may share one team limit, while separately scheduled chats
+may provide additional capacity. Do not assume either arrangement. With human
+authorization for worker chats, evaluate that option and verify simultaneous
+execution before claiming extra capacity. Split broad work by independent regions
+or domains where useful, give each group clear ownership and integration duties,
+and keep finished batches flowing into the product. Avoid a fixed project-wide
+worker count; expand only while useful work, resource capacity and integration
+throughput support it. Worker count alone is not outcome progress.
 
 Keep the supervisor's native goal active across passes. Neither worker type
 shares it. Switching worker type must preserve the assignment, evidence and

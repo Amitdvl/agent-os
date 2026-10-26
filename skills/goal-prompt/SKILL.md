@@ -82,6 +82,14 @@ serialize that dependency, not the entire project. Do not invent work to fill
 agent slots. Respect the available concurrency and human restrictions on models,
 worker types and authority. A durable goal does not itself authorize the opt-in
 supervisor workflow; ordinary bounded delegation remains available.
+Distinguish each team's runtime limit from total project capacity; neither a
+fixed worker count nor nested agents establish project-wide capacity. When useful
+independent work is waiting, an approved supervisor should evaluate separate
+worker chats against actual simultaneous execution, human worker preferences,
+and integration cost. Preserve required access and model settings in the goal or
+referenced brief, and verify them in each worker runtime; defaults and prompt
+wording are not proof. Keep finished batches moving into the product and measure
+verified user journeys or resolved critical uncertainties rather than worker count.
 When delegation is justified, the lead owns scope, non-goals, acceptance checks,
 integration, and final verification. Worker output is evidence, not a
 replacement for the goal. Internal subagents or separate tasks do not share the
