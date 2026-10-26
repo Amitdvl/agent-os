@@ -13,8 +13,8 @@ owns the outcome; workers own only bounded assignments.
 Goal mode and orchestration are separate concerns. A `/goal` creates a durable,
 thread-scoped outcome; it does not by itself require orchestration. For substantive
 implementation, apply the `cover-project` test-ownership checkpoint before
-choosing one executor. Otherwise use one executor by default, including for
-long-running or multi-file goals.
+assigning work. Run independently actionable implementation, testing and review
+tracks in parallel unless there is a concrete reason to sequence them.
 
 Activate orchestration only when one of these conditions is clearly true:
 
@@ -26,10 +26,12 @@ Activate orchestration only when one of these conditions is clearly true:
    production data, permissions, deployments, secrets, or money—and an
    independent risk review materially reduces the chance of harm.
 
-Do not orchestrate merely because work uses `/goal`, spans multiple files, has
-several steps, is lengthy, or could theoretically be divided. When the
-activation decision is genuinely uncertain, ask the human whether to
-orchestrate. Never claim a model or delegation occurred when it did not.
+Do not add agents merely to fill slots. A trivial task, true dependency, atomic
+shared-state operation, unavailable capability or concrete coordination/resource
+cost can justify direct or sequential work; state the reason and affected scope.
+Never add a blanket one-production-writer constraint without such necessity or
+an explicit human instruction. Serialize conflicts, not the entire project.
+Never claim a model or delegation occurred when it did not.
 
 ## Testing as a separate deliverable
 
@@ -46,7 +48,7 @@ must not spawn more workers. Do not expand the human's product scope.
 ## Lead Contract
 
 1. Define the outcome, scope, non-goals, risks, and acceptance checks before delegation.
-2. Select roles and order work. Prefer a single executor unless parallel work is genuinely independent.
+2. Dispatch independently actionable feature writers, testers and reviewers concurrently. Use isolated worktrees or disjoint mutable surfaces; keep one integration lead. Sequence only real dependencies or documented exceptions.
 3. Choose a requested model only when the runtime exposes model selection. Prefer a stronger planning/review model for the lead and a capable execution model for workers when available. Never claim a model or delegation occurred when it did not.
 4. Keep the lead responsible for integration, safety decisions, final diff review, and final Done/Not Done.
 5. Keep the host anchored to the original goal. Treat worker output as evidence and implementation input, not a replacement goal; reconcile it against the agreed scope, non-goals, and acceptance checks before acting on it.

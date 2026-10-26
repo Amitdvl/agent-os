@@ -211,7 +211,19 @@ launch until resolved; if the interface cannot reconcile it, report the gap and
 leave replacement dispatch pending. A queued client ID is not a ready thread ID.
 Never guess identities or silently duplicate work.
 
-Use one worker writer at a time in the approved project. For a project chat,
+Run independently actionable implementation, testing and review tracks in
+parallel unless a concrete dependency, atomic shared-state operation, unavailable
+capability or coordination/resource cost makes that counterproductive. Parallel
+feature writers are the default; do not funnel all production work through the
+supervisor or impose one writer for the whole project. Give each writer an
+isolated worktree or disjoint mutable surface. Keep one writer per shared mutable
+surface in a checkout, serialize only conflicting changes, and let the lead own
+integration, conflict resolution and verification. Record the specific reason and
+affected scope whenever useful parallel work is deferred; revisit it when the
+constraint changes. Do not create filler tasks or unnecessary supervisor layers.
+Workers may coordinate bounded internal subagents when useful and authorized,
+within the same actual concurrency limit and explicit ownership boundaries.
+For a project chat,
 resolve its actual project through `list_projects`; preserve the current
 checkout unless worktree isolation was requested. Projectless workers need
 explicit allowed paths. Subagents use the approved checkout and explicit write
@@ -323,7 +335,7 @@ resume authority before restarting it. Reconcile an unavailable worker's state
 and write effects before replacing it, carrying forward unresolved findings.
 
 After accepting a pass, update the run note, reconsider the whole objective,
-and choose another worker only for an observed important gap. Keep the
+and dispatch the next independently useful tracks for observed important gaps. Keep the
 supervisor goal active across progress turns so native continuation can carry
 the review forward without another human nudge. Native usage limits, app
 lifecycle and ordinary permissions still apply; there is no background daemon.

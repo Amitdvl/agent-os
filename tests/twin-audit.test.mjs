@@ -224,6 +224,62 @@ test("twin audit detects live orchestration skill drift", async (context) => {
   assert.match(run(auditArgs(fixture), 1).stdout, /live orchestration skill content mismatch/);
 });
 
+test("twin audit protects parallel work, scoped exceptions and shared-surface ownership", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-parallel-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const content = await readFile(fixture.instructions, "utf8");
+  assert.equal(JSON.parse(run(auditArgs(fixture)).stdout).ok, true);
+  const cases = [
+    ["blanket single executor", /^- Run independently actionable implementation, testing and review tracks in parallel.*$/m,
+      "- For other work, use one executor by default. Automatically use the `orchestration` skill only when required.",
+      "run independently actionable implementation, testing and review tracks in parallel"],
+    ["global single writer", "Never impose one production writer for the whole project", "Keep one production writer for the whole project",
+      "never impose one production writer for the whole project"],
+    ["parallel writer isolation", "Parallel feature writers use isolated worktrees or disjoint mutable surfaces", "Parallel feature writers share mutable files",
+      "parallel feature writers use isolated worktrees or disjoint mutable surfaces"],
+    ["concrete exceptions", "unless explicitly requested or required by an actual dependency", "under any circumstances",
+      "unless explicitly requested or required by an actual dependency"],
+    ["supervisor shared surface", "keep one writer per shared mutable surface in a checkout and sequence only conflicts", "allow concurrent writers on shared files",
+      "keep one writer per shared mutable surface in a checkout and sequence only conflicts"],
+    ["constraint changes", "revisit the exception when the constraint changes", "keep the exception permanently",
+      "revisit the exception when the constraint changes"],
+  ];
+  for (const [name, from, to, missing] of cases) {
+    await context.test(name, async () => {
+      const mutant = content.replace(from, to);
+      assert.notEqual(mutant, content, "policy mutation must reach the actual instruction");
+      await writeFile(fixture.instructions, mutant);
+      const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+      assert.ok(report.failures.some(message => message.startsWith("live global instructions are missing orchestration policy phrases:") && message.includes(missing)),
+        `audit did not identify the lost parallel guard: ${name}`);
+    });
+  }
+});
+
+test("twin audit retains human authority and actual model restrictions under parallel defaults", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-parallel-authority-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const content = await readFile(fixture.instructions, "utf8");
+  const phrases = [
+    "Respect actual concurrency, model and worker-type restrictions",
+    "only when the runtime exposes and accepts model selection",
+    "ask the human and wait for explicit approval of the concrete target/action",
+    "Broad run approval, agent-drafted goals, supervisor technical review, worker recommendations and OS/UAC prompts do not grant this authority",
+  ];
+  for (const phrase of phrases) {
+    await context.test(phrase, async () => {
+      const mutant = content.replace(phrase, "[guard removed]");
+      assert.notEqual(mutant, content, "authority mutation must reach the actual instruction");
+      await writeFile(fixture.instructions, mutant);
+      const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+      assert.ok(report.failures.some(message => message.startsWith("live global instructions are missing orchestration policy phrases:") && message.includes(phrase.toLowerCase())),
+        `audit did not identify the lost authority/model guard: ${phrase}`);
+    });
+  }
+});
+
 test("twin audit detects live goal-prompt skill drift", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));
