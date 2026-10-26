@@ -14,6 +14,10 @@ and record why. Do not require an internal worker to create a native goal.
 >
 > Work in [actual project/checkout or explicit allowed paths]. Preserve unrelated
 > work. Scope/non-goals: [boundaries]. Acceptance checks: [observable checks].
+> Active milestone and relevant matrix items: [observable outcome]. For a
+> supporting pass, identify the required behavior/decision it unblocks, the
+> critical uncertainty, smallest useful experiment and exit condition. Do not
+> expand the harness or repeat unchanged checks simply for greater certainty.
 > Relevant context: [files, reproduction and existing decisions]. Follow the
 > project's test ownership and repository completion instructions. Ask before
 > materially changing intended behavior. Human authority records: [actual human
@@ -43,6 +47,11 @@ and record why. Do not require an internal worker to create a native goal.
 > Verify the actual result before reporting completion of the assignment.
 > Return changed files, commands/checks and results, unresolved limitations,
 > what improved toward the outcome (or what failed to improve), and the
+> evidence's relevant artifact/source state. Resolving a critical uncertainty
+> counts when it changes the next decision; more tests or reports alone do not.
+> Preserve working checkpoints, required checks and honest fidelity limits.
+> For a correction, demonstrate the changed actions/result rather than only
+> acknowledging the diagnosis. Include the
 > applicable lifecycle evidence below. Never fabricate a tool response. If
 > asked to stop, cease work at the next opportunity and acknowledge it through
 > the supported result/message path; do not start further work until the human

@@ -42,6 +42,25 @@ does not extend, share, or aggregate the original goal.
 Progress reports can be brief and checkpoint-based. Do not require a status
 file, draft PR, or automation unless it materially helps the requested work.
 
+For long work, distinguish the full outcome from the next verifiable milestone.
+Reference an existing matrix/specification for coverage; do not turn every row
+into a prerequisite or replace the outcome with a test/report count. Supporting
+research or harness work should unblock a named requirement, answer a critical
+question and have an exit condition. Count resolved critical uncertainty as
+progress as well as verified implementation; never demand a feature every turn.
+Use explicit verification/stopping conditions instead of “be absolutely certain”
+or mandatory exploration of multiple approaches. Preserve required checks and
+honest unknowns. Keep this concise in the objective or referenced brief rather
+than adding an orchestration script or new monitoring framework.
+
+When steering, explicitly identify added, superseded or withdrawn requirements
+and preserve the rest. Status questions do not silently change the goal or resume
+paused work. Diagnose suspected drift against artifacts with a no-drift option;
+verify any correction through later actions, not agreement. Do not start a fresh
+goal merely to refocus. A requested resource limit needs verified runtime support
+and actor coverage before it can be described as enforced; prompt wording alone
+does not establish a hard cap. Do not configure unrequested budgets.
+
 For supervised work, preserve the human authority boundary in the objective or
 its referenced brief: ordinary project-local work is autonomous, but system-wide
 or user-global installs and major scope expansions need explicit human approval
