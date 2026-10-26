@@ -92,6 +92,15 @@ See [skill consolidation](skill-consolidation.md) for retirement and host routin
 
 ## Approved development cleanup
 
+The core `goal-prompt` and `goal-supervisor` packages preserve outcome milestones,
+explicit intent amendments and bounded supporting work. Supervision records
+contribution in its existing run note, diagnoses repeated nonprogress with a
+no-drift option, reuses valid evidence and verifies recovery through actions.
+Worker/auditor contracts carry the same outcome and authority boundaries. The
+Commands catalog describes both packages and their supported dollar-sign
+invocation. See [engineering guidance](agentic-engineering.md#recognize-drift-without-manufacturing-it)
+for neutral steering and research limits; this adds no scheduler or hard budget.
+
 The web-development pack ships `cloudflare` (shared platform/deployment/auth
 references) and provider-scoped `agents-sdk`. Creator ships canonical
 `frontend-testing-debugging` with multi-server helper/examples; core ships

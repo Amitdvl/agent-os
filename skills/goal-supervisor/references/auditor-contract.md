@@ -61,6 +61,11 @@ No model override or configured time/cycle/token budget is required.
 - Check that claimed worker achievements exist, the supervisor actually
   inspected/verified them, failures received a disposition, and follow-up work
   advanced observed gaps. Worker requests and confident reports are not proof.
+- Sample contribution receipts against the actual actions and artifacts. Check
+  whether supporting work unblocked the outcome, repeated work had new grounds,
+  and claimed drift corrections changed subsequent behavior. Consider justified
+  prerequisite work and no-drift explanations; do not infer waste from elapsed
+  time or missing commits alone. Additional audits are not a remedy by default.
 - Check worker selection: bounded passes default to subagents, separate chats
   have a recorded lifecycle/visibility or tool-availability reason, and internal
   workers are not required to manage native goals. Check the preserved human

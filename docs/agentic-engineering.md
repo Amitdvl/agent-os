@@ -68,6 +68,45 @@ Communicate meaningful changes, findings, uncertainty and next gates. Treat new 
 
 After delivery, reconcile the retrospective with what actually happened. For the next relevant project, select a few high-value practices, observe whether they were used and record the outcome. Measure what is available—late integration findings, invalidated export reasons, resource failures and unclosed release gates—without inventing precision or creating a monitoring system the user did not request.
 
+## Recognize drift without manufacturing it
+
+The shared [supervisor](../skills/goal-supervisor/SKILL.md) keeps the approved
+outcome, active milestone, contribution evidence and next action in its existing
+run note. Supporting work needs a named dependency and exit condition. Verified
+outcome improvements and resolved critical uncertainties count; activity counts
+and acknowledgments alone do not. Two consecutive noncontributing passes trigger
+a proportionate diagnosis, not an automatic stop or universal spending limit.
+This is a proposed operational heuristic, not a measured optimum or runtime lock.
+
+For a neutral status check, ask: “The goal is unchanged. Did the recent completed
+passes advance the milestone or resolve a critical uncertainty? Cite current
+artifacts, explain repeated work, consider justified prerequisites and conclude
+justified progress, uncertain, or evidence-supported drift. Do not change goals,
+launch/stop workers or resume paused work for this assessment.” Verify the next
+actions after a correction. Reassurance alone is not recovery.
+
+Avoid leading confessions (“why are you wasting tokens?”), indefinite certainty
+demands, forced alternative exploration and instructions to stop all testing or
+research. None distinguishes useful prerequisites from drift. Preserve required
+checks, working checkpoints and honest fidelity limits. State which requirements
+an amendment replaces; a status question is not a scope change. Use current
+source-bound evidence and retain valid prior checks rather than forcing unchanged
+re-runs. A different reviewer or a stricter gate does not automatically make the
+result more reliable or the process able to finish.
+
+Relevant September–October 2026 evidence includes
+[IntentFlux](https://arxiv.org/abs/2609.32520) on superseded intent and partial
+mitigation by active-state maintenance;
+[Prompt-Induced Waste, September revision](https://arxiv.org/html/2608.01347v6)
+on prompt/effort/harness interactions;
+[Looping Is Not Reliability, October revision](https://arxiv.org/html/2607.24604v3)
+on stale evidence, loss of correct states and guard/completion trade-offs; and
+[RIPPLE](https://arxiv.org/abs/2610.31276) on critique without corrective action.
+Their experimental settings and training methods do not establish that these
+workflow instructions eliminate drift. Compare real future outcomes before
+claiming an efficiency improvement. Project incidents and private run records
+remain in the consuming project.
+
 ## Using these lessons for reusable kits
 
 A kit has several consumers: the shared library, registered starting point, ordinary editor, retained project snapshot and final output. Define which surface owns each contract. Validate normal creation and deliberate snapshot adoption separately. A kit's advertised support should match source validation, visible authoring controls and the output states actually reviewed.

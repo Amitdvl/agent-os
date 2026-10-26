@@ -136,6 +136,23 @@ chat and this inspectable artifact for recovery, never a hidden memory store.
 
 ## Supervise
 
+### Keep the active outcome visible
+
+Keep the original approved brief and explicit human amendments as the authority.
+In the existing run note, maintain a compact current milestone: observable
+acceptance, relevant matrix/backlog items, established evidence, unresolved
+critical uncertainty and next action. A matrix describes coverage; it does not
+automatically determine work order or make unequal rows a progress percentage.
+Prefer a thin complete main journey before broad supporting infrastructure when
+dependencies permit. Completing that milestone does not complete the whole goal.
+
+For a human amendment, identify what it adds, replaces or withdraws and invalidate
+dependent assumptions. Preserve the remaining requirements. Treat questions and
+status requests as questions, not silent scope changes or authority to restart
+paused work. Do not reset the goal/chat merely because a run is long. On recovery,
+read the approved brief, current state and needed evidence; expand historical
+records only to resolve a specific gap, rather than replaying every report.
+
 ### Choose the worker type
 
 Use an internal subagent for a bounded investigation, implementation, test or
@@ -164,15 +181,24 @@ unavailable worker state or deliberate pause.
 Inspect the project and intended behavior. Discover work from evidence. Before
 each pass, identify the current obstacle to the outcome, the observation or
 important uncertainty supporting it, the expected improvement, and how to check
-whether it helped. Compare plausible next moves and choose the one that best
-advances the whole outcome, accounting for dependencies and risk. Do not force
-numeric scores or a fixed research/code/design sequence.
+whether it helped. Select the smallest useful next move accounting for
+dependencies and risk; compare alternatives only when the choice warrants it.
+Do not force numeric scores or a fixed research/code/design sequence.
 
 A pass may investigate an assumption, research alternatives, prototype, simplify,
 implement, design or verify. Choose the discipline from the obstacle. Research
 earns its place when its answer could change a consequential decision. Avoid
 speculative polish, local improvements that do not help the objective, repeated
 attempts without new evidence and tasks invented merely to keep running.
+
+For supporting research, harness, tooling, documentation or review work, name the
+required milestone behavior it unblocks, the unresolved question, the cheapest
+discriminating experiment/check and its exit condition. End or redirect that
+branch when the question is answered or another attempt lacks a changed
+hypothesis, input or useful observation. A valid negative result may resolve a
+critical uncertainty; no feature commit is required on every pass. Do not invent
+fidelity, weaken acceptance or bypass necessary verification to manufacture
+visible progress. Do not let a support artifact silently become the deliverable.
 
 Before launching, reconcile the run note against supported agent or chat state.
 Follow an existing worker before creating another. Persist dispatch intent with
@@ -229,6 +255,56 @@ expected improvement occurred. Check that research conclusions, implemented
 behavior, copy and appearance agree where they interact. Update assumptions
 that the evidence overturned. A worker's completion report is input to this
 review, not its conclusion.
+
+Record a short contribution receipt in the existing run note: milestone,
+observed behavior improved or critical uncertainty resolved, evidence and its
+source/artifact state, remaining gap and next action. Test/report/commit counts,
+green checks and confident summaries alone do not establish contribution. For
+research-only or non-software outcomes, use the corresponding decision or
+deliverable evidence rather than imposing a playable/UI criterion.
+
+Reuse accepted evidence while its relevant artifact, environment, assumptions
+and scope remain valid. Recheck affected behavior after relevant changes,
+failures or a concrete nondeterminism concern, and run required integration and
+final checks. Preserve verified checkpoints and original failures; distinguish
+a product correction from an oracle/harness correction. Do not rerun unchanged
+successful checks or re-review the same candidate merely for greater certainty.
+
+### Detect and correct drift proportionately
+
+At pass boundaries, compare the contribution receipts with the active milestone.
+Repeated investigation without a new decision-relevant observation, repeated
+verification without a relevant change, and support work repeatedly postponing
+the main journey are warning signals. Two consecutive passes without an
+outcome improvement or resolved critical uncertainty are a default diagnostic
+trigger, not a validated optimum, spending budget, automatic failure or stop.
+One clearly contradictory action can warrant earlier diagnosis. Distinguish
+ordinary long execution, necessary prerequisite work, access/usage failures and
+deliberate pauses from drift. Do not infer token waste from wall-clock time.
+
+First diagnose from current raw evidence and credible alternatives: justified
+progress, uncertain, or drift supported by evidence. Allow a no-drift verdict;
+do not ask an advisor to find waste or redesign a healthy run. Keep routine
+diagnosis with the supervisor, using the independent challenge below only when
+its disputed or consequential judgment earns it. Do not establish a standing
+reviewer, scheduled LLM polling or another audit framework.
+
+When drift is supported, choose a concrete next action toward the same outcome,
+name support work to defer and the evidence that would justify resuming it, and
+verify the correction through subsequent actions and artifacts. An admission,
+new plan or apology is not recovery evidence. An unresolved warning should not
+be followed by another unchanged support pass: use a discriminating experiment,
+implementation, simplification or report the concrete missing decision/access.
+Keep valid tests, honest unknowns, scope and human authority intact. No-drift
+findings permit ordinary continuation; they do not authorize a paused actor to
+resume. Optional improvements do not become new acceptance gates.
+
+Keep diagnosis overhead proportional and do not repeatedly read full histories.
+If the human requests a spending/time/token limit, verify the installed control
+and which actors it actually covers before promising enforcement. Distinguish
+runtime-enforced limits from prompt instructions and unavailable usage data;
+never imply that a supervisor limit automatically includes its workers. Do not
+configure a budget without the human's request.
 
 Use an independent challenge for a consequential disputed or weakly supported
 decision, with raw evidence and no desired verdict in the assignment. A
