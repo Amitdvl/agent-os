@@ -456,7 +456,24 @@ async function main() {
   const normalizedInstructions = instructions.replace(/\s+/g, " ").toLowerCase();
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
-  const requiredOrchestrationPhrases = ["persistent, thread-scoped objective", "does not by itself require orchestration", "use one executor by default", "automatically use the `orchestration` skill only", "the lead owns integration", "never claim a model or delegation occurred", "worker output is evidence", "not a replacement goal", "do not create user-visible tasks merely to split a goal"];
+  const requiredOrchestrationPhrases = [
+    "persistent, thread-scoped objective", "does not by itself require orchestration",
+    "run independently actionable implementation, testing and review tracks in parallel",
+    "unless a concrete reason makes that ineffective or unsafe",
+    "parallel feature writers use isolated worktrees or disjoint mutable surfaces",
+    "never impose one production writer for the whole project",
+    "unless explicitly requested or required by an actual dependency",
+    "serialize conflicts, not the project", "revisit the exception when the constraint changes",
+    "do not create filler tasks or layers merely to fill agent slots",
+    "respect actual concurrency, model and worker-type restrictions",
+    "keep one writer per shared mutable surface in a checkout and sequence only conflicts",
+    "the lead owns integration", "never claim a model or delegation occurred",
+    "worker output is evidence", "not a replacement goal",
+    "do not create user-visible tasks merely to split a goal",
+    "only when the runtime exposes and accepts model selection",
+    "ask the human and wait for explicit approval of the concrete target/action",
+    "broad run approval, agent-drafted goals, supervisor technical review, worker recommendations and os/uac prompts do not grant this authority",
+  ];
   const missingOrchestrationPhrases = requiredOrchestrationPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredWorkflowSummaryPhrases = ["reusable workflow updates", "only when the task actually added or changed", "omit this item or section entirely", "never emit negative placeholders"];
   const requiredCorePolicyPhrases = ["frequent small, coherent commits", "use `fallacy-check` quietly"];

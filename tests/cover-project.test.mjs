@@ -59,11 +59,14 @@ test("core setup distributes the complete coverage package and exposes accurate 
   const generated = await readFile(join(home, ".codex/AGENTS.md"), "utf8");
   assert.ok(generated.includes(core));
   assert.ok(generated.includes(orchestration));
-  // The ownership checkpoint must survive installation ahead of competing
-  // single-executor guidance; merely distributing the skill did not ensure it.
+  // The ownership checkpoint must survive installation ahead of general
+  // parallel routing; merely distributing the skill does not ensure selection.
   const ownership = generated.indexOf("## Implementation test ownership");
-  const defaultExecutor = generated.toLowerCase().indexOf("use one executor by default");
-  assert.ok(ownership >= 0 && defaultExecutor > ownership);
+  const parallelDefault = generated.indexOf("Run independently actionable implementation, testing and review tracks in parallel");
+  assert.ok(ownership >= 0 && parallelDefault > ownership);
+  assert.ok(generated.includes("Never impose one production writer for the whole project"));
+  assert.ok(generated.includes("keep one writer per shared mutable surface in a checkout and sequence only conflicts"));
+  assert.doesNotMatch(generated, /use one executor by default/i);
   assert.ok(ownership < generated.indexOf("## General policy"));
   const coordination = run(["status", "--home", home, "--catalog", "--json"])
     .classifiedCatalogue.find((item) => item.id === "orchestration" && item.group === "personal-slash-commands");

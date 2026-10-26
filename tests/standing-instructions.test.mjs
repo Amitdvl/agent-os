@@ -38,10 +38,13 @@ const SCENARIOS = [
     /refresh the page and verify that the entry is visible/,
     /leave the task incomplete/,
   ]],
-  ["a goal does not silently create an orchestration team or new chats", "orchestration", [
+  ["durable goals allow parallel work without authorizing supervision or new chats", "orchestration", [
     /persistent, thread-scoped objective/,
     /does not by itself require orchestration/,
-    /use one executor by default/,
+    /run independently actionable implementation, testing and review tracks in parallel/,
+    /unless a concrete reason makes that ineffective or unsafe/,
+    /never impose one production writer for the whole project/,
+    /keep the run off until the actual human reply explicitly approves supervision/,
     /worker output is evidence.*not a replacement goal/,
     /do not create user-visible tasks merely to split a goal/,
     /isolated write scope/,
@@ -187,7 +190,7 @@ for (const scenario of SCENARIOS) {
 
 test("standing policy guards discriminate loss of high-risk obligations", async () => {
   const corpus = await sources();
-  for (const index of [0, 2, 3, 5, 6, 7, 8, 11, 13, 14, 16, 17, 18]) {
+  for (const index of [0, 2, 3, 4, 5, 6, 7, 8, 11, 13, 14, 16, 17, 18]) {
     const scenario = SCENARIOS[index];
     const source = corpus[scenario[1]];
     assert.deepEqual(failures(scenario, source), [], `cannot fault-check an invalid baseline: ${scenario[0]}`);

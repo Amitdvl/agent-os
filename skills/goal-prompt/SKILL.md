@@ -70,12 +70,18 @@ without that decision. A drafted objective is not evidence of human approval.
 
 ## Delegation
 
-Goal mode does not by itself require orchestration. Use one executor by default.
-Activate the `orchestration` workflow only when the work has independently
-valuable workstreams with separate evidence, or a sensitive/irreversible change
-needs an independent risk review. Keep parallel writers in isolated worktrees
-or on disjoint mutable surfaces.
-
+Require parallel execution for independently actionable work unless a concrete
+reason makes it ineffective or unsafe. Draft goals around one integration lead
+and bounded feature writers, testers and reviewers working concurrently in
+isolated worktrees or on disjoint mutable surfaces. Parallel implementation is
+not limited to testing and review. Do not add a blanket "one production writer"
+or single-executor constraint unless the human explicitly requests it or an
+actual dependency, atomic shared-state change, unavailable capability or concrete
+coordination/resource cost requires it. State the reason and the affected scope;
+serialize that dependency, not the entire project. Do not invent work to fill
+agent slots. Respect the available concurrency and human restrictions on models,
+worker types and authority. A durable goal does not itself authorize the opt-in
+supervisor workflow; ordinary bounded delegation remains available.
 When delegation is justified, the lead owns scope, non-goals, acceptance checks,
 integration, and final verification. Worker output is evidence, not a
 replacement for the goal. Internal subagents or separate tasks do not share the

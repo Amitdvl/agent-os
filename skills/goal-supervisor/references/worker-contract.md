@@ -85,8 +85,11 @@ instructions.
 > correction goal; never try to resume it through an unsupported interface.
 
 The supervisor should include just the context needed to execute, without
-prejudging an independent review's conclusion. Only one worker writes shared
-state at a time. A correction stays with the same worker where possible.
+prejudging an independent review's conclusion. Parallel feature writers use isolated worktrees or disjoint mutable surfaces.
+Only one writer owns a shared mutable surface in a checkout; sequence conflicts,
+not the whole project. The lead integrates and verifies all tracks. State a
+concrete reason before deferring independently actionable parallel work. A
+correction stays with the same worker where possible.
 
 The supervisor independently checks either kind of result. Goal snapshots in a
 chat worker's report help identify lifecycle state but do not prove semantic correctness.
