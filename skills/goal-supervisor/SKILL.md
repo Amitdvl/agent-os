@@ -182,7 +182,11 @@ may provide additional capacity. Do not assume either arrangement. With human
 authorization for worker chats, evaluate that option and verify simultaneous
 execution before claiming extra capacity. Split broad work by independent regions
 or domains where useful, give each group clear ownership and integration duties,
-and keep finished batches flowing into the product. Avoid a fixed project-wide
+and hand each coherent verified batch to integration immediately, without waiting
+for a whole group/wave or a long final report. Return its commit/source state,
+checks and limitations concisely. Group owners resolve shared integration; one
+lead verifies the combined journey or deliverable. Assign a blocker shared across groups
+to one feature owner and reuse the fix. Avoid a fixed project-wide
 worker count; expand only while useful work, resource capacity and integration
 throughput support it. Worker count alone is not outcome progress.
 
@@ -292,9 +296,13 @@ research-only or non-software outcomes, use the corresponding decision or
 deliverable evidence rather than imposing a playable/UI criterion.
 
 Reuse accepted evidence while its relevant artifact, environment, assumptions
-and scope remain valid. Recheck affected behavior after relevant changes,
-failures or a concrete nondeterminism concern, and run required integration and
-final checks. Preserve verified checkpoints and original failures; distinguish
+and scope remain valid. Workers check their changed scope; the lead runs broad
+checks once on the combined batch unless required project checks, a relevant
+change, failure or unresolved risk justify repetition. Coordinate full suites
+and coverage to avoid duplicate concurrent resource contention. Diagnose costly
+startup or validation from current progress and bottleneck evidence before
+blindly waiting longer or rerunning it. Preserve required integration and final
+checks, verified checkpoints and original failures; distinguish
 a product correction from an oracle/harness correction. Do not rerun unchanged
 successful checks or re-review the same candidate merely for greater certainty.
 
@@ -351,7 +359,9 @@ resume authority before restarting it. Reconcile an unavailable worker's state
 and write effects before replacing it, carrying forward unresolved findings.
 
 After accepting a pass, update the run note, reconsider the whole objective,
-and dispatch the next independently useful tracks for observed important gaps. Keep the
+and promptly reassign available workers to the highest-value independent outcome
+gaps. Prioritize verified journeys and resolved critical uncertainties over worker
+count; serialize actual dependencies only. Keep the
 supervisor goal active across progress turns so native continuation can carry
 the review forward without another human nudge. Native usage limits, app
 lifecycle and ordinary permissions still apply; there is no background daemon.

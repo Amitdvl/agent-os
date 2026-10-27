@@ -48,12 +48,19 @@ and record why. Do not require an internal worker to create a native goal.
 > Do not invent evidence or taste preferences. A research or review assignment
 > must not be steered toward a predetermined conclusion.
 >
-> Verify the actual result before reporting completion of the assignment.
-> Return changed files, commands/checks and results, unresolved limitations,
+> Verify the actual result before reporting completion. Hand off each coherent
+> verified batch immediately for integration; do not wait
+> for other workers or a long final report. Return its commit/source state,
+> changed files, commands/checks and results, unresolved limitations,
 > what improved toward the outcome (or what failed to improve), and the
 > evidence's relevant artifact/source state. Resolving a critical uncertainty
 > counts when it changes the next decision; more tests or reports alone do not.
 > Preserve working checkpoints, required checks and honest fidelity limits.
+> Check changed scope and reuse valid unchanged evidence. Coordinate broad
+> suites/coverage with the lead to avoid duplicate concurrent runs; required
+> project checks, relevant changes, failures or unresolved risks may justify
+> repetition. Diagnose costly startup/validation before blindly waiting or
+> rerunning. Report shared blockers so one feature owner can provide a reused fix.
 > For a correction, demonstrate the changed actions/result rather than only
 > acknowledging the diagnosis. Include the
 > applicable lifecycle evidence below. Never fabricate a tool response. If

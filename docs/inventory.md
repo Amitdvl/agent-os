@@ -100,8 +100,11 @@ Worker/auditor contracts carry the same outcome and authority boundaries. Team
 limits are distinguished from project capacity; approved separate chats require
 observed execution and verified worker settings. Independent region/domain groups
 own bounded integration, and finished playable batches take priority over
-worker-count reporting. The
-Commands catalog describes both packages and their supported dollar-sign
+worker-count reporting. Each coherent verified batch moves immediately to
+integration; shared blockers have one feature owner, finished workers take the
+next valuable independent gap, and the lead coordinates broad validation while
+preserving required checks and valid evidence. The Commands catalog describes
+these packages and `orchestration` with their supported dollar-sign
 invocation. See [engineering guidance](agentic-engineering.md#recognize-drift-without-manufacturing-it)
 for neutral steering and research limits; this adds no scheduler or hard budget.
 

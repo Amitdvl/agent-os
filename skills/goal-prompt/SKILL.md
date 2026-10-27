@@ -88,8 +88,14 @@ independent work is waiting, an approved supervisor should evaluate separate
 worker chats against actual simultaneous execution, human worker preferences,
 and integration cost. Preserve required access and model settings in the goal or
 referenced brief, and verify them in each worker runtime; defaults and prompt
-wording are not proof. Keep finished batches moving into the product and measure
-verified user journeys or resolved critical uncertainties rather than worker count.
+wording are not proof. Require immediate handoff of each coherent verified batch
+with concise source/check/limitation evidence, without waiting for a whole wave.
+Give shared blockers one feature owner and reuse the fix; group owners resolve
+integration and one lead verifies the combined result. Reassign finished workers
+to the highest-value independent outcome gaps. Use focused checks and valid
+unchanged evidence, coordinate broad validation at the lead, preserve required
+checks and diagnose costly startup/validation before repeating it. Measure verified
+user journeys or resolved critical uncertainties rather than worker count.
 When delegation is justified, the lead owns scope, non-goals, acceptance checks,
 integration, and final verification. Worker output is evidence, not a
 replacement for the goal. Internal subagents or separate tasks do not share the

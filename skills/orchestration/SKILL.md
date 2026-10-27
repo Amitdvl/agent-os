@@ -71,6 +71,9 @@ release/migration operator. A role changes focus, not permissions.
 ## Coordination Rules
 
 - Do not let multiple workers edit the same files or mutable machine state concurrently. Sequence them or use isolated worktrees when parallel changes are necessary.
+- Hand off each coherent verified batch immediately with its commit/source state, checks and limitations; do not wait for a whole wave or long report. Group owners resolve shared integration; one lead verifies the combined result. Give a blocker shared across groups one feature owner and reuse the fix.
+- Check changed scope and reuse valid unchanged evidence. Coordinate broad checks at the lead on the combined batch, preserving required project checks and repeating when relevant changes, failures or unresolved risks justify it. Avoid duplicate concurrent full suites/coverage; diagnose costly startup or validation before blindly waiting or rerunning.
+- Promptly reassign finished workers to the highest-value independent outcome gaps; prioritize verified journeys and critical uncertainties over worker count.
 - Keep workers task-local. Do not leak the expected conclusion into an independent review assignment.
 - Do not let a worker's tangent, partial deliverable, or proposed expansion silently redirect the work. Redirect it to the original scope, or explicitly re-scope only with user authorization.
 - Stop or redirect a worker when evidence changes the plan. Do not force the original plan through.
