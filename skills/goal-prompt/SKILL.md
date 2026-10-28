@@ -80,7 +80,21 @@ actual dependency, atomic shared-state change, unavailable capability or concret
 coordination/resource cost requires it. State the reason and the affected scope;
 serialize that dependency, not the entire project. Do not invent work to fill
 agent slots. Respect the available concurrency and human restrictions on models,
-worker types and authority. A durable goal does not itself authorize the opt-in
+worker types and authority. When model selection is supported, route mechanical
+edits, catalog processing and simple fixtures to GPT-5.6 Terra Medium where
+available; ordinary implementation, focused tests and bounded investigation to
+GPT-6 Sol Medium; and difficult reasoning, architecture or subtle security and
+persistence decisions to GPT-6.1 Sol High. Keep routine supervision at Medium
+where supported, with High for consequential decisions and difficult review.
+Never specify Ultra or weaken independent final acceptance. Escalate for
+demonstrated reasoning difficulty rather than missing assets, permissions,
+resource limits or tool failure. Prefer fresh worker context with a compact
+contract, relevant files and acceptance checks; use full history only when
+needed. Use scripts or shared pipelines for repetitive catalog work. Do not
+create a separate chat solely to reach an older model without a concrete net
+benefit; model age alone proves no price advantage. Assess accepted results,
+usage, elapsed time and rework on representative batches without creating an
+unrequested monitoring project or hard budget. A durable goal does not itself authorize the opt-in
 supervisor workflow; ordinary bounded delegation remains available.
 Distinguish each team's runtime limit from total project capacity; neither a
 fixed worker count nor nested agents establish project-wide capacity. When useful

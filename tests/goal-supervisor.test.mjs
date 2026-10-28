@@ -166,3 +166,21 @@ test("installed discovery metadata asks for a proposal and generated host instru
   // demonstrate model compliance, human approval authenticity, native goal
   // availability on either host, recovery safety, or cooperative stop timing.
 });
+
+test("model routing stays consistent across the supervisor, goal, orchestration and global policy", async () => {
+  const paths = [
+    "policies/orchestration.md",
+    "skills/goal-supervisor/SKILL.md",
+    "skills/goal-prompt/SKILL.md",
+    "skills/orchestration/SKILL.md",
+  ];
+  for (const path of paths) {
+    const text = (await readFile(join(ROOT, path), "utf8")).replace(/\s+/g, " ");
+    for (const tier of ["GPT-5.6 Terra Medium", "GPT-6 Sol Medium", "GPT-6.1 Sol High"]) {
+      assert.ok(text.includes(tier), `${path} omits ${tier}`);
+    }
+    assert.match(text, /fresh (?:worker )?context/i, `${path} omits fresh context`);
+    assert.match(text, /Ultra/, `${path} omits the Ultra exclusion`);
+    assert.match(text, /accept/i, `${path} omits acceptance fidelity`);
+  }
+});

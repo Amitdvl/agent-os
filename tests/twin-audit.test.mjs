@@ -264,7 +264,7 @@ test("twin audit retains human authority and actual model restrictions under par
   const content = await readFile(fixture.instructions, "utf8");
   const phrases = [
     "Respect actual concurrency, model and worker-type restrictions",
-    "only when the runtime exposes and accepts model selection",
+    "Select each assignment's model and reasoning effort deliberately when the runtime supports it",
     "ask the human and wait for explicit approval of the concrete target/action",
     "Broad run approval, agent-drafted goals, supervisor technical review, worker recommendations and OS/UAC prompts do not grant this authority",
   ];

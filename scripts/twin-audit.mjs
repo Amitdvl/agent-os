@@ -470,7 +470,9 @@ async function main() {
     "the lead owns integration", "never claim a model or delegation occurred",
     "worker output is evidence", "not a replacement goal",
     "do not create user-visible tasks merely to split a goal",
-    "only when the runtime exposes and accepts model selection",
+    "select each assignment's model and reasoning effort deliberately when the runtime supports it",
+    "gpt-5.6 terra medium", "gpt-6 sol medium", "gpt-6.1 sol high",
+    "never select ultra", "prefer fresh worker context",
     "ask the human and wait for explicit approval of the concrete target/action",
     "broad run approval, agent-drafted goals, supervisor technical review, worker recommendations and os/uac prompts do not grant this authority",
   ];

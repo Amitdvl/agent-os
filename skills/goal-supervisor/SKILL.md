@@ -247,9 +247,24 @@ For a project chat,
 resolve its actual project through `list_projects`; preserve the current
 checkout unless worktree isolation was requested. Projectless workers need
 explicit allowed paths. Subagents use the approved checkout and explicit write
-scope; spawning does not itself isolate files. Preserve normal model defaults:
-subagents inherit the parent unless explicitly configured, and new chats use
-the host's configured model unless the human requested one.
+scope; spawning does not itself isolate files. Choose models per assignment when
+the runtime supports selection: GPT-5.6 Terra Medium for mechanical edits,
+catalog processing and straightforward fixtures where available; GPT-6 Sol
+Medium for ordinary implementation, focused tests and bounded investigation;
+GPT-6.1 Sol High for difficult reasoning, architecture, subtle security or
+persistence decisions. Medium is the routine supervisor default where
+supported; use High for consequential decisions and difficult reviews without
+weakening independent final acceptance. Respect actual availability and human
+preferences. Do not create a chat solely to reach an older model unless its
+benefit exceeds lifecycle and integration cost. Never use Ultra or an arbitrary
+weaker substitute when risk needs stronger reasoning. Escalate demonstrated
+reasoning difficulty, not missing assets, permissions, resource limits or tool
+failure. Prefer fresh worker context with a compact contract, relevant files
+and acceptance checks; include full history only when needed. Use scripts or
+shared pipelines for repetitive catalog work. Compare accepted results, usage,
+elapsed time and rework on representative batches before claiming savings;
+model age alone proves no price advantage. Do not add a monitoring project or
+unrequested hard budgets. Record what model and effort the runtime accepted.
 Read [the worker contract](references/worker-contract.md) when
 dispatching or correcting a worker.
 
