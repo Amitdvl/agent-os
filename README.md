@@ -76,6 +76,8 @@ installed automatically; each destination chooses and configures them locally.
 
 For substantial implementation and reusable-kit work, [engineering lessons](docs/agentic-engineering.md) covers finite scope, ordinary-path proof, interaction review, evidence reuse, resource ownership and release closure. It is a practice guide; project-specific evidence stays in its consuming repository.
 
+Substantial Codex work must belong to a matching Codex project. Codex reuses or creates the project, automatically moves its main and related worker chats, places future related chats there, and verifies membership. This organization is the agent's responsibility; unsupported creation or movement must be reported as unfinished with the exact blocker. See [the project organization policy](policies/orchestration.md).
+
 [WWWWH](docs/wwwwh.md) provides optional guidance for adaptive, goal-oriented inquiry.
 Comparative benefit over ordinary assistance has not been demonstrated; see the
 usage and evaluation limits before adopting it.

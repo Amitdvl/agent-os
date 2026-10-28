@@ -167,6 +167,21 @@ const SCENARIOS = [
     /successful tail\/filter is not a successful test/,
     /never suppress errors to claim success/,
   ]],
+  ["substantial Codex work automatically belongs to a real matching project", "orchestration", [
+    /substantial codex projects.*must operate inside a matching codex project rather than remain only in recent chats/,
+    /at the start, on resumption, or when a small task grows/,
+    /identify and reuse the matching project; create one through supported app tools or ui when none exists/,
+    /check existing projects first and avoid duplicates/,
+    /a sidebar section is not a codex project/,
+    /automatically move the active main or supervisor chat and related worker chats/,
+    /place future related chats there at creation/,
+    /without asking the user to perform the move or requesting routine confirmation/,
+    /move only chats belonging to the work; preserve their ids, history, goals, execution host, and checkout\/worktree ownership/,
+    /verify actual project membership through supported app state/,
+    /honor permissions and deliberate human stops/,
+    /never edit app internal state to simulate membership/,
+    /record the exact blocker, complete available in-scope work, and leave project organization explicitly unfinished/,
+  ]],
 ];
 
 async function sources() {
