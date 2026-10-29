@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meaningful Work"
+  short_description: "Keep meaningful tasks outcome-focused"
+  default_prompt: "Use $meaningful-work to carry this task to a verified outcome in the current conversation."
