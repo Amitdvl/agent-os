@@ -233,6 +233,17 @@ asks the executor to read its normal installed global instructions and preserve
 project-local constraints. A toolkit legacy assertion now checks the original
 named exports instead of an exact export count, allowing additive API changes.
 
+For an automatic-discovery trial, use `node scripts/prepare-implementation-eval.mjs
+checkout discovery` (or `toolkit discovery`). This separate mode removes explicit
+global-instruction read requests from the project instructions and request; the
+default remains the historical forced-read fixture. Confirm the host actually
+loaded the intended global and project instructions using its supported prompt
+inspection independently before the task. A neutral assignment alone is not
+proof of discovery. Do not compare outcomes across modes as if they differed
+only in policy: their visible instructions differ. Record host, model, tools,
+fixture revision, instruction hashes, elapsed time, rework, acceptance checks,
+and actual usage when the host reports it. Unavailable usage remains unknown.
+
 Keep the implementation request and initial source fixed when comparing policy
 versions. Observe actual child-agent creation, not just a stated intention. Only
 after completion, inspect the assignment, skill reads, stable source target,
