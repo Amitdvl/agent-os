@@ -144,8 +144,6 @@
     {"id": "trashness-monthly", "path": "templates/automations/trashness-monthly/automation.toml", "disposition": "portable-template-paused"}
   ],
   "referenceOnly": [
-    {"id": "supervisor-autonomy-evaluation-protocol", "path": "docs/experiments/supervisor-autonomy.md", "disposition": "portable-reference-only", "reason": "Opt-in, time-limited observational evaluation protocol. Does not modify or enroll ordinary supervisor runs or install a scheduler."},
-    {"id": "supervisor-autonomy-experiment-instance", "disposition": "private-machine-only", "reason": "Owner-specific finite schedule, enrollment/authority records, thread identities, local paths and session evidence remain private. Only the generic evaluation protocol is portable."},
     {"id": "retired-superpowers", "disposition": "retired", "reason": "Workflow pack retired by user approval. Useful debugging, planning, delegation, review and testing references are retained in canonical packages with attribution. No global pack activation, repeated phase gates or pack runtime required."},
     {"id": "retired-standalone-duplicates", "disposition": "retired", "reason": "Standalone Sentry and Remotion entries are superseded by their installed official plugins; standalone subagent-driven-development is superseded by orchestration references. Unique useful Remotion concepts are retained as a scoped supplement."},
     {"id": "plugin-owned-supabase-rules", "disposition": "host-or-third-party", "reason": "Keep the installed Supabase plugin guidance; disable the older Build Web Apps duplicate by namespaced selector. Vendor versions and caches remain host-owned, not copied into Agent OS."},
