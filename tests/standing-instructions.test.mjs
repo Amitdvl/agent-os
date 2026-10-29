@@ -13,6 +13,14 @@ const normalize = (text) => text.replace(/\s+/g, " ").toLowerCase();
 // than a snapshot of the replacement prose. They check that guidance survives;
 // they cannot establish that a language model will obey it in every execution.
 const SCENARIOS = [
+  ["authorized work continues beyond intermediate milestones", "core", [
+    /persist with the user's authorized objective until it is complete/,
+    /do not stop after a baseline, plan, intermediate milestone, or progress report/,
+    /a genuine blocker prevents further progress/,
+    /a decision from the user is required/,
+    /the user explicitly directs you to stop/,
+    /continue any independent authorized work/,
+  ]],
   ["eligible implementation assigns testing before suite expansion", "core", [
     /before writing or substantially expanding the suite/,
     /actually dispatch one bounded worker/,
