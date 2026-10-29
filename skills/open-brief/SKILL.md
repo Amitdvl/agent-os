@@ -1,6 +1,6 @@
 ---
 name: open-brief
-description: Delegate an uncertain problem or independent reassessment through a concise outcome brief, giving the agent freedom to investigate and choose its approach without inheriting a prescribed diagnosis or workflow.
+description: Delegate research, implementation, or several milestones through a concise outcome brief when the user asks for a fresh agent, independent judgment, or delegation without micromanagement; let the agent choose its approach.
 ---
 
 # Open Brief
@@ -9,6 +9,16 @@ Give the receiving agent enough context to exercise judgment, while leaving the
 problem-solving method to it. Use when the human wants independent thinking,
 a fresh perspective, or delegation without micromanagement. Ordinary tasks with
 an agreed implementation contract do not need reframing.
+
+## Natural-language invocation
+
+Use this skill when the user says, for example, “give a fresh agent the goal and
+let it figure out how,” “delegate this without micromanaging,” or “get an
+independent reassessment.” No skill name or special phrase is required. Match
+the intention in context, not keywords alone: a request to discuss delegation or
+only draft a brief does not authorize dispatch. Research, implementation and
+assignments with several required milestones all qualify; preserve every
+required outcome and the actual authority.
 
 ## Write the brief
 

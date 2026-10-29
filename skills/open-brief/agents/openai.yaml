@@ -2,3 +2,5 @@ interface:
   display_name: "Open Brief"
   short_description: "Delegate outcomes without prescribing the method"
   default_prompt: "Use $open-brief to delegate this problem with a concise outcome brief and room for independent judgment."
+policy:
+  allow_implicit_invocation: true
