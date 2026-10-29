@@ -26,6 +26,7 @@
         "goal-supervisor",
         "goal-prompt",
         "justification-audit",
+        "open-brief",
         "orchestration",
         "outcome-loop",
         "pamphlet",
