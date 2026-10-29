@@ -1,0 +1,68 @@
+// Native macOS accessibility adapter; no CUA, coordinates, or floating-HUD selection.
+ObjC.import('AppKit');
+
+function run(argv) {
+  const [appPath, id, expectedDescription] = argv;
+  const bundle = $.NSBundle.bundleWithPath(appPath);
+  if (!bundle) throw Error('Awareness app bundle is unavailable');
+  const apps = $.NSRunningApplication.runningApplicationsWithBundleIdentifier(bundle.bundleIdentifier);
+  let pid;
+  for (let i = 0; i < apps.count; i++) {
+    const app = apps.objectAtIndex(i);
+    if (ObjC.unwrap(app.bundleURL.path) === appPath) pid = Number(app.processIdentifier);
+  }
+  if (!pid) throw Error('The specified Awareness app is not running');
+  const processes = Application('System Events').applicationProcesses.whose({unixId: pid})();
+  if (processes.length !== 1) throw Error('Awareness process identity is ambiguous');
+  const p = processes[0], title = 'Codex Commands';
+  function waitFor(fn, label) {
+    const deadline = Date.now() + 12000;
+    while (Date.now() < deadline) { if (fn()) return; delay(0.1); }
+    throw Error(`Timed out waiting for ${label}`);
+  }
+  if (!p.windows.byName(title).exists()) {
+    const items = p.menuBars[0].menuBarItems();
+    const status = items.filter(item => item.description() === 'Awareness');
+    if (status.length !== 1) throw Error('Awareness status item is ambiguous');
+    status[0].click();
+    const command = status[0].menus[0].menuItems.byName('Codex Commands…');
+    if (!command.exists()) throw Error('Codex Commands menu item is missing');
+    command.click();
+    waitFor(() => p.windows.byName(title).exists(), 'the exact Commands window');
+  }
+  const w = p.windows.byName(title);
+  w.actions.byName('AXRaise').perform();
+  const refresh = w.buttons.byName('Refresh');
+  waitFor(() => refresh.enabled(), 'the initial catalog load');
+  refresh.click();
+  delay(0.1);
+  waitFor(() => refresh.enabled(), 'the refreshed catalog');
+  const scroll = w.scrollAreas[0], table = scroll.tables[0];
+  const rows = table.rows(), label = `/${id}`;
+  const statusText = `${rows.length} commands available`;
+  if (!w.staticTexts().some(text => text.value() === statusText))
+    throw Error('Commands refresh did not finish with a successful catalog status');
+  let index = -1;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].uiElements[0].staticTexts[0].value() === label) {
+      if (index !== -1) throw Error('Duplicate command rows in Commands window');
+      index = i;
+    }
+  }
+  if (index === -1) throw Error('Requested command is absent from the refreshed Commands table');
+  function bounds(e) { const pos = e.position(), size = e.size(); return [...pos, ...size]; }
+  function inside(outer, inner) {
+    return inner[0] >= outer[0] && inner[1] >= outer[1] &&
+      inner[0] + inner[2] <= outer[0] + outer[2] && inner[1] + inner[3] <= outer[1] + outer[3];
+  }
+  const row = table.rows[index];
+  if (!inside(bounds(scroll), bounds(row))) {
+    if (!scroll.scrollBars().length) throw Error('Offscreen command has no scrollbar');
+    scroll.scrollBars[0].value = rows.length <= 1 ? 0 : index / (rows.length - 1);
+    waitFor(() => inside(bounds(scroll), bounds(row)), 'the command row to become visible');
+  }
+  const description = row.uiElements[0].staticTexts[1].value();
+  if (description !== expectedDescription) throw Error('Commands description differs from the current installed catalog');
+  return JSON.stringify({window: title, processId: pid, appPath, refreshed: true, label, description,
+    rowIndex: index, rowCount: rows.length, statusText, row: bounds(row), viewport: bounds(scroll), windowBounds: bounds(w), visible: true});
+}
