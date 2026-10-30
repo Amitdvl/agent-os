@@ -359,13 +359,23 @@ async function auditPortableSkills(liveRoot, skills) {
   const portable = skills.filter((skill) => skill.path && skill.disposition !== "portable-core-contract");
   return Promise.all(portable.map(async (skill) => {
     const livePath = join(liveRoot, skill.id, "SKILL.md");
-    try {
-      const [live, expected] = await Promise.all([readFile(livePath, "utf8"), readFile(join(ROOT, skill.path), "utf8")]);
-      return { id: skill.id, livePath, status: live === expected ? "match" : "content-mismatch" };
-    } catch (error) {
-      if (error.code === "ENOENT") return { id: skill.id, livePath, status: "missing" };
-      throw error;
-    }
+    const expectedDir = dirname(join(ROOT, skill.path));
+    const requiredFiles = skill.requiredFiles ?? [];
+    const files = await Promise.all(["SKILL.md", ...requiredFiles].map(async (file) => {
+      try {
+        const [live, expected] = await Promise.all([
+          readFile(join(liveRoot, skill.id, file), "utf8"),
+          readFile(join(expectedDir, file), "utf8"),
+        ]);
+        return { file, status: live === expected ? "match" : "content-mismatch" };
+      } catch (error) {
+        if (error.code === "ENOENT") return { file, status: "missing" };
+        throw error;
+      }
+    }));
+    const status = files.some((file) => file.status === "missing") ? "missing"
+      : files.some((file) => file.status === "content-mismatch") ? "content-mismatch" : "match";
+    return { id: skill.id, livePath, files, status };
   }));
 }
 
@@ -498,7 +508,7 @@ async function main() {
     if (source.forbidden) failures.push(`portable command resolves under forbidden root: ${source.id} -> ${source.resolvedPath}`);
   }
   for (const source of toolAudit) if (source.status !== "match") failures.push(`portable tool contract ${source.status}: ${source.id}`);
-  for (const source of skillAudit) if (source.status !== "match") failures.push(`portable skill ${source.status}: ${source.id}`);
+  for (const source of skillAudit) if (source.status !== "match") failures.push(`portable skill ${source.status}: ${source.id} (${source.files.filter((file) => file.status !== "match").map((file) => `${file.file}: ${file.status}`).join(", ")})`);
   for (const source of registryContracts) {
     if (source.skill !== "readable") failures.push(`registered tool skill ${source.skill}: ${source.id}`);
     if (source.routing !== "readable") failures.push(`registered tool routing ${source.routing}: ${source.id}`);

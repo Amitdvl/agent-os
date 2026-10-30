@@ -48,6 +48,8 @@ async function writeFixture(root, { extraSkill = false } = {}) {
     await mkdir(dirname(skillPath), { recursive: true });
     await writeFile(skillPath, await readFile(join(ROOT, skill.path), "utf8"));
   }
+  const workflowSource = join(ROOT, "skills", "cover-project", "worker-workflow.md");
+  await writeFile(join(commandRoot, "cover-project", "worker-workflow.md"), await readFile(workflowSource, "utf8"));
   if (extraSkill) {
     const unrelated = join(commandRoot, "no-temptation-lockin", "SKILL.md");
     await mkdir(dirname(unrelated), { recursive: true });
@@ -99,6 +101,34 @@ test("twin audit detects missing and mismatched portable skill content", async (
   const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
   assert.match(report.failures.join("\n"), /portable skill content-mismatch: fallacy-check/);
   assert.match(report.failures.join("\n"), /portable skill missing: outcome-loop/);
+});
+
+test("required worker workflow accepts a matching reference and unrelated extra skill files", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-workflow-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(join(fixture.commandRoot, "fallacy-check", "unrelated-extra.md"), "host-only notes\n");
+  assert.equal(JSON.parse(run(auditArgs(fixture)).stdout).ok, true);
+});
+
+test("required worker workflow rejects a missing installed reference", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-workflow-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await rm(join(fixture.commandRoot, "cover-project", "worker-workflow.md"));
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /cover-project.*worker-workflow\.md/);
+  assert.match(report.failures.join("\n"), /missing/i);
+});
+
+test("required worker workflow rejects a mismatched installed reference", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-workflow-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  await writeFile(join(fixture.commandRoot, "cover-project", "worker-workflow.md"), "stale workflow\n");
+  const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+  assert.match(report.failures.join("\n"), /cover-project.*worker-workflow\.md/);
+  assert.match(report.failures.join("\n"), /mismatch/i);
 });
 
 test("twin audit rejects dangling host skill links before inventory filtering", async (context) => {
