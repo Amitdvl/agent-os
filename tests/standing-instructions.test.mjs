@@ -190,6 +190,15 @@ const SCENARIOS = [
     /never edit app internal state to simulate membership/,
     /record the exact blocker, complete available in-scope work, and leave project organization explicitly unfinished/,
   ]],
+  ["accelerated broad work maintains useful top-down parallelism", "orchestration", [
+    /derive top-level acceptance workstreams from the remaining goal/,
+    /assign bounded outcome contracts/,
+    /reason from first principles within their ownership and evidence limits/,
+    /about ten confirmed active, independently useful lanes/,
+    /reconcile and replenish the lane roster at least once per minute/,
+    /ten new launches per minute is not a progress measure/,
+    /scale back only for observed contention, conflicting ownership, or exhausted useful work/,
+  ]],
 ];
 
 async function sources() {
