@@ -8,6 +8,14 @@ description: Coordinate genuinely multi-track or high-risk work through a lead a
 Use the smallest role team that improves correctness or throughput. The lead
 owns the outcome; workers own only bounded assignments.
 
+Treat every task and goal as a five-hour delivery target from the latest human
+start or reset. Decompose useful independent outcomes immediately, fill available
+parallel capacity, and replenish lanes as work completes. Recheck the critical
+path and accepted output at least once per minute. When the target is at risk,
+increase useful throughput or change the approach around the measured
+bottleneck. Keep the lead's integration and full acceptance checks; report unmet
+work honestly at the target rather than marking it done from partial evidence.
+
 ## Activation
 
 Goal mode and orchestration are separate concerns. A `/goal` creates a durable,

@@ -176,6 +176,14 @@ not require a new chat. Record the reason in the run note. If subagent tools
 are unavailable, a supported separate chat is a fallback; disclose that reason.
 Each chat worker creates and manages its own focused native goal.
 
+An explicit human request for aggressive parallel throughput is a concrete
+capacity benefit. When useful independent work exceeds internal agent slots,
+use authorized project chats or isolated CLI sessions, replenish finished lanes,
+and measure accepted output and resource contention. Treat five hours from the
+latest human start or reset as the delivery target; escalate the critical path
+when that target is at risk. The supervisor retains integration, final review,
+and truthful status reporting.
+
 When useful independent work is waiting at a team limit, verify the limit's actual
 scope: nested agents may share one team limit, while separately scheduled chats
 may provide additional capacity. Do not assume either arrangement. With human
