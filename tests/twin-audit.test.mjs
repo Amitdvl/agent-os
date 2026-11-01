@@ -274,6 +274,10 @@ test("twin audit protects parallel work, scoped exceptions and shared-surface ow
       "keep one writer per shared mutable surface in a checkout and sequence only conflicts"],
     ["constraint changes", "revisit the exception when the constraint changes", "keep the exception permanently",
       "revisit the exception when the constraint changes"],
+    ["no project-wide agent cap", "Do not impose an arbitrary fixed cap on independent Codex pages or CLI sessions", "Use no more than four agents for the entire project",
+      "do not impose an arbitrary fixed cap on independent codex pages or cli sessions"],
+    ["bottleneck-driven dispatch", "Continuously identify the highest-leverage current blocker", "Pick tasks arbitrarily",
+      "continuously identify the highest-leverage current blocker"],
   ];
   for (const [name, from, to, missing] of cases) {
     await context.test(name, async () => {

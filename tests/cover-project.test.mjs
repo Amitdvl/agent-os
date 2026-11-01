@@ -65,6 +65,8 @@ test("core setup distributes the complete coverage package and exposes accurate 
   const parallelDefault = generated.indexOf("Run independently actionable implementation, testing and review tracks in parallel");
   assert.ok(ownership >= 0 && parallelDefault > ownership);
   assert.ok(generated.includes("Never impose one production writer for the whole project"));
+  assert.ok(generated.includes("Do not impose an arbitrary fixed cap on independent Codex pages or CLI sessions"));
+  assert.ok(generated.includes("Continuously identify the highest-leverage current blocker"));
   assert.ok(generated.includes("keep one writer per shared mutable surface in a checkout and sequence only conflicts"));
   assert.doesNotMatch(generated, /use one executor by default/i);
   assert.ok(ownership < generated.indexOf("## General policy"));

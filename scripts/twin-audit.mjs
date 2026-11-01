@@ -476,6 +476,8 @@ async function main() {
     "serialize conflicts, not the project", "revisit the exception when the constraint changes",
     "do not create filler tasks or layers merely to fill agent slots",
     "respect actual concurrency, model and worker-type restrictions",
+    "do not impose an arbitrary fixed cap on independent codex pages or cli sessions",
+    "continuously identify the highest-leverage current blocker",
     "keep one writer per shared mutable surface in a checkout and sequence only conflicts",
     "the lead owns integration", "never claim a model or delegation occurred",
     "worker output is evidence", "not a replacement goal",
