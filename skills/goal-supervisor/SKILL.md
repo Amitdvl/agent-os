@@ -184,6 +184,13 @@ latest human start or reset as the delivery target; escalate the critical path
 when that target is at risk. The supervisor retains integration, final review,
 and truthful status reporting.
 
+For broad accelerated work, give each production worker a continuing domain or
+player-journey outcome. Let that worker carry dependent evidence recovery,
+implementation, connected operation, focused checks, correction, and the next
+source-ready family inside exclusive ownership. A single test or note is a
+checkpoint unless it completes the outcome or proves a real blocker. Hand
+coherent verified commits to the supervisor as the work progresses.
+
 When useful independent work is waiting at a team limit, verify the limit's actual
 scope: nested agents may share one team limit, while separately scheduled chats
 may provide additional capacity. Do not assume either arrangement. With human

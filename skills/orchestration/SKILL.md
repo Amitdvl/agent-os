@@ -16,6 +16,16 @@ increase useful throughput or change the approach around the measured
 bottleneck. Keep the lead's integration and full acceptance checks; report unmet
 work honestly at the target rather than marking it done from partial evidence.
 
+For accelerated broad work, assign each production worker a continuing high-level
+domain or player-journey outcome. The worker plans and executes dependent
+evidence, implementation, connected operation, focused checks, correction, and
+the next source-ready family within exclusive ownership. One test, note, or
+isolated fix is a checkpoint unless it completes the outcome or proves a real
+blocker. Hand coherent verified batches to the lead while useful domain work
+continues. Plan producer dependencies and non-overlapping write scopes before
+scaling, and use a supported deadline clock when the human sets a short time
+limit. Measure accepted integrated behavior, not chat launches.
+
 ## Activation
 
 Goal mode and orchestration are separate concerns. A `/goal` creates a durable,
