@@ -11,10 +11,10 @@ available for on-demand use.
 
 ## Preflight and installation
 
-The official package is `rea-agents`, binary `rea`; reviewed version 6.7.0.
-Install deliberately with `npm install --global rea-agents@6.7.0`, then verify
+The official package is `rea-agents`, binary `rea`; reviewed version 6.8.0.
+Install deliberately with `npm install --global rea-agents@6.8.0`, then verify
 `command -v rea`, `rea --version`, command help and `rea capabilities --json`.
-Node ^22.19.0, ^24.11.0 or >=26 is required. No account or API key is needed for
+Node ^22.23.4, ^24.22.1 or >=26.12.1 is required. No account or API key is needed for
 local static inspection. There is no integration-owned configuration or archive;
 input artifacts and output Evidence stay in the selected task's workspace.
 The binary lives under the configured npm global prefix's bin directory.

@@ -189,20 +189,22 @@ test("audited Homebrew source records retain current reviewed release pins", asy
   const sources = await json("sources");
   const sourceMap = new Map(sources.sources.map((source) => [source.id, source]));
   const expected = {
-    "birdclaw-audited": ["steipete/tap/birdclaw", "0.16.0-audited"],
-    "discrawl-audited": ["openclaw/tap/discrawl", "0.15.8-audited"],
-    "notcrawl-brew": ["openclaw/tap/notcrawl", "0.6.6-audited"],
+    "birdclaw-audited": ["steipete/tap/birdclaw", "0.16.3-audited"],
+    "discrawl-audited": ["openclaw/tap/discrawl", "0.19.0-audited"],
+    "instagram-cli-brew": ["supreme-gg-gg/tap/instagram-cli", "2.1.0-audited"],
+    "notcrawl-brew": ["openclaw/tap/notcrawl", "0.6.10-audited"],
     "peekaboo-audited": ["steipete/tap/peekaboo", "4.5.0-audited"],
     "remindctl-audited": ["steipete/tap/remindctl", "0.3.9-audited"],
     "spogo-brew": ["steipete/tap/spogo", "0.13.2-audited"],
-    "wacli-audited": ["openclaw/tap/wacli", "0.22.0-audited"],
-    "wacrawl-audited": ["openclaw/tap/wacrawl", "0.4.3-audited"],
-    "yt-dlp-brew": ["yt-dlp", "2026.10.21-audited"],
+    "wacli-audited": ["openclaw/tap/wacli", "0.25.1-audited"],
+    "wacrawl-audited": ["openclaw/tap/wacrawl", "0.4.4-audited"],
+    "yt-dlp-brew": ["yt-dlp", "2026.10.26-audited"],
   };
   for (const [id, [locator, pin]] of Object.entries(expected)) {
     assert.equal(sourceMap.get(id)?.locator, locator, `${id} locator`);
     assert.equal(sourceMap.get(id)?.pin, pin, `${id} pin`);
   }
+  assert.equal(sourceMap.get("rea-agents-npm")?.pin, "6.8.0", "REA reviewed package pin");
 });
 
 test("portable assets contain no personal path, identity, excluded feature, or embedded secret-looking value", async () => {

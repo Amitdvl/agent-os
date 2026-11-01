@@ -32,7 +32,7 @@ Every selected tool is rendered to a managed `SKILL.md` with a data-root placeho
 
 The `remindctl` contract reflects the native limitation: there is no Urgent toggle. Use an alarm when timing matters and leave priority unset unless the user explicitly requests a supported priority.
 
-The audited Homebrew source records currently cover Birdclaw 0.16.0, Discrawl 0.15.8, Notcrawl 0.6.6, Peekaboo 4.5.0, Remindctl 0.3.8, Spogo 0.13.1, Wacli 0.22.0, Wacrawl 0.4.3, and yt-dlp 2026.8.19. These pins document reviewed releases; their `automation: disabled` setting continues to prohibit unattended installation.
+The audited Homebrew source records currently cover Birdclaw 0.16.3, Discrawl 0.19.0, Instagram CLI 2.1.0, Notcrawl 0.6.10, Peekaboo 4.5.0, Remindctl 0.3.9, Spogo 0.13.2, Wacli 0.25.1, Wacrawl 0.4.4, and yt-dlp 2026.10.26. These pins document reviewed releases; their `automation: disabled` setting continues to prohibit unattended installation.
 
 The portable core policy also makes reusable-workflow reporting conditional:
 completion summaries name local-tool, Agent OS, command, skill, automation, hook,
@@ -125,7 +125,7 @@ provider for generic requests.
 
 ## REA
 
-`rea` is the official `rea-agents` npm package, pinned to 6.7.0 and selected by
+`rea` is the official `rea-agents` npm package, pinned to 6.8.0 and selected by
 the research pack. Its generated skill and sibling routing contract require
 explicit invocation through `$rea` or a request to use REA. Codex discovery
 metadata disables implicit invocation while keeping the skill available. The
