@@ -60,3 +60,14 @@ test("default completion requires publishing intended work without overriding sc
   for (const phrase of ["even\nwithout an explicit finish invocation", "A pushed feature branch alone is not completion", "Verify the intended commits are included in the remote default branch", "Never promote unrelated commits"])
     assert.ok(skill.includes(phrase), `finish skill is missing: ${phrase}`);
 });
+
+test("orchestration policy keeps Codex App chat concurrency within its eight-chat ceiling", async () => {
+  const orchestration = await readFile(join(ROOT, "policies", "orchestration.md"), "utf8");
+  for (const phrase of [
+    "Never create or launch more than eight Codex App chats at the same time",
+    "Eight is the app-wide ceiling",
+    "count existing active chats",
+    "if the count is unknown or already eight, reuse an existing chat or wait until a slot is free",
+    "Internal subagents that do not create app chats do not consume a chat slot",
+  ]) assert.ok(orchestration.includes(phrase), `chat concurrency policy is missing: ${phrase}`);
+});
