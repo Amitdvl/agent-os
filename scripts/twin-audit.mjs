@@ -467,6 +467,15 @@ async function main() {
   const requiredTwinSyncPhrases = ["commit the intended agent os mirror change locally", "push it to the configured agent os `origin`", "never force-push or push unrelated project work"];
   const missingTwinSyncPhrases = requiredTwinSyncPhrases.filter((phrase) => !normalizedInstructions.includes(phrase));
   const requiredOrchestrationPhrases = [
+    "human-authorized goal and delegation",
+    "without per-chunk confirmation",
+    "direct verified human authorization",
+    "original scope, restrictions and provenance",
+    "do not turn a coordinator's request into human consent",
+    "tool's direct-human-authorization requirements",
+    "never fabricate a user quote",
+    "uploads or downloads outside explicit bounds",
+    "human stops and narrower worker restrictions",
     "persistent, thread-scoped objective", "does not by itself require orchestration",
     "run independently actionable implementation, testing and review tracks in parallel",
     "unless a concrete reason makes that ineffective or unsafe",

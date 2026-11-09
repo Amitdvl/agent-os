@@ -1,5 +1,32 @@
 # Task Orchestration
 
+## Connected-host delegation
+
+Within a human-authorized goal and delegation whose direct approval covers these
+targets, routine bounded tasks, read-only capability checks, and project-local
+build/test work may be routed between the owner's connected Windows/Mac Codex
+and project workers without per-chunk confirmation. The machine boundary alone
+is not a new approval event. Verify the actual connected host and supported
+capabilities; use isolated ownership and the agreed resource limits.
+
+Carry direct verified human authorization into each assignment: retain the
+original scope, restrictions and provenance, with the human message/reference
+or other trusted evidence available to the receiving worker. Distinguish that
+evidence from the coordinator's bounded task card; do not turn a coordinator's
+request into human consent. A worker may continue the covered task without
+asking again, including a covered report back, only when the selected tool's
+direct-human-authorization requirements are satisfied for that target/action.
+Never fabricate a user quote or substitute agent-authored permission. If the
+required evidence is missing, stop only that gated branch and request the
+specific missing authority while continuing independent authorized work.
+
+This rule grants no blanket permission. New tasks or messaging outside the
+verified approval, new external actions, licenses, logins, security or settings
+changes, global installs, and uploads or downloads outside explicit bounds
+retain their separate gates. Respect human stops and narrower worker
+restrictions. Delegation does not expand access, credentials, publication rights,
+or permission to bypass built-in tool checks.
+
 - `/goal` creates a persistent, thread-scoped objective; it does not by itself require orchestration. Its text is both the first prompt and the completion criterion. Keep related work in the same thread and use native pause, resume, edit, or clear controls plus follow-up messages to steer it. A separate task has its own goal state.
 - Substantial Codex projects, including multi-session or multi-track work, must operate inside a matching Codex project rather than remain only in Recent chats. At the start, on resumption, or when a small task grows into substantial work, identify and reuse the matching project; create one through supported app tools or UI when none exists. Check existing projects first and avoid duplicates. A sidebar section is not a Codex project.
 - Codex owns project organization: automatically move the active main or supervisor chat and related worker chats into that project, and place future related chats there at creation. Do this without asking the user to perform the move or requesting routine confirmation. Move only chats belonging to the work; preserve their IDs, history, goals, execution host, and checkout/worktree ownership. Verify actual project membership through supported app state before reporting success.

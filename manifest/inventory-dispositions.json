@@ -169,6 +169,7 @@
     {"id": "memory-disabled", "disposition": "strict-portable"},
     {"id": "focus-protection", "disposition": "strict-portable"},
     {"id": "task-orchestration", "disposition": "portable-core"},
+    {"id": "connected-host-delegation-authority", "disposition": "portable-core-contract", "source": "policies/orchestration.md", "reason": "Bounded standing cross-host delegation retains direct verified human authorization, provenance, target scope and separate tool/action gates; it does not grant permissions."},
     {"id": "repo-skill-ownership", "disposition": "portable-core"},
     {"id": "local-work-autonomy", "disposition": "strict-portable"},
     {"id": "agent-vault", "disposition": "portable-core-contract"},

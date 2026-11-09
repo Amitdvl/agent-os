@@ -297,6 +297,12 @@ test("twin audit retains human authority and actual model restrictions under par
   const fixture = await writeFixture(root);
   const content = await readFile(fixture.instructions, "utf8");
   const phrases = [
+    "direct verified human authorization",
+    "original scope, restrictions and provenance",
+    "do not turn a coordinator's request into human consent",
+    "tool's direct-human-authorization requirements",
+    "Never fabricate a user quote",
+    "uploads or downloads outside explicit bounds",
     "Respect actual concurrency, model and worker-type restrictions",
     "Select each assignment's model and reasoning effort deliberately when the runtime supports it",
     "ask the human and wait for explicit approval of the concrete target/action",
@@ -304,8 +310,9 @@ test("twin audit retains human authority and actual model restrictions under par
   ];
   for (const phrase of phrases) {
     await context.test(phrase, async () => {
-      const mutant = content.replace(phrase, "[guard removed]");
-      assert.notEqual(mutant, content, "authority mutation must reach the actual instruction");
+      const pattern = new RegExp(phrase.split(/\s+/).map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+"));
+      const mutant = content.replace(pattern, "[guard removed]");
+      assert.ok(mutant !== content, "authority mutation must reach the actual instruction");
       await writeFile(fixture.instructions, mutant);
       const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
       assert.ok(report.failures.some(message => message.startsWith("live global instructions are missing orchestration policy phrases:") && message.includes(phrase.toLowerCase())),
