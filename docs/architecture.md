@@ -1,17 +1,5 @@
 # Architecture
 
-## Connected-host delegation authority
-
-The orchestration policy and skill carry the same bounded cross-host rule into
-generated host instructions and worker assignments. An already authorized goal
-may use the owner's connected Windows/Mac workers for covered project work
-without repeating confirmation at each machine boundary. Each handoff retains
-the direct human approval reference, scope and restrictions. A coordinator's
-task card cannot replace that evidence. Connector checks, human stops, new
-external actions and work outside the approved bounds remain separate gates.
-Tests verify instruction/skill distribution and detect removal of the authority
-guards; they do not establish model compliance or authorize a tool call.
-
 Agent OS owns portable policy and rendered integration structure. A destination Mac owns its identity, accounts, encryption keys, permissions, private archives, and application state.
 
 ## Layout and deployment

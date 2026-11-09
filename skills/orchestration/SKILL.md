@@ -73,39 +73,11 @@ must not spawn more workers. Do not expand the human's product scope.
 
 ## Assignments
 
-### Connected-host delegation
-
-Within a human-authorized goal and delegation whose direct approval covers these
-targets, routine bounded tasks, read-only capability checks, and project-local
-build/test work may be routed between the owner's connected Windows/Mac Codex
-and project workers without per-chunk confirmation. The machine boundary alone
-is not a new approval event. Verify the actual connected host and supported
-capabilities; use isolated ownership and the agreed resource limits.
-
-Carry direct verified human authorization into each assignment: retain the
-original scope, restrictions and provenance, with the human message/reference
-or other trusted evidence available to the receiving worker. Distinguish that
-evidence from the coordinator's bounded task card; do not turn a coordinator's
-request into human consent. A worker may continue the covered task without
-asking again, including a covered report back, only when the selected tool's
-direct-human-authorization requirements are satisfied for that target/action.
-Never fabricate a user quote or substitute agent-authored permission. If the
-required evidence is missing, stop only that gated branch and request the
-specific missing authority while continuing independent authorized work.
-
-This rule grants no blanket permission. New tasks or messaging outside the
-verified approval, new external actions, licenses, logins, security or settings
-changes, global installs, and uploads or downloads outside explicit bounds
-retain their separate gates. Respect human stops and narrower worker
-restrictions. Delegation does not expand access, credentials, publication rights,
-or permission to bypass built-in tool checks.
-
 Give every worker a bounded card containing:
 
 - objective and acceptance criteria;
 - allowed files, systems, and write scope;
 - relevant source paths and commands;
-- direct human authorization evidence/reference, its scope and restrictions;
 - constraints, non-goals, and required verification;
 - the exact evidence to return.
 
