@@ -314,6 +314,27 @@ test("twin audit retains human authority and actual model restrictions under par
   }
 });
 
+test("twin audit requires necessary handoffs without needless lead messages", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "agent-os-twin-handoff-"));
+  context.after(() => rm(root, { recursive: true, force: true }));
+  const fixture = await writeFixture(root);
+  const content = await readFile(fixture.instructions, "utf8");
+  for (const phrase of [
+    "When delegated work requires another owner to integrate, review, verify, unblock, or continue it",
+    "Do not notify the lead for self-contained work",
+    "do not send duplicate status messages",
+    "report the undelivered handoff as a blocker",
+  ]) {
+    await context.test(phrase, async () => {
+      const mutant = content.replace(phrase, "[handoff rule removed]");
+      assert.notEqual(mutant, content, "handoff mutation must reach the instruction");
+      await writeFile(fixture.instructions, mutant);
+      const report = JSON.parse(run(auditArgs(fixture), 1).stdout);
+      assert.ok(report.failures.some(message => message.startsWith("live global instructions are missing orchestration policy phrases:") && message.includes(phrase.toLowerCase())));
+    });
+  }
+});
+
 test("twin audit detects live goal-prompt skill drift", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "agent-os-twin-audit-"));
   context.after(() => rm(root, { recursive: true, force: true }));
